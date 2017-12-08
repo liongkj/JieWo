@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "410731047642",
+    "firebase_url": "https://jiewo-a02c5.firebaseio.com",
+    "project_id": "jiewo-a02c5",
+    "storage_bucket": "jiewo-a02c5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410731047642:android:bd5a8ac8da5a9c75",
+        "android_client_info": {
+          "package_name": "com.jiewo.kj.jiewo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "410731047642-7oor5jr83o9g7s2lga30e1m6q2pas540.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jiewo.kj.jiewo",
+            "certificate_hash": "3508afe37d1f78325bc9311991117309c7f915b8"
+          }
+        },
+        {
+          "client_id": "410731047642-orvb18603es1gf6or2lbevdt3ja5son7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jiewo.kj.jiewo",
+            "certificate_hash": "cb86437482e32a5b22779658b26709d66df357c4"
+          }
+        },
+        {
+          "client_id": "410731047642-h7n88hn42go4qpslj2s3gvmjougd8kmu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCB9sWLSI-oqqubWEhGEyL2H9zsS0vPKrM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "410731047642-h7n88hn42go4qpslj2s3gvmjougd8kmu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

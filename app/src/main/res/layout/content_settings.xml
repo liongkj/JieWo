@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v4.widget.NestedScrollView
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.jiewo.kj.jiewo.SettingsActivity"
+    tools:showIn="@layout/activity_settings">
+
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:orientation="vertical"
+
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="88dp"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginStart="@dimen/fab_margin"
+            android:divider="@android:color/black"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/img_profile"
+                android:scaleType="fitXY"
+                android:layout_width="100dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_vertical"
+                android:paddingEnd="@dimen/fab_margin"
+                android:paddingStart="@dimen/fab_margin"
+                android:src="@drawable/ic_profile_pic"
+
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginStart="8dp"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:paddingBottom="8dp">
+
+                <TextView
+                    android:id="@+id/txtUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/primarytextfont"
+                    android:text="Username"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/txtNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/primarytextfont"
+                    android:text="Number"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/txtEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/primarytextfont"
+                    android:text="Email"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="@dimen/fab_margin"
+            android:background="@android:color/darker_gray" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginStart="@dimen/fab_margin"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_signout"
+                style="@style/Widget.AppCompat.Button"
+
+                android:layout_marginStart="@dimen/fab_margin"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="@dimen/cardview_default_elevation"
+                android:onClick="signOut"
+                android:text="SIGN OUT" />
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_acc_delete"
+                style="@style/Widget.AppCompat.Button"
+                android:padding="@dimen/fab_margin"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="@dimen/cardview_default_elevation"
+                android:text="DELETE ACCOUNT"
+                android:textColor="@android:color/white"
+                app:backgroundTint="@android:color/holo_red_light"
+                android:onClick="deleteAccount"/>
+
+        </LinearLayout>
+    </android.support.v7.widget.LinearLayoutCompat>
+
+
+</android.support.v4.widget.NestedScrollView>

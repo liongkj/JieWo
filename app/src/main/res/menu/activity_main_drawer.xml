@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_menu_home"
+            android:title="Home" />
+        <item
+            android:id="@+id/nav_category"
+            android:icon="@drawable/ic_menu_category"
+            android:title="Category" />
+        <item
+            android:id="@+id/nav_state"
+            android:icon="@drawable/ic_menu_nearby"
+            android:title="What's Nearby" />
+
+
+    </group>
+
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/setting">
+        <item android:title="Communicate">
+
+            <item
+                android:id="@+id/nav_items"
+                android:icon="@drawable/ic_menu_items"
+                android:title="My Items" />
+
+            <item
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/ic_menu_settings"
+                android:title="Settings" />
+
+        </item>
+    </group>
+</menu>
