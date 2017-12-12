@@ -26,8 +26,7 @@ public class UserModel implements Serializable{
     private String email;
     private Uri photoURI;
     private String number;
-    static FirebaseAuth auth = FirebaseAuth.getInstance();
-    static FirebaseUser firebaseUser = auth.getCurrentUser();
+    static FirebaseUser firebaseUser;
     private static UserModel User = null;
 
     private UserModel(String id, String name, String email, Uri photoURI) {
@@ -39,6 +38,8 @@ public class UserModel implements Serializable{
 
     public static UserModel getUser() {
         if (User==null) {
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            firebaseUser = auth.getCurrentUser();
             User = new UserModel(firebaseUser.getUid(), firebaseUser.getDisplayName(), firebaseUser.getEmail(), firebaseUser.getPhotoUrl());
         }
         return User;

@@ -34,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
 
         } else {
             // not signed in
+
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
@@ -53,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
 
             // Successfully signed in
             if (resultCode == RESULT_OK) {
+
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 finish();
                 return;

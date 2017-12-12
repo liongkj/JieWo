@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo;
+package com.jiewo.kj.jiewo.View.ui;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -17,7 +17,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.jiewo.kj.jiewo.Model.UserModel;
-import com.jiewo.kj.jiewo.View.ui.LoginActivity;
+import com.jiewo.kj.jiewo.R;
 
 public class SettingsActivity extends AppCompatActivity {
     TextView txtUsername,txtEmail,txtNumber;
@@ -46,6 +46,23 @@ public class SettingsActivity extends AppCompatActivity {
         txtNumber.setText(user.getNumber());
         user.setProfilePic(imageView);
         }
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//
+//        Intent intent = getIntent();
+//
+//        String frag = intent.getExtras().getString("frag");
+//
+//        switch (frag) {
+//
+//            case "fragmentB":
+//                //here you can set Fragment B to your activity as usual;
+//                fragmentManager.beginTransaction().replace(R.id.fragment_placeholder, new FragmentB()).commit();
+//                break;
+//        }
+//    }
 
     public void signOut(View view) {
         AuthUI.getInstance()
