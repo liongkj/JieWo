@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo;
+package com.jiewo.kj.jiewo.View.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
+import com.jiewo.kj.jiewo.Model.UserModel;
 
 import java.util.Arrays;
 
@@ -19,12 +20,13 @@ public class LoginActivity extends AppCompatActivity {
 
     // Choose an arbitrary request code value
     private static final int RC_SIGN_IN = 123;
-
+    UserModel user = null;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
+
         if (auth.getCurrentUser() != null) {
             // already signed in
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
@@ -40,10 +42,7 @@ public class LoginActivity extends AppCompatActivity {
                                             new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()))
                             .build(),
                     RC_SIGN_IN);
-
         }
-
-
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo;
+package com.jiewo.kj.jiewo.View.ui;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -17,10 +17,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import java.util.Objects;
+import com.jiewo.kj.jiewo.Model.UserModel;
+import com.jiewo.kj.jiewo.R;
+import com.jiewo.kj.jiewo.SettingsActivity;
 
 
 public class MainActivity extends AppCompatActivity
@@ -35,8 +34,7 @@ public class MainActivity extends AppCompatActivity
     Uri uri;
     String username;
     Double rating;
-    FirebaseAuth auth;
-    FirebaseUser firebaseUser;
+    UserModel user = UserModel.getUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +42,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        auth = FirebaseAuth.getInstance();
-        firebaseUser = auth.getCurrentUser();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -71,11 +67,9 @@ public class MainActivity extends AppCompatActivity
         txtRating = headerView.findViewById(R.id.txt_rating);;
         imageView = headerView.findViewById(R.id.imageView);;
 
-        username = firebaseUser.getDisplayName();
-        uri = firebaseUser.getPhotoUrl();
-        if(!Objects.equals(uri, null))new SettingsActivity.DownloadImageTask(imageView).execute(uri.toString());
-//        rating =
-        txtUsername.setText(username);
+        txtUsername.setText(user.getName());
+        user.setProfilePic(imageView);
+        //rating
     }
 
     @Override
