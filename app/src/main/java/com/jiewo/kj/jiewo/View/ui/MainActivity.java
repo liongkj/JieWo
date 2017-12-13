@@ -1,7 +1,6 @@
 package com.jiewo.kj.jiewo.View.ui;
 
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -21,6 +20,7 @@ import com.jiewo.kj.jiewo.Model.UserModel;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.View.ui.Fragments.ItemFragment;
 import com.jiewo.kj.jiewo.View.ui.Fragments.MainFragment;
+import com.jiewo.kj.jiewo.View.ui.Fragments.SettingFragment;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         //rating
 
 
-
         if (findViewById(R.id.fragment_placeholder) != null) {
 
             // However, if we're being restored from a previous state,
@@ -96,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle setupDrawerToggle() {
         // NOTE: Make sure you pass in a valid toolbar reference.  ActionBarDrawToggle() does not require it
         // and will not render the hamburger icon without it.
-        return new ActionBarDrawerToggle(this, mDrawer, toolbar,R.string.drawer_open,  R.string.drawer_close);
+        return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open, R.string.drawer_close);
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -113,8 +112,8 @@ public class MainActivity extends AppCompatActivity {
     public void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
-        Class fragmentClass;
-        switch(menuItem.getItemId()) {
+        Class fragmentClass = null;
+        switch (menuItem.getItemId()) {
             case R.id.nav_home:
                 fragmentClass = MainFragment.class;
                 break;
@@ -124,8 +123,12 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_state:
                 fragmentClass = MainFragment.class;
                 break;
+            case R.id.nav_settings:
+                fragmentClass= SettingFragment.class;
+                break;
             default:
-                fragmentClass = ItemFragment.class;
+                fragmentClass = MainFragment.class;
+                break;
         }
 
         try {
@@ -158,21 +161,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
 
-            case R.id.nav_settings:
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                intent.putExtra("frag", "fragmentB");
-                startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
         }
-
-//        if (drawerToggle.onOptionsItemSelected(item)) {
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
