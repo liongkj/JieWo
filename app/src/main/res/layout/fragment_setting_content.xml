@@ -8,8 +8,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.jiewo.kj.jiewo.View.ui.SettingsActivity"
-    tools:showIn="@layout/activity_settings">
+    tools:context="com.jiewo.kj.jiewo.View.ui.Fragments.SettingFragment"
+    tools:showIn="@layout/fragment_setting">
 
     <android.support.v7.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -19,11 +19,13 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="88dp"
+            android:layout_height="80dp"
             android:layout_marginEnd="@dimen/fab_margin"
             android:layout_marginStart="@dimen/fab_margin"
             android:divider="@android:color/black"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/fab_margin"
+            android:paddingBottom="8dp">
 
             <ImageView
                 android:id="@+id/img_profile"
@@ -34,7 +36,7 @@
                 android:paddingEnd="@dimen/fab_margin"
                 android:paddingStart="@dimen/fab_margin"
                 android:src="@drawable/ic_profile_pic"
-
+                android:contentDescription="Profile picture"
                 />
 
             <LinearLayout
@@ -113,7 +115,7 @@
                 android:text="DELETE ACCOUNT"
                 android:textColor="@android:color/white"
                 app:backgroundTint="@android:color/holo_red_light"
-                android:onClick="deleteAccount"/>
+                android:onClick="deleteAccout"/>
 
         </LinearLayout>
     </android.support.v7.widget.LinearLayoutCompat>

@@ -23,7 +23,7 @@ import com.jiewo.kj.jiewo.View.ui.Fragments.MainFragment;
 import com.jiewo.kj.jiewo.View.ui.Fragments.SettingFragment;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
 
     NavigationView navigationView;
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 fragmentClass = MainFragment.class;
                 break;
             case R.id.nav_settings:
-                fragmentClass= SettingFragment.class;
+                fragmentClass = SettingFragment.class;
                 break;
             default:
                 fragmentClass = MainFragment.class;
@@ -182,5 +182,8 @@ public class MainActivity extends AppCompatActivity {
         // Pass any configuration change to the drawer toggles
         drawerToggle.onConfigurationChanged(newConfig);
     }
+
+
+
 
 }

@@ -60,30 +60,6 @@ public class SettingsActivity extends Fragment {
 //                });
 //    }
 //
-//    public void deleteAccount(final View view) {
-//        new MaterialDialog.Builder(this)
-//                .title("Confirm delete?")
-//                .content("All data associated with your account would be deleted permanently")
-//                .positiveText("DELETE")
-//                .negativeText("Cancel")
-//                .iconRes(R.drawable.ic_emoticon_sad)
-//                .show();
-//
-//        new MaterialDialog.Builder(this)
-//                .onPositive(new MaterialDialog.SingleButtonCallback() {
-//                    @Override
-//                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-//                        dialog.dismiss();
-//                    }
-//                })
-//                .onNegative(new MaterialDialog.SingleButtonCallback() {
-//                    @Override
-//                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-//                        Log.i("del123", "delete prompt");
-////                        confirmDelete(view);
-//                    }
-//                })
-//        ;
-//    }
+
 
 }
