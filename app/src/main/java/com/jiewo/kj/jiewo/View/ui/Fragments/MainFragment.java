@@ -1,11 +1,13 @@
 package com.jiewo.kj.jiewo.View.ui.Fragments;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
 import com.jiewo.kj.jiewo.R;
 
 public class MainFragment extends Fragment {
@@ -22,4 +24,10 @@ public class MainFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        ShimmerRecyclerView shimmerRecycler = (ShimmerRecyclerView) getView().findViewById(R.id.shimmer_recycler_view);
+        shimmerRecycler.showShimmerAdapter();
+    }
 }

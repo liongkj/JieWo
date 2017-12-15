@@ -50,6 +50,8 @@ dependencies {
     //architecture component
     implementation "android.arch.lifecycle:common-java8:1.0.0"
     implementation "android.arch.lifecycle:extensions:1.0.0"
+    //recycleview
+    implementation 'com.github.sharish:ShimmerRecyclerView:v1.1'
 
 
 
