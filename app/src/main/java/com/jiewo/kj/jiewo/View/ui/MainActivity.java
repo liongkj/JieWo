@@ -18,12 +18,12 @@ import android.widget.TextView;
 
 import com.jiewo.kj.jiewo.Model.UserModel;
 import com.jiewo.kj.jiewo.R;
-import com.jiewo.kj.jiewo.View.ui.Fragments.ItemFragment;
-import com.jiewo.kj.jiewo.View.ui.Fragments.MainFragment;
+import com.jiewo.kj.jiewo.View.ui.Fragments.HomeFragment;
+import com.jiewo.kj.jiewo.View.ui.Fragments.RentItemFragment;
 import com.jiewo.kj.jiewo.View.ui.Fragments.SettingFragment;
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
 
     NavigationView navigationView;
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity{
             }
 
             // Create a new Fragment to be placed in the activity layout
-            MainFragment firstFragment = new MainFragment();
+            HomeFragment firstFragment = new HomeFragment();
 
             // In case this activity was started with special instructions from an
             // Intent, pass the Intent's extras to the fragment as arguments
@@ -115,19 +115,19 @@ public class MainActivity extends AppCompatActivity{
         Class fragmentClass = null;
         switch (menuItem.getItemId()) {
             case R.id.nav_home:
-                fragmentClass = MainFragment.class;
+                fragmentClass = HomeFragment.class;
                 break;
-            case R.id.nav_category:
-                fragmentClass = ItemFragment.class;
+            case R.id.nav_rent_item:
+                fragmentClass = RentItemFragment.class;
                 break;
-            case R.id.nav_state:
-                fragmentClass = MainFragment.class;
+            case R.id.nav_geolocate:
+                fragmentClass = HomeFragment.class;
                 break;
             case R.id.nav_settings:
                 fragmentClass = SettingFragment.class;
                 break;
             default:
-                fragmentClass = MainFragment.class;
+                fragmentClass = HomeFragment.class;
                 break;
         }
 
@@ -182,8 +182,5 @@ public class MainActivity extends AppCompatActivity{
         // Pass any configuration change to the drawer toggles
         drawerToggle.onConfigurationChanged(newConfig);
     }
-
-
-
 
 }

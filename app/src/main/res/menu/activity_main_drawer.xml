@@ -9,11 +9,15 @@
             android:icon="@drawable/ic_menu_home"
             android:title="Home" />
         <item
-            android:id="@+id/nav_category"
-            android:icon="@drawable/ic_menu_category"
-            android:title="Category" />
+            android:id="@+id/nav_rent_item"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Rent My Item"/>
         <item
-            android:id="@+id/nav_state"
+            android:id="@+id/nav_find_item"
+            android:icon="@drawable/ic_menu_search"
+            android:title="Find Items" />
+        <item
+            android:id="@+id/nav_geolocate"
             android:icon="@drawable/ic_menu_nearby"
             android:title="What's Nearby" />
 

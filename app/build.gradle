@@ -20,9 +20,10 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.google.firebase:firebase-auth:11.6.2'
-    implementation 'com.google.firebase:firebase-database:11.6.2'
-    implementation 'com.google.android.gms:play-services-auth:11.6.2'
+    implementation 'com.google.firebase:firebase-auth:11.8.0'
+    implementation 'com.google.firebase:firebase-database:11.8.0'
+    implementation 'com.google.android.gms:play-services-auth:11.8.0'
+    implementation 'com.google.firebase:firebase-storage:11.8.0'
 
     implementation 'com.android.support:appcompat-v7:27.0.2'
 //    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -31,17 +32,18 @@ dependencies {
     implementation 'com.android.support:support-v4:27.0.2'
     implementation 'com.android.support:customtabs:27.0.2'
 
+    implementation 'com.android.support:recyclerview-v7:27.0.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-    implementation 'com.google.firebase:firebase-core:11.6.2'
+    implementation 'com.google.firebase:firebase-core:11.8.0'
     // FirebaseUI for Firebase Auth
     implementation 'com.firebaseui:firebase-ui-auth:3.1.0'
 
     // FirebaseUI for Firebase Realtime Database
     implementation 'com.firebaseui:firebase-ui-database:3.1.0'
-    implementation 'com.google.android.gms:play-services-maps:11.6.2'
+    implementation 'com.google.android.gms:play-services-maps:11.8.0'
 
     //material dialog confirmation box
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
@@ -51,10 +53,7 @@ dependencies {
     implementation "android.arch.lifecycle:common-java8:1.0.0"
     implementation "android.arch.lifecycle:extensions:1.0.0"
     //recycleview
-    implementation 'com.github.sharish:ShimmerRecyclerView:v1.1'
-
-
-
+    implementation 'com.facebook.shimmer:shimmer:0.1.0@aar'
 }
 
 
