@@ -1,27 +1,40 @@
 package com.jiewo.kj.jiewo.View.ui.Fragments;
 
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.graphics.drawable.ColorDrawable;
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.view.KeyEvent;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageView;
 
 import com.jiewo.kj.jiewo.R;
+import com.vansuita.pickimage.bean.PickResult;
+import com.vansuita.pickimage.bundle.PickSetup;
+import com.vansuita.pickimage.dialog.PickImageDialog;
+import com.vansuita.pickimage.listeners.IPickResult;
 
 public class RentItemFragment extends Fragment {
     FloatingActionButton fabAddItem;
+    ImageView itemImage;
+    private Uri fileUri;
+
+    static final int REQUEST_IMAGE_CHOOSER = 2;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int MY_PERMISSIONS_REQUEST_CAMERA = 0;
+
 
     public RentItemFragment() {
         // Required empty public constructor
@@ -30,20 +43,27 @@ public class RentItemFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
+
         View view = inflater.inflate(R.layout.fragment_rent_item, container, false);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        getActivity().setTitle("Rent Item");
 
-        fabAddItem = (FloatingActionButton) view.findViewById(R.id.add_item);
-
-        fabAddItem.setOnClickListener(new View.OnClickListener() {
+        itemImage = view.findViewById(R.id.backdrop);
+        itemImage.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-                showDialog();
-
+            public void onClick(View v) {
+                PickImageDialog.build(new PickSetup())
+                        .setOnPickResult(new IPickResult() {
+                            @Override
+                            public void onPickResult(PickResult r) {
+                                itemImage.setImageBitmap(r.getBitmap());
+                            }
+                        }).show(getActivity().getSupportFragmentManager());
             }
         });
+
+
         return view;
     }
 
@@ -64,86 +84,45 @@ public class RentItemFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    public void showDialog() {
+    private void choosePhotoIntent() {
 
-        final View dialogView = View.inflate(getContext(), R.layout.dialog_add_item, null);
-        final Dialog dialog = new Dialog(getContext(), R.style.MyAlertDialogStyle);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(dialogView);
+        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(pickPhoto, REQUEST_IMAGE_CHOOSER);//one can be replaced with any action code
 
-        ImageView imageView = (ImageView) dialog.findViewById(R.id.closeDialog);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                revealShow(dialogView, false, dialog);
-            }
-        });
-
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                revealShow(dialogView, true, null);
-            }
-        });
-
-        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
-                if (i == KeyEvent.KEYCODE_BACK) {
-
-                    revealShow(dialogView, false, dialog);
-                    return true;
-                }
-
-                return false;
-            }
-        });
-
-
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
-        dialog.show();
     }
 
-    private void revealShow(View dialogView, boolean b, final Dialog dialog) {
+    private void dispatchTakePictureIntent() {
 
-        final View view = dialogView.findViewById(R.id.additemDialog);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        int permissionCheck = ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.CAMERA);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) { //check permission
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        } else { //request permission
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CAMERA)) {
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.CAMERA},
+                        MY_PERMISSIONS_REQUEST_CAMERA);
+            }
+        }
+    }
 
-        int w = view.getWidth();
-        int h = view.getHeight();
-
-        int endRadius = (int) Math.hypot(w, h);
-
-        int cx = (int) (fabAddItem.getX() + (fabAddItem.getWidth() / 2));
-        int cy = (int) (fabAddItem.getY()) + fabAddItem.getHeight() + 56;
-
-
-        if (b) {
-            Animator revealAnimator = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, endRadius);
-
-            view.setVisibility(View.VISIBLE);
-            revealAnimator.setDuration(700);
-            revealAnimator.start();
-
-        } else {
-
-            Animator anim =
-                    ViewAnimationUtils.createCircularReveal(view, cx, cy, endRadius, 0);
-
-            anim.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    dialog.dismiss();
-                    view.setVisibility(View.INVISIBLE);
-
-                }
-            });
-            anim.setDuration(700);
-            anim.start();
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            itemImage.setImageBitmap(imageBitmap);
         }
 
+        if (requestCode == REQUEST_IMAGE_CHOOSER && resultCode == Activity.RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            itemImage.setImageBitmap(imageBitmap);
+        }
     }
 
 

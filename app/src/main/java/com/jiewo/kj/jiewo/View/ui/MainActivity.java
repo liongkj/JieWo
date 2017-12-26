@@ -1,14 +1,9 @@
 package com.jiewo.kj.jiewo.View.ui;
 
 
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -21,21 +16,28 @@ import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.View.ui.Fragments.HomeFragment;
 import com.jiewo.kj.jiewo.View.ui.Fragments.RentItemFragment;
 import com.jiewo.kj.jiewo.View.ui.Fragments.SettingFragment;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 
 public class MainActivity extends AppCompatActivity {
 
 
-    NavigationView navigationView;
-    View headerView;
     TextView txtUsername;
-    TextView txtRating;
     ImageView imageView;
     UserModel user = UserModel.getUser();
-    private DrawerLayout mDrawer;
     private Toolbar toolbar;
-    private NavigationView nvDrawer;
-    private ActionBarDrawerToggle drawerToggle;
+
+    private Drawer result = null;
+    private AccountHeader headerResult = null;
 
 
     @Override
@@ -45,88 +47,101 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitle("Main");
 
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerToggle = setupDrawerToggle();
+        //drawer header
+        buildHeader(false, savedInstanceState);
 
-        // Tie DrawerLayout events to the ActionBarToggle
-        mDrawer.addDrawerListener(drawerToggle);
+        buildDrawer();
 
-        // Find our drawer view
-        nvDrawer = (NavigationView) findViewById(R.id.nav_view);
-        // Setup drawer view
-        setupDrawerContent(nvDrawer);
-
-        navigationView = findViewById(R.id.nav_view);
-        headerView = navigationView.getHeaderView(0);
-
-        txtUsername = headerView.findViewById(R.id.txt_user);
-        txtRating = headerView.findViewById(R.id.txt_rating);
-        imageView = headerView.findViewById(R.id.imageView);
-
-        txtUsername.setText(user.getName());
-        user.setProfilePic(imageView);
-        //rating
+    }
 
 
-        if (findViewById(R.id.fragment_placeholder) != null) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
 
-            // However, if we're being restored from a previous state,
-            // then we don't need to do anything and should return or else
-            // we could end up with overlapping fragments.
-            if (savedInstanceState != null) {
-                return;
-            }
-
-            // Create a new Fragment to be placed in the activity layout
-            HomeFragment firstFragment = new HomeFragment();
-
-            // In case this activity was started with special instructions from an
-            // Intent, pass the Intent's extras to the fragment as arguments
-            firstFragment.setArguments(getIntent().getExtras());
-
-            // Add the fragment to the 'fragment_container' FrameLayout
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_placeholder, firstFragment).commit();
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
     }
 
-    private ActionBarDrawerToggle setupDrawerToggle() {
-        // NOTE: Make sure you pass in a valid toolbar reference.  ActionBarDrawToggle() does not require it
-        // and will not render the hamburger icon without it.
-        return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open, R.string.drawer_close);
+    @Override
+    public void onBackPressed() {
+        //handle the back press :D close the drawer first and if the drawer is closed close the activity
+        if (result != null && result.isDrawerOpen()) {
+            result.closeDrawer();
+        } else {
+            super.onBackPressed();
+        }
     }
 
-    private void setupDrawerContent(NavigationView navigationView) {
-        navigationView.setNavigationItemSelectedListener(
-                new NavigationView.OnNavigationItemSelectedListener() {
+    private void buildDrawer() {
+        PrimaryDrawerItem home = new PrimaryDrawerItem().withIdentifier(1).withName("Home").withIcon(GoogleMaterial.Icon.gmd_home);
+        PrimaryDrawerItem search = new PrimaryDrawerItem().withIdentifier(3).withName("Find Items").withIcon(GoogleMaterial.Icon.gmd_search);
+        PrimaryDrawerItem rentItem = new PrimaryDrawerItem().withIdentifier(2).withName("Rent My Item").withIcon(GoogleMaterial.Icon.gmd_add);
+        PrimaryDrawerItem nearby = new PrimaryDrawerItem().withIdentifier(4).withName("What's Nearby").withIcon(GoogleMaterial.Icon.gmd_location_city);
+        SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName("Settings").withIcon(GoogleMaterial.Icon.gmd_settings);
+        SecondaryDrawerItem items = new SecondaryDrawerItem().withIdentifier(6).withName("My Items").withIcon(GoogleMaterial.Icon.gmd_check_box);
+
+
+        result = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withAccountHeader(headerResult)
+                .addDrawerItems(
+                        home,
+                        search,
+                        rentItem,
+                        nearby,
+                        new DividerDrawerItem(),
+                        items,
+                        settings
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        selectDrawerItem(menuItem);
-                        return true;
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        // do something with the clicked item :D
+                        selectDrawerItem((int) drawerItem.getIdentifier());
+
+                        return false;
                     }
-                });
+                })
+                .build();
+
+
     }
 
-    public void selectDrawerItem(MenuItem menuItem) {
-        // Create a new fragment and specify the fragment to show based on nav item clicked
+    private void selectDrawerItem(int identifier) {
         Fragment fragment = null;
         Class fragmentClass = null;
-        switch (menuItem.getItemId()) {
-            case R.id.nav_home:
+        switch (identifier) {
+            case 1:
                 fragmentClass = HomeFragment.class;
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
                 break;
-            case R.id.nav_rent_item:
+            case 2:
                 fragmentClass = RentItemFragment.class;
+                result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 break;
-            case R.id.nav_geolocate:
+            case 3:
+                fragmentClass = HomeFragment.class;
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 fragmentClass = HomeFragment.class;
                 break;
-            case R.id.nav_settings:
+            case 5:
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
                 fragmentClass = SettingFragment.class;
                 break;
             default:
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
                 fragmentClass = HomeFragment.class;
                 break;
         }
@@ -139,48 +154,29 @@ public class MainActivity extends AppCompatActivity {
 
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.fragment_placeholder, fragment).commit();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_placeholder, fragment)
+                .addToBackStack(null)
+                .commit();
 
-        // Highlight the selected item has been done by NavigationView
-        menuItem.setChecked(true);
-        // Set action bar title
-        setTitle(menuItem.getTitle());
-        // Close the navigation drawer
-        mDrawer.closeDrawers();
+
     }
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+    private void buildHeader(boolean compact, Bundle savedInstanceState) {
+        // Create the AccountHeader
+        ProfileDrawerItem profile = new ProfileDrawerItem();
+        profile.withName(user.getName()).withEmail(user.getEmail()).withIcon(user.getPhotoURI());
+        headerResult = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(R.drawable.header)
+                .withCompactStyle(compact)
+                .addProfiles(
+                        profile
+                        //don't ask but google uses 14dp for the add account icon in gmail but 20dp for the normal icons (like manage account)
+
+                )
+
+                .withSavedInstance(savedInstanceState)
+                .build();
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        drawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        // Pass any configuration change to the drawer toggles
-        drawerToggle.onConfigurationChanged(newConfig);
-    }
-
 }

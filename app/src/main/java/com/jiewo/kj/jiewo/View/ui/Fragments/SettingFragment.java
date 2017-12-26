@@ -47,7 +47,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
+        getActivity().setTitle("Settings");
 
         return inflater.inflate(R.layout.fragment_setting, container, false);
 

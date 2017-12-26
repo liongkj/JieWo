@@ -1,5 +1,6 @@
 package com.jiewo.kj.jiewo.Model;
 
+import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -19,7 +20,7 @@ import java.util.Objects;
  * Created by khaij on 09/12/2017.
  */
 
-public class UserModel implements Serializable{
+public class UserModel extends Application implements Serializable {
 
     private String id;
     private String name;
@@ -28,6 +29,7 @@ public class UserModel implements Serializable{
     private String number;
     static FirebaseUser firebaseUser;
     private static UserModel User = null;
+    Bitmap profilePic = null;
 
     private UserModel(String id, String name, String email, Uri photoURI) {
         this.id = id;
@@ -37,7 +39,7 @@ public class UserModel implements Serializable{
     }
 
     public static UserModel getUser() {
-        if (User==null) {
+        if (User == null) {
             FirebaseAuth auth = FirebaseAuth.getInstance();
             firebaseUser = auth.getCurrentUser();
             User = new UserModel(firebaseUser.getUid(), firebaseUser.getDisplayName(), firebaseUser.getEmail(), firebaseUser.getPhotoUrl());
@@ -45,19 +47,19 @@ public class UserModel implements Serializable{
         return User;
     }
 
-    public void logout(){
+    public void logout() {
 
         User = null;
     }
 
     public String getName() {
-        if (name!=null)
-        return name;
+        if (name != null)
+            return name;
         else return "Null";
     }
 
     public String getNumber() {
-        if(number==null)return "0103363030";
+        if (number == null) return "0103363030";
         return number;
     }
 
@@ -72,8 +74,8 @@ public class UserModel implements Serializable{
     }
 
     public String getEmail() {
-        if (email!=null)
-        return email;
+        if (email != null)
+            return email;
         else return "sample@mail.com";
     }
 
@@ -84,22 +86,29 @@ public class UserModel implements Serializable{
         firebaseUser.updateProfile(profileUpdates);
     }
 
-    public void setProfilePic(ImageView imageView){
-        if(!Objects.equals(photoURI, null)){
+    public Uri getPhotoURI(){
+
+        return photoURI;
+    }
+
+    public void setProfilePic(ImageView imageView) {
+        if (!Objects.equals(photoURI, null)) {
             new DownloadImageTask(imageView).execute(photoURI.toString());
         }
     }
 
     public static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
+        Bitmap mIcon11 = null;
 
         public DownloadImageTask(ImageView bmImage) {
             this.bmImage = bmImage;
         }
 
+
         protected Bitmap doInBackground(String... urls) {
             String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
+
             try {
                 InputStream in = new java.net.URL(urldisplay).openStream();
                 mIcon11 = BitmapFactory.decodeStream(in);
@@ -112,6 +121,7 @@ public class UserModel implements Serializable{
 
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
+
         }
     }
 }
