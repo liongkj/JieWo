@@ -126,4 +126,19 @@
     <string name="upload_image">UPLOAD IMAGE</string>
     <string name="read_file">This app needs access to your file storage so that it can read photos.</string>
 
+        <string-array name="category_array">
+            <item>Bags &amp; Wallets</item>
+            <item>Shoes</item>
+            <item>Clothes</item>
+
+        </string-array>
+
+    <string-array name="location_array">
+        <item>Bukit Jalil</item>
+        <item>Puchong</item>
+        <item>Serdang</item>
+        <item>Subang Jaya</item>
+
+    </string-array>
+
 </resources>

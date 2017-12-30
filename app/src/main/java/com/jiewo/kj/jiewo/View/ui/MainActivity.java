@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void buildDrawer() {
         PrimaryDrawerItem home = new PrimaryDrawerItem().withIdentifier(1).withName("Home").withIcon(GoogleMaterial.Icon.gmd_home);
-        PrimaryDrawerItem search = new PrimaryDrawerItem().withIdentifier(3).withName("Find Items").withIcon(GoogleMaterial.Icon.gmd_search);
         PrimaryDrawerItem rentItem = new PrimaryDrawerItem().withIdentifier(2).withName("Rent My Item").withIcon(GoogleMaterial.Icon.gmd_add);
+        PrimaryDrawerItem search = new PrimaryDrawerItem().withIdentifier(3).withName("Find Items").withIcon(GoogleMaterial.Icon.gmd_search);
         PrimaryDrawerItem nearby = new PrimaryDrawerItem().withIdentifier(4).withName("What's Nearby").withIcon(GoogleMaterial.Icon.gmd_location_city);
         SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName("Settings").withIcon(GoogleMaterial.Icon.gmd_settings);
         SecondaryDrawerItem items = new SecondaryDrawerItem().withIdentifier(6).withName("My Items").withIcon(GoogleMaterial.Icon.gmd_check_box);
@@ -94,8 +94,8 @@ public class MainActivity extends AppCompatActivity {
                 .withAccountHeader(headerResult)
                 .addDrawerItems(
                         home,
-                        search,
                         rentItem,
+                        search,
                         nearby,
                         new DividerDrawerItem(),
                         items,
@@ -125,14 +125,14 @@ public class MainActivity extends AppCompatActivity {
                 result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
                 break;
             case 2:
-                fragmentClass = RentItemFragment.class;
                 result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                fragmentClass = RentItemFragment.class;
                 break;
             case 3:
                 fragmentClass = HomeFragment.class;
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-                fragmentClass = HomeFragment.class;
+                result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
                 break;
             case 5:
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -140,9 +140,10 @@ public class MainActivity extends AppCompatActivity {
                 fragmentClass = SettingFragment.class;
                 break;
             default:
+                fragmentClass = HomeFragment.class;
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
-                fragmentClass = HomeFragment.class;
+
                 break;
         }
 

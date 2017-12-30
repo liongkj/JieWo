@@ -6,148 +6,126 @@
     android:fitsSystemWindows="true"
     tools:context="com.jiewo.kj.jiewo.View.ui.Fragments.RentItemFragment">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/collapsingToolbarId"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            app:expandedTitleMarginEnd="64dp"
-            app:expandedTitleMarginStart="48dp"
-            app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleGravity="top"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            >
-
-            <ImageView
-                android:id="@+id/backdrop"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
-                android:minHeight="200dp"
-                android:fitsSystemWindows="true"
-                app:layout_collapseMode="parallax"
-                android:src="@drawable/ic_menu_camera" />
-
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/spiceToolbarId"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/AppTheme.PopupOverlay">
-
-            </android.support.v7.widget.Toolbar>
-
-
-        </android.support.design.widget.CollapsingToolbarLayout>
-    </android.support.design.widget.AppBarLayout>
-
-    <android.support.v4.widget.NestedScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:orientation="vertical"
+        android:paddingEnd="@dimen/fab_margin"
+        android:paddingStart="@dimen/fab_margin"
+        android:paddingTop="@dimen/fab_margin"
+        android:focusable="true">
 
-        <LinearLayout
-            android:layout_width="fill_parent"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:text="Upload photos (0/6)" />
 
-            <TextView
-                android:text="TextView 1"
-                android:id="@+id/textview1"
-                android:layout_width="fill_parent"
-                android:layout_height="70dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:gravity="center"
-                android:background="#F44336"
-                android:textColor="#FAFAFA"/>
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:scrollbars="none">
 
-            <TextView
-                android:text="TextView 2"
-                android:id="@+id/textview2"
-                android:layout_width="fill_parent"
-                android:layout_height="70dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:gravity="center"
-                android:background="#E91E63"
-                android:textColor="#FAFAFA"/>
+            <LinearLayout
+                android:id="@+id/imageButtonParent"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-            <TextView
-                android:text="TextView 3"
-                android:id="@+id/textview3"
-                android:layout_width="fill_parent"
-                android:layout_height="70dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:gravity="center"
-                android:background="#2196F3"
-                android:textColor="#FAFAFA"/>
+                <android.support.v7.widget.AppCompatImageButton
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:padding="8dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_menu_camera" />
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:padding="8dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_menu_camera" />
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:padding="8dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_menu_camera" />
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:padding="8dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_menu_camera" />
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_menu_camera" />
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_menu_camera" />
 
 
-            <TextView
-                android:text="TextView 4"
-                android:id="@+id/textview4"
-                android:layout_width="fill_parent"
-                android:layout_height="70dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:gravity="center"
-                android:background="#FF9800"
-                android:textColor="#FAFAFA"/>
+            </LinearLayout>
 
-            <TextView
-                android:text="TextView 5"
-                android:id="@+id/textview5"
-                android:layout_width="fill_parent"
-                android:layout_height="70dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:gravity="center"
-                android:background="#009688"
-                android:textColor="#FAFAFA"/>
+        </HorizontalScrollView>
 
-            <TextView
-                android:text="TextView 6"
-                android:id="@+id/textview6"
-                android:layout_width="fill_parent"
-                android:layout_height="70dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:gravity="center"
-                android:background="#F4FF81"
-                android:textColor="#000000"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
 
-            <TextView
-                android:text="TextView 7"
-                android:id="@+id/textview7"
-                android:layout_width="fill_parent"
-                android:layout_height="70dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:gravity="center"
-                android:background="#FFEB3B"
-                android:textColor="#000000"/>
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Item Name"
+            app:met_floatingLabel="highlight"
+            app:met_maxCharacters="20"
+            app:met_minCharacters="0"/>
 
-        </LinearLayout>
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Item Desription"
+            app:met_floatingLabel="highlight"
+            app:met_minCharacters="0"
+            android:layout_marginTop="-10dp"/>
 
-    </android.support.v4.widget.NestedScrollView>
+        <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+            android:id="@+id/category_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:met_floatingLabel="highlight"
+            android:hint="Category"
+            android:layout_marginTop="4dp"
+            />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Price (RM)"
+            android:inputType="numberDecimal"
+            app:met_autoValidate="true"
+            app:met_floatingLabel="highlight"
+            app:met_maxCharacters="20" />
+
+        <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+            android:id="@+id/location_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Location"
+            app:met_floatingLabel="highlight"
+            />
+
+    </LinearLayout>
 
 
 </android.support.design.widget.CoordinatorLayout>
