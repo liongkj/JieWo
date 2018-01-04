@@ -1,9 +1,11 @@
 package com.jiewo.kj.jiewo.View.ui.Fragments;
 
 
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -16,23 +18,48 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.jiewo.kj.jiewo.Model.ItemModel;
+import com.jiewo.kj.jiewo.Model.UserModel;
 import com.jiewo.kj.jiewo.R;
+import com.rengwuxian.materialedittext.MaterialEditText;
 import com.vansuita.pickimage.bean.PickResult;
 import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.dialog.PickImageDialog;
 import com.vansuita.pickimage.listeners.IPickResult;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
+import java.util.HashMap;
+import java.util.Map;
 
-public class RentItemFragment extends Fragment {
-    MaterialBetterSpinner spinner;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnFocusChange;
+
+
+public class RentItemFragment extends Fragment implements DialogInterface.OnClickListener {
+    @BindView(R.id.imageButtonParent)
     LinearLayout linearLayout;
+    @BindView(R.id.category_spinner)
+    MaterialBetterSpinner catSpinner;
+    @BindView(R.id.location_spinner)
+    MaterialBetterSpinner locSpinner;
+    @BindView(R.id.txtTitle)
+    MaterialEditText txtTitle;
+    @BindView(R.id.txtDescription)
+    MaterialEditText txtDescription;
+    @BindView(R.id.txtPrice)
+    MaterialEditText txtPrice;
+    boolean isValid = true;
 
-    static final int REQUEST_IMAGE_CHOOSER = 2;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int MY_PERMISSIONS_REQUEST_CAMERA = 0;
-
+    private static final String[] ITEMS = {"Bags & Wallets", "Shoes", "Clothes", "Item 4", "Item 5", "Item 6"};
+    private DatabaseReference mDatabase;
+    UserModel user = UserModel.getUser();
 
     public RentItemFragment() {
         // Required empty public constructor
@@ -43,10 +70,9 @@ public class RentItemFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_rent_item, container, false);
-//        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        linearLayout = view.findViewById(R.id.imageButtonParent);
+        ButterKnife.bind(this, view);
         getActivity().setTitle("Rent Item");
-        spinner = view.findViewById(R.id.category_spinner);
+
         //set image uploader
         for (int i = 0; i < 6; i++) {
             final ImageButton ib = (ImageButton) linearLayout.getChildAt(i);
@@ -65,9 +91,12 @@ public class RentItemFragment extends Fragment {
             });
         }
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.category_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        ArrayAdapter<CharSequence> catAdapter = ArrayAdapter.createFromResource(getContext(), R.array.category_array, android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<CharSequence> locAdapter = ArrayAdapter.createFromResource(getContext(), R.array.location_array, android.R.layout.simple_spinner_dropdown_item);
+        catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        locAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        catSpinner.setAdapter(catAdapter);
+        locSpinner.setAdapter(locAdapter);
         return view;
     }
 
@@ -75,18 +104,9 @@ public class RentItemFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -97,24 +117,112 @@ public class RentItemFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
         switch (item.getItemId()) {
             case R.id.button_done:
-                Log.i("d","Save item");
-                //validation
-                //call upload
-                return true;
+                if (isValid()) {
+                    Log.e("valid", "is valid ");
+                    confirmSubmit();
+                }
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+
+        return false;
     }
 
-public void validationStatus(){
 
-//        return null;
-}
+    private void submitItem() {
+        final String title = txtTitle.getText().toString();
+        final String des = txtDescription.getText().toString();
+        final Double price = Double.valueOf(txtPrice.getText().toString());
+        final String category = catSpinner.getText().toString();
+        Toast.makeText(getContext(), "Posting...", Toast.LENGTH_SHORT).show();
+        writeNewItem(user.getId(), user.getName(), title, des, price, category);
+    }
 
+    private void confirmSubmit() {
 
+        MaterialDialog md = new MaterialDialog.Builder(getContext())
+                .title("Submit Item?")
+                .content("By clicking submit, I confirm I've read and accepted the Terms and Condition?")
+                .positiveText("SUBMIT")
+                .show();
+
+        md.getBuilder().onPositive(new MaterialDialog.SingleButtonCallback() {
+            @Override
+            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                submitItem();
+            }
+        })
+        ;
+    }
+
+    private void isFree() {
+        if (txtPrice.getText().toString().isEmpty() || Double.compare(Double.parseDouble(txtPrice.getText().toString()), 0.0) == 0) {
+            txtPrice.setText("0");
+            MaterialDialog md = new MaterialDialog.Builder(getContext())
+                    .title("Confirm?")
+                    .content("You are renting this item for free. Are you sure?")
+                    .positiveText("Ok")
+                    .show();
+
+            md.getBuilder().onPositive(new MaterialDialog.SingleButtonCallback() {
+                @Override
+                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                    Log.e("yes", "d");
+
+                }
+            })
+            ;
+        }
+
+    }
+
+    public Boolean isValid() {
+
+        Log.e("validation", "run");
+        if (txtPrice.getText().toString().isEmpty()) {
+            txtPrice.setText("0.0");
+        }
+
+        if (!txtTitle.isCharactersCountValid()) {
+            txtTitle.setError("Minimum 2 characters");
+            isValid = false;
+        }
+        if (!txtDescription.isCharactersCountValid()) {
+            txtDescription.setError("Item Description is Required");
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    private void writeNewItem(String userId, String username, String title, String des, Double price, String category) {
+        Log.e("validation", "validation done");
+        String key = mDatabase.child("items").push().getKey();
+        ItemModel item = new ItemModel(userId, username, title, des, price, category);
+        Map<String, Object> itemValues = item.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/items/" + key, itemValues);
+        childUpdates.put("/user-items/" + userId + "/" + key, itemValues);
+
+        mDatabase.updateChildren(childUpdates);
+    }
+
+    @OnFocusChange(R.id.txtPrice)
+    void clear(boolean focus) {
+        if (focus) {
+            txtPrice.setText("");
+        } else {
+            isFree();
+        }
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+
+    }
 }
 
 

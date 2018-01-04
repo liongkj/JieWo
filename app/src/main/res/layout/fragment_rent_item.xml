@@ -9,11 +9,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:focusable="true"
         android:orientation="vertical"
         android:paddingEnd="@dimen/fab_margin"
         android:paddingStart="@dimen/fab_margin"
-        android:paddingTop="@dimen/fab_margin"
-        android:focusable="true">
+        android:paddingTop="@dimen/fab_margin">
 
         <TextView
             android:layout_width="match_parent"
@@ -84,46 +84,68 @@
             android:background="@android:color/darker_gray" />
 
         <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/txtTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Item Name"
+            android:hint="Set Name"
+            app:met_clearButton="true"
+            android:maxLines="1"
+
             app:met_floatingLabel="highlight"
+            app:met_floatingLabelText="Item Name"
             app:met_maxCharacters="20"
-            app:met_minCharacters="0"/>
+            app:met_minCharacters="2" />
 
         <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/txtDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Item Desription"
+            app:met_clearButton="true"
+            app:met_singleLineEllipsis="true"
+            android:hint="Item Description"
             app:met_floatingLabel="highlight"
-            app:met_minCharacters="0"
-            android:layout_marginTop="-10dp"/>
+            app:met_floatingLabelText="Item Description"
+            app:met_minCharacters="0" />
 
         <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
             android:id="@+id/category_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:met_floatingLabel="highlight"
-            android:hint="Category"
-            android:layout_marginTop="4dp"
-            />
+            android:hint="Select Category"
+            app:met_floatingLabel="highlight" />
 
         <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/txtPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Price (RM)"
+            android:text="0.0"
             android:inputType="numberDecimal"
             app:met_autoValidate="true"
             app:met_floatingLabel="highlight"
             app:met_maxCharacters="20" />
 
-        <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
-            android:id="@+id/location_spinner"
+        <LinearLayout
+            android:layout_marginTop="-16dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Location"
-            app:met_floatingLabel="highlight"
-            />
+            android:layout_height="wrap_content">
+
+            <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+                android:id="@+id/location_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Location"
+                app:met_floatingLabel="highlight"
+                android:layout_weight="4"/>
+
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@null"
+                android:layout_weight="1"
+                android:src="@drawable/gps_button_state"
+                style="?android:attr/borderlessButtonStyle" />
+        </LinearLayout>
 
     </LinearLayout>
 

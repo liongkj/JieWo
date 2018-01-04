@@ -52,6 +52,10 @@ public class UserModel extends Application implements Serializable {
         User = null;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public String getName() {
         if (name != null)
             return name;
@@ -86,7 +90,7 @@ public class UserModel extends Application implements Serializable {
         firebaseUser.updateProfile(profileUpdates);
     }
 
-    public Uri getPhotoURI(){
+    public Uri getPhotoURI() {
 
         return photoURI;
     }

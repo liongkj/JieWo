@@ -1,46 +1,47 @@
 package com.jiewo.kj.jiewo.Model;
 
+import com.google.firebase.database.Exclude;
+import com.google.firebase.database.IgnoreExtraProperties;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by khaij on 10/12/2017.
  */
-
+@IgnoreExtraProperties
 public class ItemModel {
-    private String itemId;
+    private String userId;
+    private String owner;
+    private String itemTitle;
+    private String itemDescription;
     private String category;
-    private UserModel userModel;
+    private double price;
     private int[] Resources = {};
 
-
-    public String getItemId() {
-        return itemId;
+    public ItemModel() {
     }
 
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
+    public ItemModel(String itemId, String owner, String title, String description, Double price, String category) {
+        this.userId = itemId;
+        this.owner = owner;
+        this.itemTitle = title;
+        this.itemDescription = description;
+        this.price = price;
         this.category = category;
     }
 
-    public UserModel getUserModel() {
-        return userModel;
-    }
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("userId", userId);
+        result.put("itemTitle", itemTitle);
+        result.put("itemDescription", itemDescription);
+        result.put("category", category);
+        result.put("price", price);
+        result.put("owner", owner);
 
-    public void setUserModel(UserModel userModel) {
-        this.userModel = userModel;
-    }
-
-    public int[] getResources() {
-        return Resources;
-    }
-
-    public int getImage(int i) {
-        return Resources[i];
+        return result;
     }
 
 

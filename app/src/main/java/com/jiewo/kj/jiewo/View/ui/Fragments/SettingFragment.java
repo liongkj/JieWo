@@ -23,14 +23,27 @@ import com.jiewo.kj.jiewo.Model.UserModel;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.View.ui.LoginActivity;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class SettingFragment extends Fragment implements View.OnClickListener {
 
-    TextView txtUsername, txtEmail, txtNumber;
+    @BindView(R.id.txtUsername)
+    TextView txtUsername;
+    @BindView(R.id.txtEmail)
+    TextView txtEmail;
+    @BindView(R.id.txtNumber)
+    TextView txtNumber;
+    @BindView(R.id.img_profile)
     ImageView imageView;
+    @BindView(R.id.btn_signout)
+    AppCompatButton btnsignOut;
+    @BindView(R.id.btn_acc_delete)
+    AppCompatButton btndelAccount;
+
     String username, email, number;
     UserModel user = UserModel.getUser();
-    AppCompatButton btnsignOut, btndelAccount;
 
     public SettingFragment() {
         // Required empty public constructor
@@ -44,25 +57,19 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_setting, container, false);
+        ButterKnife.bind(this, view);
         // Inflate the layout for this fragment
         getActivity().setTitle("Settings");
 
-        return inflater.inflate(R.layout.fragment_setting, container, false);
+        return view;
 
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        txtUsername = getView().findViewById(R.id.txtUsername);
-        txtEmail = getView().findViewById(R.id.txtEmail);
-        txtNumber = getView().findViewById(R.id.txtNumber);
-        imageView = getView().findViewById(R.id.img_profile);
-        btnsignOut = getView().findViewById(R.id.btn_signout);
-        btndelAccount = getView().findViewById(R.id.btn_acc_delete);
         btnsignOut.setOnClickListener(this);
         btndelAccount.setOnClickListener(this);
         txtUsername.setText(user.getName());
@@ -118,7 +125,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         if (view == view.findViewById(R.id.btn_signout)) {
             signOut();
-        }else
-        deleteAccount();
+        } else
+            deleteAccount();
     }
 }
