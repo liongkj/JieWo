@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     UserModel user = UserModel.getUser();
     @BindView(R.id.toolbar) Toolbar toolbar;
 
-    private Drawer result = null;
+    static public Drawer result = null;
     private AccountHeader headerResult = null;
 
 
@@ -178,4 +178,5 @@ public class MainActivity extends AppCompatActivity {
                 .withSavedInstance(savedInstanceState)
                 .build();
     }
+
 }

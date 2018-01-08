@@ -40,6 +40,16 @@
 
         </activity>
 
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDD0k4oQHPBL1zNE8uk0NRoxcQbSqZ7hwY"/>
+
+        <service android:name=".Util.FetchAddressIntentService"
+            android:exported="false"/>
+        
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.com.vansuita.pickimage.provider"

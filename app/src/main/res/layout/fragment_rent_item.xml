@@ -88,9 +88,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Set Name"
-            app:met_clearButton="true"
+            android:inputType="text"
             android:maxLines="1"
-
+            app:met_clearButton="true"
             app:met_floatingLabel="highlight"
             app:met_floatingLabelText="Item Name"
             app:met_maxCharacters="20"
@@ -100,12 +100,13 @@
             android:id="@+id/txtDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:met_clearButton="true"
-            app:met_singleLineEllipsis="true"
             android:hint="Item Description"
+            android:inputType="text"
+            android:maxLines="1"
+            app:met_clearButton="true"
             app:met_floatingLabel="highlight"
             app:met_floatingLabelText="Item Description"
-            app:met_minCharacters="0" />
+            app:met_minCharacters="5" />
 
         <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
             android:id="@+id/category_spinner"
@@ -119,32 +120,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Price (RM)"
-            android:text="0.0"
             android:inputType="numberDecimal"
+            android:text="0.0"
             app:met_autoValidate="true"
             app:met_floatingLabel="highlight"
             app:met_maxCharacters="20" />
 
         <LinearLayout
-            android:layout_marginTop="-16dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-16dp">
 
             <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
                 android:id="@+id/location_spinner"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="4"
                 android:hint="Location"
-                app:met_floatingLabel="highlight"
-                android:layout_weight="4"/>
+                app:met_floatingLabel="highlight" />
 
             <ImageButton
+                android:id="@+id/btn_location"
+                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
-                android:background="@null"
                 android:layout_weight="1"
-                android:src="@drawable/gps_button_state"
-                style="?android:attr/borderlessButtonStyle" />
+                android:background="@null"
+                android:src="@drawable/gps_button_state" />
         </LinearLayout>
 
     </LinearLayout>
