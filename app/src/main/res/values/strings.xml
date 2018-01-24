@@ -126,12 +126,12 @@
     <string name="upload_image">UPLOAD IMAGE</string>
     <string name="read_file">This app needs access to your file storage so that it can read photos.</string>
 
-        <string-array name="category_array">
-            <item>Bags &amp; Wallets</item>
-            <item>Shoes</item>
-            <item>Clothes</item>
+    <string-array name="category_array">
+        <item>Bags &amp; Wallets</item>
+        <item>Shoes</item>
+        <item>Clothes</item>
 
-        </string-array>
+    </string-array>
 
     <string-array name="location_array">
         <item>Bukit Jalil</item>
@@ -148,4 +148,5 @@
     <string name="service_not_available">Service is not avaiable</string>
 
     <string name="invalid_lat_long_used">Invalid location data</string>
+    <string name="title_activity_address">AddressActivity</string>
 </resources>

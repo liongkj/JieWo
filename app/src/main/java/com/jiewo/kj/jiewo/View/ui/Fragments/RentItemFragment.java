@@ -1,21 +1,14 @@
 package com.jiewo.kj.jiewo.View.ui.Fragments;
 
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.location.Geocoder;
 import android.location.Location;
 import android.media.ThumbnailUtils;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,19 +23,13 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.jiewo.kj.jiewo.Model.ItemModel;
 import com.jiewo.kj.jiewo.Model.UserModel;
 import com.jiewo.kj.jiewo.R;
-import com.jiewo.kj.jiewo.Util.Constants;
-import com.jiewo.kj.jiewo.Util.FetchAddressIntentService;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.vansuita.pickimage.bean.PickResult;
 import com.vansuita.pickimage.bundle.PickSetup;
@@ -55,12 +42,10 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.OnFocusChange;
 
 
-public class RentItemFragment extends Fragment implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class RentItemFragment extends Fragment {
     @BindView(R.id.imageButtonParent)
     LinearLayout linearLayout;
     @BindView(R.id.category_spinner)
@@ -82,7 +67,7 @@ public class RentItemFragment extends Fragment implements
     private DatabaseReference mDatabase;
     UserModel user = UserModel.getUser();
     protected Location mLastLocation;
-    private AddressResultReceiver mResultReceiver;
+
     private FusedLocationProviderClient mFusedLocationClient;
     boolean mLocationPermissionGranted;
     protected Location mLastKnownLocation;
@@ -132,8 +117,7 @@ public class RentItemFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
-        mResultReceiver = new AddressResultReceiver(new Handler());
+
     }
 
 
@@ -282,115 +266,6 @@ public class RentItemFragment extends Fragment implements
         fragmentManager.beginTransaction()
                 .replace(R.id.fragment_placeholder, fragment)
                 .commit();
-    }
-
-    private void startIntentService() {
-        Intent intent = new Intent(getContext(), FetchAddressIntentService.class);
-        intent.putExtra(Constants.RECEIVER, mResultReceiver);
-        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
-        getContext().startService(intent);
-    }
-
-    private void fetchAddressButtonHander(View view) {
-        if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mFusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    mLastKnownLocation = location;
-
-                    // In some rare cases the location returned can be null
-                    if (mLastKnownLocation == null) {
-                        return;
-                    }
-
-                    if (!Geocoder.isPresent()) {
-                        Toast.makeText(getContext(),
-                                "No geocoder",
-                                Toast.LENGTH_LONG).show();
-                        return;
-                    }
-
-                    // Start service and update UI to reflect new location
-                    startIntentService();
-//                        updateUI();
-                }
-            });
-
-        } else
-
-        {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-
-    }
-
-    @OnClick(R.id.btn_location)
-    public void getLocation() {
-        startIntentService();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        mLocationPermissionGranted = false;
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mLocationPermissionGranted = true;
-                }
-            }
-        }
-//        updateLocationUI();
-    }
-
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    class AddressResultReceiver extends ResultReceiver {
-        /**
-         * Create a new ResultReceive to receive results.  Your
-         * {@link #onReceiveResult} method will be called from the thread running
-         * <var>handler</var> if given, or from an arbitrary thread if null.
-         *
-         * @param handler
-         */
-        public AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-
-            // Display the address string
-            // or an error message sent from the intent service.
-            String mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            Log.e("location getting", mAddressOutput);
-
-            // Show a toast message if an address was found.
-            if (resultCode == Constants.SUCCESS_RESULT) {
-                Log.e("location", getString(R.string.address_found));
-            }
-
-        }
     }
 
 }

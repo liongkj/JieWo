@@ -21,7 +21,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.jiewo.kj.jiewo.Model.UserModel;
 import com.jiewo.kj.jiewo.R;
-import com.jiewo.kj.jiewo.View.ui.LoginActivity;
+import com.jiewo.kj.jiewo.View.ui.Activities.LoginActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,6 +41,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     AppCompatButton btnsignOut;
     @BindView(R.id.btn_acc_delete)
     AppCompatButton btndelAccount;
+    @BindView(R.id.txt_add_address)
+    TextView btnAddress;
 
     String username, email, number;
     UserModel user = UserModel.getUser();
@@ -62,6 +64,13 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         ButterKnife.bind(this, view);
         // Inflate the layout for this fragment
         getActivity().setTitle("Settings");
+        btnAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Intent myIntent = new Intent(getActivity(),AddressActivity.class);
+                //startActivity(myIntent);
+            }
+        });
 
         return view;
 

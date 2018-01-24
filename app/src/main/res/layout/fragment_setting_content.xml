@@ -14,30 +14,28 @@
     <android.support.v7.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_marginEnd="@dimen/fab_margin"
             android:layout_marginStart="@dimen/fab_margin"
+            android:layout_marginTop="@dimen/fab_margin"
             android:divider="@android:color/black"
             android:orientation="horizontal"
-            android:layout_marginTop="@dimen/fab_margin"
             android:paddingBottom="8dp">
 
             <ImageView
                 android:id="@+id/img_profile"
-                android:scaleType="fitXY"
                 android:layout_width="100dp"
                 android:layout_height="70dp"
                 android:layout_gravity="center_vertical"
+                android:contentDescription="Profile picture"
                 android:paddingEnd="@dimen/fab_margin"
                 android:paddingStart="@dimen/fab_margin"
-                android:src="@drawable/ic_profile_pic"
-                android:contentDescription="Profile picture"
-                />
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_profile_pic" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -82,6 +80,63 @@
             android:layout_marginBottom="@dimen/fab_margin"
             android:background="@android:color/darker_gray" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginStart="@dimen/fab_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Favorites"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:id="@+id/list_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:layout_marginEnd="3dp"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="-20dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_city" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="5"
+                    android:text="Location 1" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Delete" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txt_add_address"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:text="Add favourite places" />
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="@dimen/fab_margin"
+            android:background="@android:color/darker_gray" />
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -94,10 +149,10 @@
                 android:id="@+id/btn_signout"
                 style="@style/Widget.AppCompat.Button"
 
-                android:layout_marginStart="@dimen/fab_margin"
-                android:layout_marginEnd="@dimen/fab_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginStart="@dimen/fab_margin"
                 android:elevation="@dimen/cardview_default_elevation"
                 android:onClick="signOut"
                 android:text="SIGN OUT" />
@@ -105,17 +160,17 @@
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/btn_acc_delete"
                 style="@style/Widget.AppCompat.Button"
-                android:padding="@dimen/fab_margin"
-                android:layout_marginStart="@dimen/fab_margin"
-                android:layout_marginEnd="@dimen/fab_margin"
-                android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:layout_marginTop="8dp"
                 android:elevation="@dimen/cardview_default_elevation"
+                android:onClick="deleteAccout"
+                android:padding="@dimen/fab_margin"
                 android:text="DELETE ACCOUNT"
                 android:textColor="@android:color/white"
-                app:backgroundTint="@android:color/holo_red_light"
-                android:onClick="deleteAccout"/>
+                app:backgroundTint="@android:color/holo_red_light" />
 
         </LinearLayout>
     </android.support.v7.widget.LinearLayoutCompat>

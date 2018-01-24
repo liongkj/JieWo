@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo.View.ui;
+package com.jiewo.kj.jiewo.View.ui.Activities;
 
 
 import android.os.Bundle;
