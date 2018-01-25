@@ -40,6 +40,7 @@ dependencies {
     implementation 'com.android.support:customtabs:27.0.2'
     implementation 'com.google.firebase:firebase-core:11.8.0'
     implementation 'com.google.android.gms:play-services-location:11.8.0'
+    implementation 'com.google.android.gms:play-services-places:11.8.0'
     // FirebaseUI for Firebase Auth
     implementation 'com.firebaseui:firebase-ui-auth:3.1.0'
     // FirebaseUI for Firebase Realtime Database
@@ -49,8 +50,8 @@ dependencies {
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     implementation 'com.afollestad.material-dialogs:commons:0.9.6.0'
     //architecture component
-    implementation 'android.arch.lifecycle:common-java8:1.0.0'
-    implementation 'android.arch.lifecycle:extensions:1.0.0'
+    implementation 'android.arch.lifecycle:common-java8:1.1.0'
+    implementation 'android.arch.lifecycle:extensions:1.1.0'
     //recycleview
     implementation 'com.facebook.shimmer:shimmer:0.1.0@aar'
     implementation 'com.mikepenz:iconics-core:3.0.0@aar'

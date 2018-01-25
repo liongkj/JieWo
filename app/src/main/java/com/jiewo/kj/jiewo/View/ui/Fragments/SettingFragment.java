@@ -17,17 +17,19 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.jiewo.kj.jiewo.Model.UserModel;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.View.ui.Activities.LoginActivity;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class SettingFragment extends Fragment implements View.OnClickListener {
+public class SettingFragment extends Fragment
+        implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
     @BindView(R.id.txtUsername)
     TextView txtUsername;
@@ -136,5 +138,10 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
             signOut();
         } else
             deleteAccount();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }

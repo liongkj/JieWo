@@ -2,6 +2,7 @@ package com.jiewo.kj.jiewo.View.ui.Activities;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.places.Places;
 import com.jiewo.kj.jiewo.Model.UserModel;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.View.ui.Fragments.HomeFragment;
@@ -29,14 +33,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     UserModel user = UserModel.getUser();
     @BindView(R.id.toolbar) Toolbar toolbar;
 
     static public Drawer result = null;
     private AccountHeader headerResult = null;
-
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,13 @@ public class MainActivity extends AppCompatActivity {
         buildHeader(false, savedInstanceState);
 
         buildDrawer();
+
+        mGoogleApiClient = new GoogleApiClient
+                .Builder(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .enableAutoManage(this,this)
+                .build();
 
     }
 
@@ -179,4 +190,8 @@ public class MainActivity extends AppCompatActivity {
                 .build();
     }
 
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
 }
