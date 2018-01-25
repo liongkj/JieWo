@@ -107,9 +107,10 @@
                     android:layout_height="20dp"
                     android:layout_marginStart="-20dp"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_city" />
+                    android:src="@drawable/ic_menu_home"/>
 
                 <TextView
+                    android:id="@+id/txtSavedLocation"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="5"
@@ -148,7 +149,6 @@
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/btn_signout"
                 style="@style/Widget.AppCompat.Button"
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/fab_margin"

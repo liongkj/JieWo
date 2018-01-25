@@ -1,5 +1,6 @@
 package com.jiewo.kj.jiewo.View.ui.Fragments;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.media.ThumbnailUtils;
@@ -10,17 +11,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnFocusChange;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -30,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.jiewo.kj.jiewo.Model.ItemModel;
 import com.jiewo.kj.jiewo.Model.UserModel;
 import com.jiewo.kj.jiewo.R;
+import com.jiewo.kj.jiewo.ViewModel.UserViewModel;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.vansuita.pickimage.bean.PickResult;
 import com.vansuita.pickimage.bundle.PickSetup;
@@ -39,10 +38,6 @@ import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnFocusChange;
 
 
 public class RentItemFragment extends Fragment {
@@ -59,13 +54,13 @@ public class RentItemFragment extends Fragment {
     @BindView(R.id.txtPrice)
     MaterialEditText txtPrice;
 
-
     MenuItem btndone;
 
     boolean isValid = true;
     private static final String[] ITEMS = {"Bags & Wallets", "Shoes", "Clothes", "Item 4", "Item 5", "Item 6"};
     private DatabaseReference mDatabase;
     UserModel user = UserModel.getUser();
+    private UserViewModel userViewModel;
     protected Location mLastLocation;
 
     private FusedLocationProviderClient mFusedLocationClient;
@@ -84,6 +79,7 @@ public class RentItemFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_rent_item, container, false);
         ButterKnife.bind(this, view);
         getActivity().setTitle("Rent Item");
+
 
         //set image uploader
         for (int i = 0; i < 6; i++) {
@@ -120,6 +116,13 @@ public class RentItemFragment extends Fragment {
 
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        String userId = getArguments().getString("uid");
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
