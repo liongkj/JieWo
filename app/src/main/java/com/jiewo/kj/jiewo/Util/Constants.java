@@ -6,4 +6,6 @@ package com.jiewo.kj.jiewo.Util;
 
 public class Constants {
     public static final String FIREBASE_ROOT = "searchedLocation";
+    public static final String ITEM_CATOGORY = "Category";
+    public static final String ITEM_USER = "Item";
 }

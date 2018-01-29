@@ -1,0 +1,69 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="rent"
+            type="com.jiewo.kj.jiewo.Model.RentModel" />
+
+        <variable
+            name="view"
+            type="com.jiewo.kj.jiewo.View.Fragments.RentFragment" />
+
+        <variable
+            name="vm"
+            type="com.jiewo.kj.jiewo.ViewModel.RentViewModel" />
+
+        <import type="android.view.View" />
+
+    </data>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.jiewo.kj.jiewo.View.ui.Fragments.RentFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="true"
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/fab_margin"
+            android:paddingStart="@dimen/fab_margin"
+            android:paddingTop="@dimen/fab_margin">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{String.valueOf(vm.imageNo)}" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/imageButtonParent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+                    <!--android:visibility="@{view.onClickAddImage()?View.GONE : View.VISIBLE}"-->
+                    <android.support.v7.widget.AppCompatImageButton
+
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:padding="8dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_menu_plus"
+                        android:onClick="@{view::onClickAddImage}" />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+        </LinearLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
+</layout>

@@ -31,7 +31,7 @@ public class UserModel extends Application implements Serializable {
     private static UserModel User = null;
     Bitmap profilePic = null;
 
-    private UserModel(String id, String name, String email, Uri photoURI) {
+    public UserModel(String id, String name, String email, Uri photoURI) {
         this.id = id;
         this.name = name;
         this.email = email;

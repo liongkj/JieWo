@@ -3,9 +3,11 @@ package com.jiewo.kj.jiewo.ViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import com.google.firebase.auth.FirebaseAuth;
+
 import com.google.firebase.auth.FirebaseUser;
 import com.jiewo.kj.jiewo.Model.UserModel;
+
+import java.util.Objects;
 
 /**
  * Created by khaij on 25/01/2018.
@@ -14,24 +16,16 @@ import com.jiewo.kj.jiewo.Model.UserModel;
 public class UserViewModel extends ViewModel {
 
     private String userId;
+    final MutableLiveData<FirebaseUser> login = new MutableLiveData<>();
     private LiveData<UserModel> user;
-    FirebaseUser firebaseUser;
 
-    public void init(String userId) {
-        this.userId = userId;
-    }
+    public void setLogin(FirebaseUser login) {
 
-    public LiveData<UserModel> getUser() {
-        if (user == null) {
-            user = new MutableLiveData<UserModel>();
-            loadUsers();
+        if (Objects.equals(this.login.getValue(), login)) {
+            return;
         }
-        return user;
+        this.login.setValue(login);
     }
 
-    private void loadUsers() {
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        firebaseUser = auth.getCurrentUser();
-        // Do an asyncronous operation to fetch users.
-    }
+
 }

@@ -1,36 +1,43 @@
 package com.jiewo.kj.jiewo.ViewModel;
 
-import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.os.AsyncTask;
+import android.arch.lifecycle.ViewModel;
+import android.databinding.Bindable;
+import android.databinding.ObservableInt;
 import android.support.annotation.NonNull;
-import com.jiewo.kj.jiewo.Model.ItemModel;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.jiewo.kj.jiewo.Util.Constants;
+import com.jiewo.kj.jiewo.Util.FirebaseQueryLiveData;
 
 /**
  * Created by khaij on 10/12/2017.
  */
 
-public class RentViewModel extends AndroidViewModel {
+public class RentViewModel extends ViewModel {
 
-    private MutableLiveData<ItemModel> item;
+    private static final DatabaseReference ITEM_CATEGORY = FirebaseDatabase.getInstance().getReference(Constants.ITEM_CATOGORY);
+    private final FirebaseQueryLiveData liveData = new FirebaseQueryLiveData(ITEM_CATEGORY);
+
+    @Bindable
+    public final ObservableInt imageNo = new ObservableInt();
 
 
-    public RentViewModel(@NonNull Application application) {
-        super(application);
+    @NonNull
+    public LiveData<DataSnapshot> getDataSnapshotLiveData() {
+        return liveData;
     }
 
-    public LiveData<ItemModel> getItem() {
-        return item;
-    }
+
+//    public RentViewModel() {
+//        getItemList();
+//    }
+//
+//    public LiveData<List<ItemModel>> getItemList(){
+//        return firebaseRepo.getItemList();
+//    }
 
 
-    public static class addAsyncTask extends AsyncTask<ItemModel, Void, Void> {
-
-        @Override
-        protected Void doInBackground(ItemModel... itemModels) {
-            return null;
-        }
-    }
 }

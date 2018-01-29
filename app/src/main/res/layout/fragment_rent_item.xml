@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.jiewo.kj.jiewo.View.ui.Fragments.RentItemFragment">
+    tools:context="com.jiewo.kj.jiewo.View.Fragments.RentItemFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -94,19 +94,21 @@
             app:met_floatingLabel="highlight"
             app:met_floatingLabelText="Item Name"
             app:met_maxCharacters="20"
-            app:met_minCharacters="2" />
+            app:met_minCharacters="2"
+            app:met_validateOnFocusLost="true" />
 
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/txtDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Item Description"
+            app:met_validateOnFocusLost="true"
             android:inputType="text"
             android:maxLines="1"
             app:met_clearButton="true"
             app:met_floatingLabel="highlight"
             app:met_floatingLabelText="Item Description"
-            app:met_minCharacters="5" />
+            app:met_minCharacters="2" />
 
         <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
             android:id="@+id/category_spinner"

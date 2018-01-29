@@ -1,5 +1,7 @@
 package com.jiewo.kj.jiewo.Model;
 
+import android.graphics.Bitmap;
+
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
@@ -11,13 +13,13 @@ import java.util.Map;
  */
 @IgnoreExtraProperties
 public class ItemModel {
-    private String userId;
-    private String owner;
-    private String itemTitle;
-    private String itemDescription;
-    private String category;
-    private double price;
-    private int[] Resources = {};
+    public String userId;
+    public String owner;
+    public String itemTitle;
+    public String itemDescription;
+    public String category;
+    public double price;
+    public Bitmap images;
 
     public ItemModel() {
     }
