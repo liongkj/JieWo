@@ -150,6 +150,7 @@
     <string name="invalid_lat_long_used">Invalid location data</string>
     <string name="title_activity_address">AddressActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_image_selected">Uploaded photos (%s/6)</string>
+
+    <item name="R.id.bound_observable" type="id" />
 </resources>

@@ -19,8 +19,8 @@ android {
     buildToolsVersion '27.0.3'
     dataBinding{enabled = true}
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
     dexOptions {
         javaMaxHeapSize "4g"
@@ -29,7 +29,6 @@ android {
 }
 
 dependencies {
-    compile project(":lib")
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:recyclerview-v7:27.0.2'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -48,6 +47,7 @@ dependencies {
     implementation 'com.android.support:support-annotations:27.0.2'
     implementation 'com.android.support:support-v4:27.0.2'
     implementation 'com.android.support:customtabs:27.0.2'
+    //firebase
     implementation 'com.google.firebase:firebase-core:11.8.0'
     implementation 'com.google.android.gms:play-services-location:11.8.0'
     implementation 'com.google.android.gms:play-services-places:11.8.0'
@@ -55,6 +55,9 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:3.1.0'
     // FirebaseUI for Firebase Realtime Database
     implementation 'com.firebaseui:firebase-ui-database:3.1.0'
+    //Geofire
+    implementation 'com.firebase:geofire-android:2.2.0'
+    //google services
     implementation 'com.google.android.gms:play-services-maps:11.8.0'
     //material dialog confirmation box
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
@@ -83,6 +86,8 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     annotationProcessor 'com.android.databinding:compiler:3.0.1'
+    //databinding validattion
+    implementation 'com.mlykotom:valifi:1.2.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

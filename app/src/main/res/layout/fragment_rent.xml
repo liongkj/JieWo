@@ -1,11 +1,12 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
-            name="rent"
-            type="com.jiewo.kj.jiewo.Model.RentModel" />
+            name="item"
+            type="com.jiewo.kj.jiewo.Model.ItemModel" />
 
         <variable
             name="view"
@@ -14,6 +15,10 @@
         <variable
             name="vm"
             type="com.jiewo.kj.jiewo.ViewModel.RentViewModel" />
+
+        <variable
+            name="isVisible"
+            type="boolean" />
 
         <import type="android.view.View" />
 
@@ -36,34 +41,117 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{String.valueOf(vm.imageNo)}" />
+                android:text="@{@string/no_image_selected(vm.imageNo)}" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
-                android:scrollbars="none">
+                android:scrollbars="horizontal">
 
                 <LinearLayout
                     android:id="@+id/imageButtonParent"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
-                    <!--android:visibility="@{view.onClickAddImage()?View.GONE : View.VISIBLE}"-->
-                    <android.support.v7.widget.AppCompatImageButton
 
+                    <android.support.v7.widget.AppCompatImageButton
                         android:layout_width="100dp"
                         android:layout_height="100dp"
+                        android:onClick="@{view::onClickAddImage}"
                         android:padding="8dp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/ic_menu_plus"
-                        android:onClick="@{view::onClickAddImage}" />
-
+                        android:visibility="@{isVisible?View.GONE : View.VISIBLE}" />
                 </LinearLayout>
-
             </HorizontalScrollView>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Item Name"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="@={vm.itemTitle.value}"
+                app:met_clearButton="true"
+                app:met_floatingLabel="highlight"
+                app:met_floatingLabelText="Item Name"
+                app:met_validateOnFocusLost="true" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Item Description"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="@={vm.itemDescription.value}"
+                app:met_clearButton="true"
+                app:met_floatingLabel="highlight"
+                app:met_floatingLabelText="Item Description"
+                app:met_validateOnFocusLost="true" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/txtPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Price (RM)"
+                android:inputType="numberDecimal"
+                android:text="@={vm.itemCost.value}"
+                app:met_autoValidate="true"
+                app:met_floatingLabel="highlight" />
+
+            <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+                android:id="@+id/catSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Select Category"
+                app:met_floatingLabel="highlight"
+
+                />
+
+
+            <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="-16dp">-->
+
+            <!--<com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner-->
+            <!--android:id="@+id/location_spinner"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="4"-->
+            <!--android:hint="Location"-->
+            <!--app:met_floatingLabel="highlight" />-->
+
+            <!--<ImageButton-->
+            <!--android:id="@+id/btn_location"-->
+            <!--style="?android:attr/borderlessButtonStyle"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="48dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:background="@null"-->
+            <!--android:src="@drawable/gps_button_state" />-->
+            <!--</LinearLayout>-->
+            <android.support.v7.widget.AppCompatButton
+                android:layout_width="200dp"
+                android:layout_height="48dp"
+                android:layout_margin="8dp"
+                android:enabled="@{vm.form.valid}"
+                android:onClick="@{view::onClickSubmit}"
+                android:layout_gravity="center_horizontal"
+                android:paddingEnd="@dimen/fab_margin"
+                android:paddingStart="@dimen/fab_margin"
+                android:text="Submit" />
+
+
         </LinearLayout>
+
 
     </android.support.design.widget.CoordinatorLayout>
 </layout>
