@@ -1,24 +1,26 @@
-package com.jiewo.kj.jiewo.View.Fragments;
+package com.jiewo.kj.jiewo.view.Fragments;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
+
+import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageButton;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.RentViewModel;
 import com.jiewo.kj.jiewo.databinding.FragmentRentBinding;
@@ -27,10 +29,8 @@ import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.dialog.PickImageDialog;
 import com.vansuita.pickimage.listeners.IPickResult;
 
-import java.util.List;
 
-
-public class RentFragment extends Fragment {
+public class RentFragment extends DialogFragment {
 
     RentViewModel viewModel;
     FragmentRentBinding binding;
@@ -38,7 +38,7 @@ public class RentFragment extends Fragment {
     private int current = 0;
     private final int MAX = 6;
     LinearLayout imageButtonParent;
-    private String category;
+
 
     public RentFragment() {
         // Required empty public constructor
@@ -47,36 +47,59 @@ public class RentFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         viewModel = ViewModelProviders.of(this).get(RentViewModel.class);
+        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.AppTheme);
+        setHasOptionsMenu(true);
+    }
 
+    @Override
+    public void onStart() {
 
-        LiveData<DataSnapshot> itemCategory = viewModel.getDataSnapshotLiveData();
-        final Observer<List<String>> catObserver = new Observer<List<String>>() {
-            @Override
-            public void onChanged(@Nullable final List<String> categoryList) {
-                // Update the UI, in this case, a TextView.
-                if (categoryList != null) {
-                    catAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, categoryList);
-                }
-                catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                binding.catSpinner.setAdapter(catAdapter);
-                catAdapter.notifyDataSetChanged();
-            }
-        };
-        viewModel.getCategoryList().observe(this, catObserver);
+        super.onStart();
+        Dialog dialog = getDialog();
+
+        if (dialog != null) {
+
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+
+            int height = ViewGroup.LayoutParams.MATCH_PARENT;
+
+            dialog.getWindow().setLayout(width, height);
+
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 //         Inflate the layout for this fragment
-        getActivity().setTitle("Rent Item");
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_rent, container, false);
         View view = binding.getRoot();
+        Toolbar toolbar = view.findViewById(R.id.toolbarDialog);
+        toolbar.setTitle("Rent Item");
+
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
+        toolbar.setNavigationIcon(android.R.drawable.ic_menu_close_clear_cancel);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getDialog().dismiss();
+
+            }
+        });
+
+        //((MainActivity) getActivity()).hideFab();
+
         binding.setView(this);
         binding.setVm(viewModel);
         imageButtonParent = binding.imageButtonParent;
+
+        catAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, viewModel.getCategoryList());
+        catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.catSpinner.setAdapter(catAdapter);
+
+
         return view;
     }
 
@@ -85,6 +108,30 @@ public class RentFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.ticker) {
+            //validateForm();
+            return true;
+        } else if (id == android.R.id.home) {
+            // handle close button click here
+            //dismiss(); // problem is with this call
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void onClickRefresh(View view) {
+        Log.e("onclick", "onclick pressed");
+        catAdapter.notifyDataSetChanged();
+
+
+    }
+
 
     public void onClickAddImage(View view) {
 

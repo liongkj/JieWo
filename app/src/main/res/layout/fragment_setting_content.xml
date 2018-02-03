@@ -8,7 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.jiewo.kj.jiewo.View.ui.Fragments.SettingFragment"
+    tools:context="com.jiewo.kj.jiewo.view.ui.Fragments.SettingFragment"
     tools:showIn="@layout/fragment_setting">
 
     <android.support.v7.widget.LinearLayoutCompat

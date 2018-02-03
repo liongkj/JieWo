@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo.View.Fragments;
+package com.jiewo.kj.jiewo.view.Fragments;
 
 
 import android.content.Intent;
@@ -28,9 +28,10 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.jiewo.kj.jiewo.Model.UserModel;
 import com.jiewo.kj.jiewo.R;
-import com.jiewo.kj.jiewo.View.Activities.LoginActivity;
+import com.jiewo.kj.jiewo.model.UserModel;
+import com.jiewo.kj.jiewo.view.activity.LoginActivity;
+import com.jiewo.kj.jiewo.view.activity.MainActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -80,6 +81,7 @@ public class SettingFragment extends Fragment
         ButterKnife.bind(this, view);
         // Inflate the layout for this fragment
         getActivity().setTitle("Settings");
+        ((MainActivity) getActivity()).hideFab();
         btnAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

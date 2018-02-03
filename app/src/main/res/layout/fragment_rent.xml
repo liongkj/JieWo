@@ -6,11 +6,11 @@
 
         <variable
             name="item"
-            type="com.jiewo.kj.jiewo.Model.ItemModel" />
+            type="com.jiewo.kj.jiewo.model.ItemModel" />
 
         <variable
             name="view"
-            type="com.jiewo.kj.jiewo.View.Fragments.RentFragment" />
+            type="com.jiewo.kj.jiewo.view.Fragments.RentFragment" />
 
         <variable
             name="vm"
@@ -27,7 +27,39 @@
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.jiewo.kj.jiewo.View.ui.Fragments.RentFragment">
+        tools:context="com.jiewo.kj.jiewo.view.ui.Fragments.RentFragment"
+        android:fitsSystemWindows="true">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.NoActionBar.AppBarOverlay">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbarDialog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                android:minHeight="?attr/actionBarSize"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                android:background="?attr/colorPrimaryDark" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <!--<android.support.design.widget.AppBarLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:theme="@style/AppTheme.AppBarOverlay">-->
+
+        <!--<android.support.v7.widget.Toolbar-->
+        <!--android:id="@+id/toolbarDialog"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="?attr/actionBarSize"-->
+        <!--android:background="?attr/colorPrimary"-->
+        <!--app:popupTheme="@style/AppTheme.PopupOverlay"/>-->
+
+        <!--</android.support.design.widget.AppBarLayout>-->
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,7 +68,8 @@
             android:orientation="vertical"
             android:paddingEnd="@dimen/fab_margin"
             android:paddingStart="@dimen/fab_margin"
-            android:paddingTop="@dimen/fab_margin">
+            android:paddingTop="@dimen/fab_margin"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <TextView
                 android:layout_width="match_parent"
@@ -48,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
-                android:scrollbars="horizontal">
+                android:scrollbars="none">
 
                 <LinearLayout
                     android:id="@+id/imageButtonParent"
@@ -67,10 +100,10 @@
                 </LinearLayout>
             </HorizontalScrollView>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray" />
+            <!--<View-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="1dp"-->
+            <!--android:background="@android:color/darker_gray" />-->
 
             <com.rengwuxian.materialedittext.MaterialEditText
                 android:layout_width="match_parent"
@@ -112,39 +145,23 @@
                 android:layout_height="wrap_content"
                 android:hint="Select Category"
                 app:met_floatingLabel="highlight"
+                android:onClick="@{view::onClickRefresh}" />
 
-                />
+            <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+                android:id="@+id/location_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Location"
+                app:met_floatingLabel="highlight"
+                android:onClick="@{view::onClickRefresh}" />
 
-
-            <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="-16dp">-->
-
-            <!--<com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner-->
-            <!--android:id="@+id/location_spinner"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="4"-->
-            <!--android:hint="Location"-->
-            <!--app:met_floatingLabel="highlight" />-->
-
-            <!--<ImageButton-->
-            <!--android:id="@+id/btn_location"-->
-            <!--style="?android:attr/borderlessButtonStyle"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="48dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:background="@null"-->
-            <!--android:src="@drawable/gps_button_state" />-->
-            <!--</LinearLayout>-->
             <android.support.v7.widget.AppCompatButton
                 android:layout_width="200dp"
                 android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
                 android:layout_margin="8dp"
                 android:enabled="@{vm.form.valid}"
                 android:onClick="@{view::onClickSubmit}"
-                android:layout_gravity="center_horizontal"
                 android:paddingEnd="@dimen/fab_margin"
                 android:paddingStart="@dimen/fab_margin"
                 android:text="Submit" />

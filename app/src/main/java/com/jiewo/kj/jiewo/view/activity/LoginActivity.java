@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo.View.Activities;
+package com.jiewo.kj.jiewo.view.activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -12,8 +12,8 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
-import com.jiewo.kj.jiewo.Model.UserModel;
 import com.jiewo.kj.jiewo.ViewModel.UserViewModel;
+import com.jiewo.kj.jiewo.model.UserModel;
 
 import java.util.Arrays;
 

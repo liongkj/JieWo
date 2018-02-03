@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo.Model;
+package com.jiewo.kj.jiewo.model;
 
 import android.databinding.BaseObservable;
 import android.graphics.Bitmap;

@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo.View;
+package com.jiewo.kj.jiewo.view;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;

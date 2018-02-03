@@ -1,23 +1,24 @@
-package com.jiewo.kj.jiewo.View.Activities;
+package com.jiewo.kj.jiewo.view.activity;
 
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.places.Places;
-import com.jiewo.kj.jiewo.Model.UserModel;
 import com.jiewo.kj.jiewo.R;
-import com.jiewo.kj.jiewo.View.Fragments.HomeFragment;
-import com.jiewo.kj.jiewo.View.Fragments.RentFragment;
-import com.jiewo.kj.jiewo.View.Fragments.SettingFragment;
+import com.jiewo.kj.jiewo.ViewModel.RentViewModel;
+import com.jiewo.kj.jiewo.model.UserModel;
+import com.jiewo.kj.jiewo.view.Fragments.HomeFragment;
+import com.jiewo.kj.jiewo.view.Fragments.RentFragment;
+import com.jiewo.kj.jiewo.view.Fragments.SettingFragment;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -33,11 +34,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity {
 
     UserModel user = UserModel.getUser();
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.fabAdd)
+    FloatingActionButton fab;
 
     static public Drawer result = null;
     private AccountHeader headerResult = null;
@@ -57,21 +60,48 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         buildDrawer();
 
-        mGoogleApiClient = new GoogleApiClient
-                .Builder(this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .enableAutoManage(this, this)
-                .build();
+        HomeFragment HomeFragment = new HomeFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_placeholder, HomeFragment)
+                .commit();
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+//                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//                getSupportFragmentManager()
+//                        .beginTransaction()
+//                        .replace(R.id.fragment_placeholder, rentFragment)
+//                        .addToBackStack(null)
+//                        .commit();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                RentFragment rentFragment = new RentFragment();
+
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//                transaction.add(android.R.id.content, rentFragment).addToBackStack(null).commit();
+                rentFragment.show(transaction, "tag");
+
+
+            }
+        });
+
+        RentViewModel rentViewModel = new RentViewModel();
+
 
     }
 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_placeholder);
         switch (item.getItemId()) {
             case android.R.id.home:
-                onBackPressed();
+//                NavUtils.navigateUpFromSameTask(this);
+                Log.e("fragment", currentFragment.toString());
+                if (!(currentFragment instanceof RentFragment))
+                    onBackPressed();
                 return true;
 
             default:
@@ -82,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void onBackPressed() {
         //handle the back press :D close the drawer first and if the drawer is closed close the activity
+
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
         } else {
@@ -89,9 +120,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
+    public void showFab() {
+        fab.show();
+    }
+
+    public void hideFab() {
+        fab.hide();
+    }
+
     private void buildDrawer() {
         PrimaryDrawerItem home = new PrimaryDrawerItem().withIdentifier(1).withName("Home").withIcon(GoogleMaterial.Icon.gmd_home);
-        PrimaryDrawerItem rentItem = new PrimaryDrawerItem().withIdentifier(2).withName("Rent My Item").withIcon(GoogleMaterial.Icon.gmd_add);
+        //PrimaryDrawerItem rentItem = new PrimaryDrawerItem().withIdentifier(2).withName("Rent My Item").withIcon(GoogleMaterial.Icon.gmd_add);
         PrimaryDrawerItem search = new PrimaryDrawerItem().withIdentifier(3).withName("Find Items").withIcon(GoogleMaterial.Icon.gmd_search);
         PrimaryDrawerItem nearby = new PrimaryDrawerItem().withIdentifier(4).withName("What's Nearby").withIcon(GoogleMaterial.Icon.gmd_location_city);
         SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName("Settings").withIcon(GoogleMaterial.Icon.gmd_settings);
@@ -102,9 +141,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withAccountHeader(headerResult)
+                .withActionBarDrawerToggleAnimated(true)
                 .addDrawerItems(
                         home,
-                        rentItem,
+                        //rentItem,
                         search,
                         nearby,
                         new DividerDrawerItem(),
@@ -112,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         settings
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         // do something with the clicked item :D
@@ -120,9 +161,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         return false;
                     }
                 })
+//                .withOnDrawerNavigationListener(new Drawer.OnDrawerNavigationListener() {
+//
+//                    @Override
+//
+//                    public boolean onNavigationClickListener(View clickedView) {
+//                        //this method is only called if the Arrow icon is shown. The hamburger is automatically managed by the MaterialDrawer
+//                        //if the back arrow is shown. close the activity
+////                        RentFragment.class.this.finish();
+//
+//                        result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+//                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//                        HomeFragment HomeFragment = new HomeFragment();
+//                        getSupportFragmentManager()
+//                                .beginTransaction()
+//                                .replace(R.id.fragment_placeholder, HomeFragment)
+//                                .addToBackStack(null)
+//                                .commit();
+//                        return true;
+//                    }
+//                })
                 .build();
-
-
     }
 
     private void selectDrawerItem(int identifier) {
@@ -191,8 +250,4 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .build();
     }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
 }

@@ -1,20 +1,20 @@
 package com.jiewo.kj.jiewo.ViewModel;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.databinding.ObservableInt;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.jiewo.kj.jiewo.Model.ItemModel;
-import com.jiewo.kj.jiewo.Util.Constants;
-import com.jiewo.kj.jiewo.Util.FirebaseQueryLiveData;
+import com.jiewo.kj.jiewo.model.ItemModel;
+import com.jiewo.kj.jiewo.util.Constants;
+import com.jiewo.kj.jiewo.util.FirebaseQueryLiveData;
 import com.mlykotom.valifi.ValiFiForm;
 import com.mlykotom.valifi.fields.ValiFieldText;
 import com.mlykotom.valifi.fields.number.ValiFieldDouble;
@@ -32,7 +32,7 @@ public class RentViewModel extends ViewModel {
 
     private static final DatabaseReference ITEM_CATEGORY = FirebaseDatabase.getInstance().getReference(Constants.ITEM_CATOGORY);
     private final FirebaseQueryLiveData liveData = new FirebaseQueryLiveData(ITEM_CATEGORY);
-    private MutableLiveData<List<String>> categoryList;
+    private List<String> categoryList;
     public ItemModel itemModel;
 
     public final ObservableInt imageNo = new ObservableInt();
@@ -45,6 +45,7 @@ public class RentViewModel extends ViewModel {
     public final ValiFiForm form = new ValiFiForm(itemTitle, itemDescription, itemCost);
 
     public RentViewModel() {
+        loadCategory();
         itemModel = new ItemModel();
         itemTitle.setEmptyAllowed(false).setErrorDelay(1000);
         itemDescription.setEmptyAllowed(false).setErrorDelay(1000);
@@ -56,34 +57,38 @@ public class RentViewModel extends ViewModel {
         return liveData;
     }
 
-    public LiveData<List<String>> getCategoryList() {
-        if (categoryList == null) {
-            categoryList = new MutableLiveData<>();
-            loadCategory();
-        }
+    public List<String> getCategoryList() {
+        //loadCategory();
         return categoryList;
     }
 
+
+    @SuppressLint("StaticFieldLeak")
     private void loadCategory() {
         // do async operation to fetch users
         List<String> categoryStringList = new ArrayList<>();
-
-        ITEM_CATEGORY.addValueEventListener(new ValueEventListener() {
+        new AsyncTask<Void, Void, List<String>>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                categoryStringList.clear();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    String data = ds.child("Category").getValue().toString();
-                    categoryStringList.add(data);
-                }
-                Log.e("test", String.valueOf(categoryStringList.size()));
-            }
+            protected List<String> doInBackground(Void... voids) {
+                ITEM_CATEGORY.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        categoryStringList.clear();
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            String data = ds.child("Category").getValue().toString();
+                            categoryStringList.add(data);
+                        }
+                    }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+                categoryList = categoryStringList;
+                return categoryStringList;
             }
-        });
-        categoryList.setValue(categoryStringList);
+        }.execute();
     }
 
 
@@ -92,18 +97,12 @@ public class RentViewModel extends ViewModel {
         if (form.isValid()) {
             form.destroy();
         }
+
+
     }
 
 }
 
-
-//    public RentViewModel() {
-//        getItemList();
-//    }
-//
-//    public LiveData<List<ItemModel>> getItemList(){
-//        return firebaseRepo.getItemList();
-//    }
 
 
 

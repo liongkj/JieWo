@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo.View.Fragments;
+package com.jiewo.kj.jiewo.view.Fragments;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.jiewo.kj.jiewo.R;
-import com.jiewo.kj.jiewo.View.Activities.MainActivity;
+import com.jiewo.kj.jiewo.view.activity.MainActivity;
 
 
 public class HomeFragment extends Fragment {
@@ -33,6 +33,7 @@ public class HomeFragment extends Fragment {
         // Required empty public constructor
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -41,7 +42,7 @@ public class HomeFragment extends Fragment {
         getActivity().setTitle("Home");
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         mToggle.setDrawerIndicatorEnabled(true);
-
+        ((MainActivity) getActivity()).showFab();
         view.setFocusableInTouchMode(true);
 
         view.requestFocus();

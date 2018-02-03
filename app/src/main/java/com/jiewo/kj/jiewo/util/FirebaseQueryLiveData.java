@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo.Util;
+package com.jiewo.kj.jiewo.util;
 
 import android.arch.lifecycle.LiveData;
 import android.util.Log;

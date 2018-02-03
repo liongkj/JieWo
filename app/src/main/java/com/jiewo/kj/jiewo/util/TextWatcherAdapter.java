@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo.Util;
+package com.jiewo.kj.jiewo.util;
 
 import android.text.Editable;
 import android.text.TextWatcher;

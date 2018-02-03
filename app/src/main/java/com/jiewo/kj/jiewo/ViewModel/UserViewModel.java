@@ -5,7 +5,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.google.firebase.auth.FirebaseUser;
-import com.jiewo.kj.jiewo.Model.UserModel;
+import com.jiewo.kj.jiewo.model.UserModel;
 
 import java.util.Objects;
 

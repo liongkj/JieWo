@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo.View.Fragments;
+package com.jiewo.kj.jiewo.view.Fragments;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
@@ -24,11 +24,11 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.jiewo.kj.jiewo.Model.UserModel;
 import com.jiewo.kj.jiewo.R;
-import com.jiewo.kj.jiewo.Util.Constants;
 import com.jiewo.kj.jiewo.ViewModel.ItemViewModel;
 import com.jiewo.kj.jiewo.ViewModel.UserViewModel;
+import com.jiewo.kj.jiewo.model.UserModel;
+import com.jiewo.kj.jiewo.util.Constants;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.vansuita.pickimage.bean.PickResult;
 import com.vansuita.pickimage.bundle.PickSetup;
@@ -71,7 +71,7 @@ public class RentItemFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
         View view = inflater.inflate(R.layout.fragment_rent_item, container, false);
         ButterKnife.bind(this, view);
         getActivity().setTitle("Rent Item");

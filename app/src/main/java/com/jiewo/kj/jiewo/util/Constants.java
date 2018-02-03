@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo.Util;
+package com.jiewo.kj.jiewo.util;
 
 /**
  * Created by khaij on 25/01/2018.
