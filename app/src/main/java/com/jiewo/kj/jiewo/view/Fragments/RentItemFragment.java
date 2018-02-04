@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -27,7 +26,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.ItemViewModel;
 import com.jiewo.kj.jiewo.ViewModel.UserViewModel;
-import com.jiewo.kj.jiewo.model.UserModel;
 import com.jiewo.kj.jiewo.util.Constants;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.vansuita.pickimage.bean.PickResult;
@@ -58,8 +56,7 @@ public class RentItemFragment extends Fragment {
     MenuItem btndone;
 
     boolean isValid = true;
-    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(Constants.ITEM_USER);
-    UserModel user = UserModel.getUser();
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(Constants.ITEM);
     private UserViewModel userViewModel;
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -216,15 +213,15 @@ public class RentItemFragment extends Fragment {
         final String des = txtDescription.getText().toString();
         final Double price = Double.valueOf(txtPrice.getText().toString());
         final String category = catSpinner.getText().toString();
-        Toast.makeText(getContext(), "Posting...", Toast.LENGTH_SHORT).show();
 
-        //writeNewItem(user.getId(), user.getName(), title, des, price, category);
+
+        //writeNewItem(user.getId(), user.getName(), title, des, itemPrice, itemCategory);
     }
 
     private void writeNewItem(String userId, String username, String title, String des, Double price, String category) {
         //Log.e("validation", "validation done");
         // String key = mDatabase.child("items").push().getKey();
-        //ItemModel item = new ItemModel(userId, username, title, des, price, category);
+        //ItemModel item = new ItemModel(userId, username, title, des, itemPrice, itemCategory);
         //Map<String, Object> itemValues = item.toMap();
 
 //        Map<String, Object> childUpdates = new HashMap<>();

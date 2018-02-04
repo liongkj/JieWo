@@ -23,7 +23,7 @@ import java.util.List;
 public class ItemViewModel extends ViewModel {
 
     private static final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-    private DatabaseReference itemCategoryRef = database.child(Constants.ITEM_CATOGORY);
+    private DatabaseReference itemCategoryRef = database.child(Constants.CATOGORY);
 
     private MutableLiveData<List<String>> categoryList;
 

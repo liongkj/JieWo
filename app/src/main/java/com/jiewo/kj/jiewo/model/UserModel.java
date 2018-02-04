@@ -31,7 +31,7 @@ public class UserModel extends Application implements Serializable {
     private static UserModel User = null;
     Bitmap profilePic = null;
 
-    public UserModel(String id, String name, String email, Uri photoURI) {
+    private UserModel(String id, String name, String email, Uri photoURI) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -63,7 +63,7 @@ public class UserModel extends Application implements Serializable {
     }
 
     public String getNumber() {
-        if (number == null) return "0103363030";
+        if (number == null) return "null";
         return number;
     }
 

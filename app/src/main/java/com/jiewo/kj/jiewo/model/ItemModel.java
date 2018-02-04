@@ -2,8 +2,8 @@ package com.jiewo.kj.jiewo.model;
 
 import android.databinding.BaseObservable;
 import android.graphics.Bitmap;
-import android.location.Location;
 
+import com.firebase.geofire.GeoLocation;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
@@ -20,9 +20,9 @@ public class ItemModel extends BaseObservable {
     public String owner;
     public String itemTitle;
     public String itemDescription;
-    public String category;
-    public double price;
-    public Location location;
+    public String itemCategory;
+    public double itemPrice;
+    public GeoLocation location;
     public List<Bitmap> images;
 
     public ItemModel() {
@@ -52,27 +52,27 @@ public class ItemModel extends BaseObservable {
         this.itemDescription = itemDescription;
     }
 
-    public String getCategory() {
-        return category;
+    public String getItemCategory() {
+        return itemCategory;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setItemCategory(String itemCategory) {
+        this.itemCategory = itemCategory;
     }
 
-    public double getPrice() {
-        return price;
+    public double getItemPrice() {
+        return itemPrice;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setItemPrice(double itemPrice) {
+        this.itemPrice = itemPrice;
     }
 
-    public Location getLocation() {
+    public GeoLocation getLocation() {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(GeoLocation location) {
         this.location = location;
     }
 
@@ -82,10 +82,9 @@ public class ItemModel extends BaseObservable {
         result.put("userId", userId);
         result.put("itemTitle", itemTitle);
         result.put("itemDescription", itemDescription);
-        result.put("category", category);
-        result.put("price", price);
-        result.put("owner", owner);
-
+        result.put("itemCategory", itemCategory);
+        result.put("itemPrice", itemPrice);
+        result.put("location", location);
         return result;
     }
 

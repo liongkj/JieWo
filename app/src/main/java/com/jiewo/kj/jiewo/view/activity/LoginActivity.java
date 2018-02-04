@@ -1,94 +1,114 @@
 package com.jiewo.kj.jiewo.view.activity;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.jiewo.kj.jiewo.ViewModel.UserViewModel;
-import com.jiewo.kj.jiewo.model.UserModel;
-
-import java.util.Arrays;
-
+import com.jiewo.kj.jiewo.R;
 
 public class LoginActivity extends AppCompatActivity {
 
-    // Choose an arbitrary request code value
-    private static final int RC_SIGN_IN = 123;
-    UserModel user = null;
-    private UserViewModel userViewModel;
+    private EditText inputEmail, inputPassword;
+    private FirebaseAuth auth;
+    private ProgressBar progressBar;
+    private Button btnSignup, btnLogin, btnReset;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
+        //Get Firebase auth instance
+        auth = FirebaseAuth.getInstance();
 
         if (auth.getCurrentUser() != null) {
-            // already signed in
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
-
-        } else {
-            // not signed in
-            startActivityForResult(
-                    AuthUI.getInstance()
-                            .createSignInIntentBuilder()
-                            .setAvailableProviders(
-                                    Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-                                            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()))
-                            .build(),
-                    RC_SIGN_IN);
         }
 
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        userViewModel.setLogin(auth.getCurrentUser());
-    }
+        // set the view now
+        setContentView(R.layout.activity_login);
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when starting the sign in flow.
-        if (requestCode == RC_SIGN_IN) {
-            IdpResponse response = IdpResponse.fromResultIntent(data);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-            // Successfully signed in
-            if (resultCode == RESULT_OK) {
+        inputEmail = (EditText) findViewById(R.id.email);
+        inputPassword = (EditText) findViewById(R.id.password);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        btnSignup = (Button) findViewById(R.id.btn_signup);
+        btnLogin = (Button) findViewById(R.id.btn_login);
+        btnReset = (Button) findViewById(R.id.btn_reset_password);
 
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                finish();
-                return;
-            } else {
-                // Sign in failed
-                if (response == null) {
-                    // User pressed back button
-                    Log.e("Login", "Login canceled by User");
-                    return;
-                }
+        //Get Firebase auth instance
+        auth = FirebaseAuth.getInstance();
 
-                if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    Log.e("Login", "No Internet Connection");
-                    Snackbar snackbar = Snackbar
-                            .make(findViewById(android.R.id.content), "No Internet", Snackbar.LENGTH_LONG);
-
-                    snackbar.show();
-                    return;
-                }
-
-                if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                    Log.e("Login", "Unknown Error");
-                    return;
-                }
+        btnSignup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, SignupActivity.class));
             }
+        });
 
-            Log.e("Login", "Unknown sign in response");
-        }
+        btnReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, ResetPasswordActivity.class));
+            }
+        });
+
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = inputEmail.getText().toString();
+                final String password = inputPassword.getText().toString();
+
+                if (TextUtils.isEmpty(email)) {
+                    Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (TextUtils.isEmpty(password)) {
+                    Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                progressBar.setVisibility(View.VISIBLE);
+
+                //authenticate user
+                auth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                // If sign in fails, display a message to the user. If sign in succeeds
+                                // the auth state listener will be notified and logic to handle the
+                                // signed in user can be handled in the listener.
+                                progressBar.setVisibility(View.GONE);
+                                if (!task.isSuccessful()) {
+                                    // there was an error
+                                    if (password.length() < 6) {
+                                        inputPassword.setError("Password too short, enter minimum 6 characters!");
+                                    } else {
+                                        Toast.makeText(LoginActivity.this, "Authentication failed, check your email and password", Toast.LENGTH_LONG).show();
+                                    }
+                                } else {
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            }
+                        });
+            }
+        });
     }
 }
-
