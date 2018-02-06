@@ -9,7 +9,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class Constants {
     public static final String FIREBASE_ROOT = "searchedLocation";
-    public static final String CATOGORY = "Category";
+    public static final String CATEGORY = "Category";
     public static final String ITEM = "Item";
     public static final String GEOLOCATION = "Item-Location";
     public static final DatabaseReference DATABASE_REF = FirebaseDatabase.getInstance().getReference();

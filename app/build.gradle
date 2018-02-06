@@ -88,6 +88,11 @@ dependencies {
     annotationProcessor 'com.android.databinding:compiler:3.0.1'
     //databinding validattion
     implementation 'com.mlykotom:valifi:1.2.0'
+    //image
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.ss.bannerslider:bannerslider:1.8.0'
+
+
 }
 
 apply plugin: 'com.google.gms.google-services'

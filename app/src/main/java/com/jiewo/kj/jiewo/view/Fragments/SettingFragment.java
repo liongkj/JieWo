@@ -107,7 +107,7 @@ public class SettingFragment extends Fragment
 
             startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
         } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-            // TODO: Handle the error.
+
         }
     }
 

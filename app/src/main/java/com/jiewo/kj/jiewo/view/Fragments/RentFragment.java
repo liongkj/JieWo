@@ -130,7 +130,6 @@ public class RentFragment extends DialogFragment {
         ArrayAdapter<String> catAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, viewModel.getCategoryList());
         catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.catSpinner.setAdapter(catAdapter);
-        binding.catSpinner.setOnItemSelectedListener(mCategoryClickListener);
 
 
         return view;
@@ -172,17 +171,6 @@ public class RentFragment extends DialogFragment {
         imageButtonParent.addView(imageButton);
     }
 
-    private AdapterView.OnItemSelectedListener mCategoryClickListener = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            viewModel.setSpinnerPos(position);
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
-    };
 
     private AdapterView.OnItemClickListener mAutoCompleteClickListener = new AdapterView.OnItemClickListener() {
 

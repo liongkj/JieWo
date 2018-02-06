@@ -30,9 +30,10 @@ import com.mlykotom.valifi.fields.ValiFieldText;
 import com.mlykotom.valifi.fields.number.ValiFieldDouble;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static com.jiewo.kj.jiewo.util.Constants.CATOGORY;
 import static com.jiewo.kj.jiewo.util.Constants.DATABASE_REF;
 import static com.jiewo.kj.jiewo.util.Constants.ITEM;
 
@@ -44,19 +45,18 @@ import static com.jiewo.kj.jiewo.util.Constants.ITEM;
 public class RentViewModel extends ViewModel {
 
 
-    private static final DatabaseReference CATEGORY = FirebaseDatabase.getInstance().getReference(CATOGORY);
+    private static final DatabaseReference CATEGORY = FirebaseDatabase.getInstance().getReference(Constants.CATEGORY);
     private static final DatabaseReference GEOFIRE = FirebaseDatabase.getInstance().getReference(Constants.GEOLOCATION);
 
     private final FirebaseQueryLiveData liveData = new FirebaseQueryLiveData(CATEGORY);
     private List<String> categoryList;
-    private int spinnerPos;
     GeoFire mGeoFire = new GeoFire(GEOFIRE);
     private ItemModel itemModel;
     private Place selectedPlace;
     private StorageReference mStorage;
 
-    public final ObservableInt imageNo = new ObservableInt();
 
+    public final ObservableInt imageNo = new ObservableInt();
     public final ValiFieldText itemTitle = new ValiFieldText();
     public final ValiFieldText itemDescription = new ValiFieldText();
     public final ValiFieldText itemCategory = new ValiFieldText();
@@ -67,7 +67,6 @@ public class RentViewModel extends ViewModel {
     public RentViewModel() {
         loadCategory();
         mStorage = FirebaseStorage.getInstance().getReference();
-        itemModel = new ItemModel();
         itemTitle.setEmptyAllowed(false).setErrorDelay(1000);
         itemDescription.setEmptyAllowed(false).setErrorDelay(1000);
         itemCost.setErrorDelay(1000);
@@ -76,14 +75,6 @@ public class RentViewModel extends ViewModel {
 
     public GeoLocation getGeolcation() {
         return new GeoLocation(getSelectedPlace().getLatLng().latitude, getSelectedPlace().getLatLng().longitude);
-    }
-
-    public int getSpinnerPos() {
-        return spinnerPos;
-    }
-
-    public void setSpinnerPos(int spinnerPos) {
-        this.spinnerPos = spinnerPos;
     }
 
     public Place getSelectedPlace() {
@@ -117,10 +108,7 @@ public class RentViewModel extends ViewModel {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         categoryStringList.clear();
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
-
                             String data = ds.getKey();
-
-
                             categoryStringList.add(data);
                         }
                     }
@@ -136,48 +124,76 @@ public class RentViewModel extends ViewModel {
         }.execute();
     }
 
+    private List<Uri> uploadImage(List<Uri> imageList, DatabaseReference itemRef) {
+        int no = 0;
+        List<Uri> images = new ArrayList<>();
+        for (Uri uri : imageList) {
+            StorageReference filepath = mStorage.child("Item_Image").child(uri.getLastPathSegment());
+            no++;
+            int finalNo = no;
+            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Uri downloadUri = taskSnapshot.getDownloadUrl();
+                    itemRef.child("picture").child("pic" + finalNo).setValue(downloadUri.toString());
+
+                }
+            });
+
+        }
+        return images;
+    }
 
     public Boolean submit(List<Uri> imageList) {
         form.refreshError();
         if (form.isValid()) {
-            Log.e("form", "valid");
-//            itemModel = new ItemModel();
-//            itemModel.setUserId(UserModel.getUser().getId());
-//            itemModel.setItemTitle(itemTitle.getValue());
-//            itemModel.setItemCategory(itemCategory.getValue());
-//            itemModel.setItemDescription(itemDescription.getValue());
-//            itemModel.setLocation(getGeolcation());
-//            itemModel.setItemPrice(itemCost.getNumber());
+
+
+            itemModel = new ItemModel();
+            itemModel.setOwner(UserModel.getUser().getId());
+            itemModel.setItemTitle(itemTitle.getValue());
+            itemModel.setItemCategory(itemCategory.getValue());
+            itemModel.setItemDescription(itemDescription.getValue());
+            itemModel.setLocation(getGeolcation());
+            itemModel.setItemPrice(itemCost.getNumber());
+
             //generate key
 
             String itemId = DATABASE_REF.child(ITEM).push().getKey();
-            DatabaseReference newItem = DATABASE_REF.child(ITEM).child(itemId);
+            DatabaseReference itemRef = DATABASE_REF.child(ITEM).child(itemId);
             //save into item key
-            newItem.child("owner").child(UserModel.getUser().getId()).setValue("true");
-            newItem.child("title").setValue(itemTitle.getValue());
-            newItem.child("description").setValue(itemDescription.getValue());
-            newItem.child("price").setValue(itemCost.getValue());
-            newItem.child("category").setValue(itemCategory.getValue());
+            Map<String, Object> newItem = itemModel.toMap();
+            Map<String, Object> update = new HashMap<>();
+            update.put(ITEM + "/" + itemId, newItem);
+            DATABASE_REF.updateChildren(update);
+            uploadImage(imageList, itemRef);
+            //DATABASE_REF.child(ITEM).child(itemId).setValue(itemModel);
+            // newItem.child("owner").child(UserModel.getUser().getId()).setValue("true");
+            //newItem.child("title").setValue(itemTitle.getValue());
+            // newItem.child("description").setValue(itemDescription.getValue());
+            //newItem.child("price").setValue(itemCost.getValue());
+            //newItem.child("category").setValue(itemCategory.getValue());
             //save into Category
-            DatabaseReference catItem = DATABASE_REF.child(CATOGORY).child(itemCategory.getValue());
-            catItem.child(itemId).setValue("true");
+            DatabaseReference catItem = DATABASE_REF.child(Constants.CATEGORY);
+            catItem.child(itemCategory.getValue()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.exists()) {
+                        catItem.setValue(itemCategory);
+                    }
+                    catItem.child(itemCategory.getValue()).child(itemId).setValue("true");
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
             //save into item-location key
             mGeoFire.setLocation(itemId, getGeolcation());
             //upload image & save image url
-            int no = 0;
-            for (Uri uri : imageList) {
-                StorageReference filepath = mStorage.child("Item_Image").child(uri.getLastPathSegment());
-                no++;
-                int finalNo = no;
-                filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Uri downloadUri = taskSnapshot.getDownloadUrl();
-                        newItem.child("picture").child("pic" + finalNo).setValue(downloadUri.toString());
 
-                    }
-                });
-            }
 
             form.destroy();
 
