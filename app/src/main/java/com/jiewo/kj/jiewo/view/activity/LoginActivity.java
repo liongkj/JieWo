@@ -12,11 +12,14 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.ui.ImeHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.jiewo.kj.jiewo.R;
+
+import static com.firebase.ui.auth.ui.ImeHelper.*;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -56,16 +59,17 @@ public class LoginActivity extends AppCompatActivity {
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, SignupActivity.class));
+                startActivity(new Intent(LoginActivity.this, com.jiewo.kj.jiewo.view.activity.SignupActivity.class));
             }
         });
 
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, ResetPasswordActivity.class));
+                startActivity(new Intent(LoginActivity.this, com.jiewo.kj.jiewo.view.activity.ResetPasswordActivity.class));
             }
         });
+
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override

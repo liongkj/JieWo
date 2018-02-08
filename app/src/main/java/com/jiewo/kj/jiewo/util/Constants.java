@@ -13,5 +13,6 @@ public class Constants {
     public static final String ITEM = "Item";
     public static final String GEOLOCATION = "Item-Location";
     public static final DatabaseReference DATABASE_REF = FirebaseDatabase.getInstance().getReference();
+
     public static final String USER = "User";
 }

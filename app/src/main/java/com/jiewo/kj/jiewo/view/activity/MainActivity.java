@@ -15,10 +15,12 @@ import android.view.View;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.RentViewModel;
+import com.jiewo.kj.jiewo.model.ItemModel;
 import com.jiewo.kj.jiewo.model.UserModel;
-import com.jiewo.kj.jiewo.view.Fragments.HomeFragment;
-import com.jiewo.kj.jiewo.view.Fragments.RentFragment;
-import com.jiewo.kj.jiewo.view.Fragments.SettingFragment;
+import com.jiewo.kj.jiewo.view.fragment.HomeFragment;
+import com.jiewo.kj.jiewo.view.fragment.ItemListFragment;
+import com.jiewo.kj.jiewo.view.fragment.RentFragment;
+import com.jiewo.kj.jiewo.view.fragment.SettingFragment;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -34,7 +36,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ItemListFragment.OnListFragmentInteractionListener{
 
     UserModel user = UserModel.getUser();
     @BindView(R.id.toolbar)
@@ -250,4 +252,8 @@ public class MainActivity extends AppCompatActivity {
                 .build();
     }
 
+    @Override
+    public void onListFragmentInteraction(ItemModel item) {
+
+    }
 }

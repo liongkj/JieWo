@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo.util;
+package com.jiewo.kj.jiewo.view.adapter;
 
 
 import android.content.Context;

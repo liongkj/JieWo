@@ -10,53 +10,56 @@
         android:layout_gravity="center"
         android:layout_margin="@dimen/card_margin"
         android:elevation="3dp"
-        card_view:cardCornerRadius="@dimen/card_album_radius">
+        card_view:cardCornerRadius="2dp">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/fab_margin"
+            android:paddingEnd="@dimen/fab_margin"
+            android:paddingBottom="@dimen/fab_margin"
+            >
 
             <ImageView
-                android:id="@+id/thumbnail"
+                android:id="@+id/catThumbnail"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/album_cover_height"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
-                android:scaleType="fitXY"
-                android:focusable="true" />
+                android:focusable="true"
+                android:scaleType="fitXY" />
 
-            <TextView
-                android:id="@+id/title"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/thumbnail"
-                android:paddingLeft="@dimen/album_title_padding"
-                android:paddingRight="@dimen/album_title_padding"
-                android:paddingTop="@dimen/album_title_padding"
-                android:textColor="#4c4c4c"
-                android:textSize="@dimen/album_title" />
+                android:paddingTop="10dp"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/title"
-                android:paddingBottom="@dimen/songs_count_padding_bottom"
-                android:paddingLeft="@dimen/album_title_padding"
-                android:paddingRight="@dimen/album_title_padding"
-                android:textSize="@dimen/songs_count" />
+                <TextView
+                    android:id="@+id/catTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Title"
+                    android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
-            <ImageView
-                android:id="@+id/overflow"
-                android:layout_width="@dimen/ic_album_overflow_width"
-                android:layout_height="@dimen/ic_album_overflow_height"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@id/thumbnail"
-                android:layout_marginTop="@dimen/ic_album_overflow_margin_top"
-                android:scaleType="centerCrop"
-                android:src="@drawable/fui_done_check_mark" />
+                <TextView
+                    android:id="@+id/catCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="4dp"
+                    android:paddingLeft="@dimen/album_title_padding"
+                    android:paddingRight="@dimen/album_title_padding"
+                    android:text="Count"
+                    android:textAppearance="@android:style/TextAppearance.Material.Caption" />
 
-        </RelativeLayout>
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_heart"/>
+            </LinearLayout>
+        </LinearLayout>
 
     </android.support.v7.widget.CardView>
 

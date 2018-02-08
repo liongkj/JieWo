@@ -30,6 +30,33 @@ public class ItemModel extends BaseObservable {
 
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    public String getItemTitle() {
+        return itemTitle;
+    }
+
+    public String getItemDescription() {
+        return itemDescription;
+    }
+
+    public String getItemCategory() {
+        return itemCategory;
+    }
+
+    public double getItemPrice() {
+        return itemPrice;
+    }
+
+    public GeoLocation getLocation() {
+        return location;
+    }
+
+    public List<Uri> getItemImages() {
+        return itemImages;
+    }
 
     public void setOwner(String owner) {
         this.owner = owner;

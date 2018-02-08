@@ -8,10 +8,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.jiewo.kj.jiewo.model.CategoryModel;
 import com.jiewo.kj.jiewo.model.ItemModel;
 import com.jiewo.kj.jiewo.model.UserModel;
 import com.jiewo.kj.jiewo.util.Constants;
@@ -108,7 +111,7 @@ public class RentViewModel extends ViewModel {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         categoryStringList.clear();
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            String data = ds.getKey();
+                            String data = ds.child("name").getValue().toString();
                             categoryStringList.add(data);
                         }
                     }
@@ -144,6 +147,39 @@ public class RentViewModel extends ViewModel {
         return images;
     }
 
+    void updateCategory(String itemId) {
+        DatabaseReference catItem = DATABASE_REF.child(Constants.CATEGORY);
+
+        catItem.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String catId = null;
+                boolean exist = false;
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    if (ds.child("name").exists()) {
+
+                        if (ds.child("name").getValue().equals(itemCategory.getValue())) {
+                            catId = ds.getKey();
+
+                            exist = true;
+                        }
+                    }
+                }
+                if (!exist) {
+                    catId = catItem.push().getKey();
+                    catItem.child(catId + "/name").setValue(itemCategory.getValue());
+                }
+                catItem.child(catId + "/items").push().setValue(itemId);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public Boolean submit(List<Uri> imageList) {
         form.refreshError();
         if (form.isValid()) {
@@ -161,35 +197,16 @@ public class RentViewModel extends ViewModel {
 
             String itemId = DATABASE_REF.child(ITEM).push().getKey();
             DatabaseReference itemRef = DATABASE_REF.child(ITEM).child(itemId);
+
             //save into item key
             Map<String, Object> newItem = itemModel.toMap();
             Map<String, Object> update = new HashMap<>();
             update.put(ITEM + "/" + itemId, newItem);
             DATABASE_REF.updateChildren(update);
+            //DATABASE_REF.updateChildren(update);
             uploadImage(imageList, itemRef);
-            //DATABASE_REF.child(ITEM).child(itemId).setValue(itemModel);
-            // newItem.child("owner").child(UserModel.getUser().getId()).setValue("true");
-            //newItem.child("title").setValue(itemTitle.getValue());
-            // newItem.child("description").setValue(itemDescription.getValue());
-            //newItem.child("price").setValue(itemCost.getValue());
-            //newItem.child("category").setValue(itemCategory.getValue());
             //save into Category
-            DatabaseReference catItem = DATABASE_REF.child(Constants.CATEGORY);
-            catItem.child(itemCategory.getValue()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (!dataSnapshot.exists()) {
-                        catItem.setValue(itemCategory);
-                    }
-                    catItem.child(itemCategory.getValue()).child(itemId).setValue("true");
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
+            updateCategory(itemId);
             //save into item-location key
             mGeoFire.setLocation(itemId, getGeolcation());
             //upload image & save image url

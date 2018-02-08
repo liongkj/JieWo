@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo.view.Fragments;
+package com.jiewo.kj.jiewo.view.fragment;
 
 
 import android.content.Intent;

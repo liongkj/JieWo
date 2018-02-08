@@ -1,16 +1,24 @@
-package com.jiewo.kj.jiewo.view.Fragments;
+package com.jiewo.kj.jiewo.view.fragment;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -20,30 +28,47 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.jiewo.kj.jiewo.R;
+import com.jiewo.kj.jiewo.ViewModel.HomeViewModel;
 import com.jiewo.kj.jiewo.databinding.FragmentHomeBinding;
 import com.jiewo.kj.jiewo.model.CategoryModel;
-import com.jiewo.kj.jiewo.util.CategoryAdapter;
-import com.jiewo.kj.jiewo.util.GridSpacingItemDecoration;
+import com.jiewo.kj.jiewo.model.ItemModel;
+import com.jiewo.kj.jiewo.util.CategoryViewHolder;
 import com.jiewo.kj.jiewo.view.activity.MainActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ss.com.bannerslider.banners.Banner;
 import ss.com.bannerslider.banners.DrawableBanner;
 import ss.com.bannerslider.views.BannerSlider;
+
+import static com.jiewo.kj.jiewo.util.Constants.CATEGORY;
+import static com.jiewo.kj.jiewo.util.Constants.DATABASE_REF;
 
 
 public class HomeFragment extends Fragment {
 
     private boolean doubleBackToExitPressedOnce;
     private RecyclerView recyclerView;
-    private CategoryAdapter adapter;
-    private List<CategoryModel> albumList;
+    private FirebaseRecyclerAdapter<CategoryModel, CategoryViewHolder> adapter;
+
+
+
     private Handler mHandler = new Handler();
     ActionBarDrawerToggle mToggle = MainActivity.result.getActionBarDrawerToggle();
     FragmentHomeBinding binding;
+    HomeViewModel viewModel;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -59,7 +84,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
     }
 
     @Override
@@ -68,7 +93,12 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
         View view = binding.getRoot();
-        getActivity().setTitle("Home");
+        recyclerView = binding.recyclerView;
+
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        getActivity().setTitle("JieWo");
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         mToggle.setDrawerIndicatorEnabled(true);
 
@@ -115,27 +145,76 @@ public class HomeFragment extends Fragment {
         //TODO search function
     }
 
-    void buildCategory() {
-        recyclerView = binding.recyclerView;
-
-        albumList = new ArrayList<>();
-        adapter = new CategoryAdapter(getContext(), albumList);
-
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getContext(), 2);
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
-
-        prepareAlbums();
-
-        try {
-            //Glide.with(this).load(R.drawable.banner_ad1).into((ImageView) findViewById(R.id.backdrop));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
+
+    void buildCategory() {
+        Query query = DATABASE_REF.child(CATEGORY).orderByChild("name");
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        FirebaseRecyclerOptions options = new FirebaseRecyclerOptions
+                .Builder<CategoryModel>()
+                .setQuery(query, new SnapshotParser<CategoryModel>() {
+                    CategoryModel cm;
+                    List<String> items;
+                    @Override
+                    public CategoryModel parseSnapshot(DataSnapshot snapshot) {
+                        items = new ArrayList<>();
+                        String id = snapshot.getKey();
+                        String name = snapshot.child("name").getValue().toString();
+                        for (DataSnapshot ds : snapshot.child("items").getChildren()) {
+                            items.add(ds.getValue().toString());
+                        }
+                        int count = items.size();
+                        cm = new CategoryModel(id ,name, items, count);
+                        Log.e("list", items.toString());
+                        return cm;
+                    }
+                })
+                .build();
+
+        adapter = new FirebaseRecyclerAdapter<CategoryModel, CategoryViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(CategoryViewHolder holder, int position, CategoryModel model) {
+                holder.bindView(model);
+                holder.setOnClickListener((view, position1) -> {
+                    final String item = model.getId();
+                    Log.e("cat",item);
+                    Fragment fragment = new ItemListFragment();
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.fragment_placeholder, fragment, "tag")
+                            .addToBackStack(null)
+                            .commit();
+                    viewModel.select(item);
+
+                });
+
+            }
+
+            @Override
+            public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.layout_grid_category, parent, false);
+
+                return new CategoryViewHolder(view);
+            }
+        };
+
+        recyclerView.setAdapter(adapter);
+    }
+
 
     void buildSlider() {
 
@@ -146,18 +225,6 @@ public class HomeFragment extends Fragment {
         //add banner using resource drawable
         banners.add(new DrawableBanner(R.drawable.banner_rent));
         bannerSlider.setBanners(banners);
-    }
-
-    private void prepareAlbums() {
-        int[] covers = new int[]{
-                R.drawable.ic_menu_camera,
-                R.drawable.ic_menu_items,
-        };
-    }
-
-    private int dpToPx(int dp) {
-        Resources r = getResources();
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
 
 }

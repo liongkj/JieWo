@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo.view.Fragments;
+package com.jiewo.kj.jiewo.view.fragment;
 
 
 import android.app.Dialog;
@@ -38,7 +38,7 @@ import com.google.android.gms.tasks.Task;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.RentViewModel;
 import com.jiewo.kj.jiewo.databinding.FragmentRentBinding;
-import com.jiewo.kj.jiewo.util.PlaceAutoCompleteAdapter;
+import com.jiewo.kj.jiewo.view.adapter.PlaceAutoCompleteAdapter;
 import com.vansuita.pickimage.bean.PickResult;
 import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.dialog.PickImageDialog;
@@ -108,7 +108,7 @@ public class RentFragment extends DialogFragment {
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(android.R.drawable.ic_menu_close_clear_cancel);
+        toolbar.setNavigationIcon(R.drawable.ic_close_cancel);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

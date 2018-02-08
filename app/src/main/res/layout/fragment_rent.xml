@@ -10,7 +10,7 @@
 
         <variable
             name="view"
-            type="com.jiewo.kj.jiewo.view.Fragments.RentFragment" />
+            type="com.jiewo.kj.jiewo.view.fragment.RentFragment" />
 
         <variable
             name="vm"
