@@ -169,7 +169,7 @@ public class RentViewModel extends ViewModel {
                     catId = catItem.push().getKey();
                     catItem.child(catId + "/name").setValue(itemCategory.getValue());
                 }
-                catItem.child(catId + "/items").push().setValue(itemId);
+                catItem.child(catId + "/items/"+itemId).setValue(true);
 
             }
 

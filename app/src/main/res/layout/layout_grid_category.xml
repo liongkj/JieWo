@@ -8,9 +8,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:layout_margin="@dimen/card_margin"
-        android:elevation="3dp"
-        card_view:cardCornerRadius="2dp">
+        card_view:cardBackgroundColor="@color/md_yellow_500"
+        card_view:cardCornerRadius="4dp"
+        card_view:cardMaxElevation="4dp"
+        card_view:cardElevation="2dp"
+        card_view:contentPadding="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -18,7 +20,8 @@
             android:orientation="vertical"
             android:paddingStart="@dimen/fab_margin"
             android:paddingEnd="@dimen/fab_margin"
-            android:paddingBottom="@dimen/fab_margin"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp"
             >
 
             <ImageView
@@ -32,30 +35,33 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp"
+                android:layout_height="50dp"
+                android:background="@color/md_grey_50"
+                android:layout_gravity="center_horizontal"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/catTitle"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_weight="4"
                     android:text="Title"
+                    android:gravity="center"
                     android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
                 <TextView
                     android:id="@+id/catCount"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="4dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
                     android:paddingLeft="@dimen/album_title_padding"
                     android:paddingRight="@dimen/album_title_padding"
                     android:text="Count"
                     android:textAppearance="@android:style/TextAppearance.Material.Caption" />
 
                 <ImageView
-                    android:layout_width="30dp"
+                    android:layout_width="20dp"
+                    android:layout_weight="0"
                     android:layout_height="match_parent"
                     android:src="@drawable/ic_heart"/>
             </LinearLayout>

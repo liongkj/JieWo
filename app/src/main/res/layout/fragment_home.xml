@@ -60,6 +60,7 @@
                 android:layout_marginStart="@dimen/fab_margin"
                 android:layout_marginEnd="@dimen/fab_margin"
                 android:paddingTop="8dp"
+
                 android:paddingBottom="16dp"
                 android:orientation="vertical">
 
@@ -77,8 +78,8 @@
                     android:id="@+id/recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    android:scrollbars="vertical" />
+                    android:scrollbars="vertical"
+                    />
 
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>

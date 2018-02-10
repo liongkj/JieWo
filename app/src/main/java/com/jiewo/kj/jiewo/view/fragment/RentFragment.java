@@ -208,7 +208,7 @@ public class RentFragment extends DialogFragment {
                 places.release();
             } catch (RuntimeRemoteException e) {
                 // Request did not complete successfully
-                Log.e(TAG, "Place query did not complete.", e);
+                Log.e(TAG, "Place keyQuery did not complete.", e);
                 return;
             }
         }

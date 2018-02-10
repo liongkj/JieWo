@@ -2,11 +2,13 @@ package com.jiewo.kj.jiewo.view.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,18 +16,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Logger;
 import com.google.firebase.database.Query;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.HomeViewModel;
+import com.jiewo.kj.jiewo.databinding.FragmentItemListBinding;
 import com.jiewo.kj.jiewo.model.CategoryModel;
 import com.jiewo.kj.jiewo.model.ItemModel;
-import com.jiewo.kj.jiewo.util.CategoryViewHolder;
 import com.jiewo.kj.jiewo.util.ItemViewHolder;
+import com.jiewo.kj.jiewo.view.activity.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,12 +49,13 @@ public class ItemListFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 2;
+    FragmentItemListBinding binding;
     private OnListFragmentInteractionListener mListener;
     HomeViewModel viewModel;
-    List<ItemModel> itemList;
     FirebaseRecyclerAdapter adapter;
-    List<ItemModel> items;
     RecyclerView recyclerView;
+    Query keyQuery;
+    List<String> data =new ArrayList<>();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -72,28 +78,37 @@ public class ItemListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(getActivity()).get(HomeViewModel.class);
+
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_item_list, container, false);
-
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            buildItemList();
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_item_list, container, false);
+        View view = binding.getRoot();
+        recyclerView = binding.CategoryItemList;
 
-        }
+        ((MainActivity) getActivity()).hideFab();
+        MainActivity.result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+//        recyclerView.setHasFixedSize(true);
+
+        viewModel.getCategoryId().observe(this, s -> {
+            getActivity().setTitle(s.getName());
+            keyQuery = DATABASE_REF.child("Category/" + s.getId() + "/items");
+            buildItemList();
+            recyclerView.setAdapter(adapter);
+            Log.e("data",data.toString());
+        });
+
+
         return view;
     }
 
@@ -115,29 +130,27 @@ public class ItemListFragment extends Fragment {
         mListener = null;
     }
 
-    void buildItemList(){
-        Query query= DATABASE_REF.child("Category/-L4o5tBb_CcMxT7TEf5e/items");
-        SnapshotParser itemParser =  new SnapshotParser<ItemModel>() {
-            ItemModel cm;
-            List<String> items;
-            @Override
-            public ItemModel parseSnapshot(DataSnapshot snapshot) {
-                items = new ArrayList<>();
-                String id = snapshot.getValue().toString();
-//                String name = snapshot.child("name").getValue().toString();
-//                for (DataSnapshot ds : snapshot.child("items").getChildren()) {
-//                    items.add(ds.getValue().toString());
-//                }
-//                int count = items.size();
+    void buildItemList() {
+        Query dataRef = DATABASE_REF.child("Item");
 
-                Log.e("item", id);
-                return cm;
-            }
-        };
+        FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<ItemModel>()
+                .setLifecycleOwner(this)
+                .setIndexedQuery(keyQuery.getRef(), dataRef.getRef(), snapshot -> {
+                    ItemModel im = new ItemModel();
+                    String id = snapshot.getKey();
+                    String title = snapshot.child("title").getValue().toString();
+                    String description = snapshot.child("description").getValue().toString();
+                    Double cost = Double.valueOf(snapshot.child("price").getValue().toString());
+                    List<Uri> images =new ArrayList<>();
+                    images.add(Uri.parse(snapshot.child("picture/pic1").getValue().toString()));
 
-        FirebaseRecyclerOptions options = new FirebaseRecyclerOptions
-                .Builder<ItemModel>()
-                .setQuery(query, itemParser)
+                    im.setItemId(id);
+                    im.setItemTitle(title);
+                    im.setItemDescription(description);
+                    im.setItemPrice(cost);
+                    im.setImages(images);
+                    return im;
+                })
                 .build();
 
         adapter = new FirebaseRecyclerAdapter<ItemModel, ItemViewHolder>(options) {
@@ -145,15 +158,16 @@ public class ItemListFragment extends Fragment {
             protected void onBindViewHolder(ItemViewHolder holder, int position, ItemModel model) {
                 holder.bindView(model);
                 holder.setOnClickListener((view, position1) -> {
-                    final String categoryId = model.getItemTitle();
-                    Log.e("catid",categoryId);
-//                    Fragment fragment = new ItemListFragment();
-//                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                    fragmentTransaction.replace(R.id.fragment_placeholder, fragment, "tag")
-//                            .addToBackStack(null)
-//                            .commit();
-//                    viewModel.select(categoryId);
+                    final ItemModel item = model;
+
+                    viewModel.selectItem(item);
+                    Fragment fragment = new ItemListFragment();
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                    fragmentTransaction.replace(R.id.fragment_placeholder, fragment, "tag")
+                            .addToBackStack(null)
+                            .commit();
 //
                 });
 
@@ -163,14 +177,15 @@ public class ItemListFragment extends Fragment {
             public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
                 View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.fragment_item, parent, false);
+                        .inflate(R.layout.layout_fragment_item, parent, false);
 
-                return new ItemViewHolder(view);
+                return new ItemViewHolder(view,getContext());
             }
         };
 
-        recyclerView.setAdapter(adapter);
+
     }
+
 
 
     /**

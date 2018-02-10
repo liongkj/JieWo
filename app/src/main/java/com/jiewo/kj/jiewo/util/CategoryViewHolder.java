@@ -10,8 +10,8 @@ import com.jiewo.kj.jiewo.model.CategoryModel;
 
 public class CategoryViewHolder extends RecyclerView.ViewHolder {
 
-    TextView catTitle;
-    TextView catCount;
+    private TextView catTitle;
+    private TextView catCount;
     private CategoryViewHolder.ClickListener mClickListener;
 
     public CategoryViewHolder(View View) {

@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Logger;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.RentViewModel;
 import com.jiewo.kj.jiewo.model.ItemModel;
@@ -100,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements ItemListFragment.
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_placeholder);
         switch (item.getItemId()) {
             case android.R.id.home:
-//                NavUtils.navigateUpFromSameTask(this);
                 Log.e("fragment", currentFragment.toString());
                 if (!(currentFragment instanceof RentFragment))
                     onBackPressed();
@@ -163,26 +164,19 @@ public class MainActivity extends AppCompatActivity implements ItemListFragment.
                         return false;
                     }
                 })
-//                .withOnDrawerNavigationListener(new Drawer.OnDrawerNavigationListener() {
-//
-//                    @Override
-//
-//                    public boolean onNavigationClickListener(View clickedView) {
-//                        //this method is only called if the Arrow icon is shown. The hamburger is automatically managed by the MaterialDrawer
-//                        //if the back arrow is shown. close the activity
-////                        RentFragment.class.this.finish();
-//
-//                        result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
-//                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//                        HomeFragment HomeFragment = new HomeFragment();
-//                        getSupportFragmentManager()
-//                                .beginTransaction()
-//                                .replace(R.id.fragment_placeholder, HomeFragment)
-//                                .addToBackStack(null)
-//                                .commit();
-//                        return true;
-//                    }
-//                })
+                .withOnDrawerNavigationListener(new Drawer.OnDrawerNavigationListener() {
+
+                    @Override
+
+                    public boolean onNavigationClickListener(View clickedView) {
+                        //this method is only called if the Arrow icon is shown. The hamburger is automatically managed by the MaterialDrawer
+                        //if the back arrow is shown. close the activity
+//                        RentFragment.class.this.finish();
+
+                        getSupportFragmentManager().popBackStack();
+                        return true;
+                    }
+                })
                 .build();
     }
 

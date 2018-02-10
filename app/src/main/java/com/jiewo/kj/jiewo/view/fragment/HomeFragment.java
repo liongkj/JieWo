@@ -62,13 +62,10 @@ public class HomeFragment extends Fragment {
     private RecyclerView recyclerView;
     private FirebaseRecyclerAdapter<CategoryModel, CategoryViewHolder> adapter;
 
-
-
     private Handler mHandler = new Handler();
     ActionBarDrawerToggle mToggle = MainActivity.result.getActionBarDrawerToggle();
     FragmentHomeBinding binding;
     HomeViewModel viewModel;
-
 
     public HomeFragment() {
         // Required empty public constructor
@@ -84,7 +81,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
+        viewModel = ViewModelProviders.of(getActivity()).get(HomeViewModel.class);
     }
 
     @Override
@@ -95,8 +92,7 @@ public class HomeFragment extends Fragment {
         View view = binding.getRoot();
         recyclerView = binding.recyclerView;
 
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
 
         getActivity().setTitle("JieWo");
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -177,7 +173,6 @@ public class HomeFragment extends Fragment {
                         }
                         int count = items.size();
                         cm = new CategoryModel(id ,name, items, count);
-                        Log.e("list", items.toString());
                         return cm;
                     }
                 })
@@ -188,16 +183,16 @@ public class HomeFragment extends Fragment {
             protected void onBindViewHolder(CategoryViewHolder holder, int position, CategoryModel model) {
                 holder.bindView(model);
                 holder.setOnClickListener((view, position1) -> {
-                    final String item = model.getId();
-                    Log.e("cat",item);
+                    final CategoryModel cat = model;
+
+                    viewModel.selectCategory(cat);
                     Fragment fragment = new ItemListFragment();
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
                     fragmentTransaction.replace(R.id.fragment_placeholder, fragment, "tag")
                             .addToBackStack(null)
                             .commit();
-                    viewModel.select(item);
-
                 });
 
             }

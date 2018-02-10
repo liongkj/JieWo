@@ -16,11 +16,19 @@ public class CategoryModel {
     private List<String> items = new ArrayList<>();
     private int count;
 
+    public CategoryModel() {
+
+    }
+
     public CategoryModel(String id, String name, List<String> items, int count) {
         this.id = id;
         this.name = name;
         this.items = items;
         this.count = count;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {

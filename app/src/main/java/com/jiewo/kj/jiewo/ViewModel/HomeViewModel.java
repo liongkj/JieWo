@@ -27,15 +27,28 @@ import static com.jiewo.kj.jiewo.util.Constants.DATABASE_REF;
 public class HomeViewModel extends ViewModel {
 
     private final MutableLiveData<List<ItemModel>> itemList = new MutableLiveData();
-    String selectedCat;
+    private MutableLiveData<CategoryModel> selectedCat;
+    private MutableLiveData<ItemModel> selectedItem;
 
-
-    public void select(String categoryId) {
-        selectedCat = categoryId;
+    public HomeViewModel() {
+        this.selectedCat = new MutableLiveData<>();
+        this.selectedItem = new MutableLiveData<>();
     }
 
-    public String getCategoryId(){
+    public void selectCategory(CategoryModel categoryId) {
+        selectedCat.setValue(categoryId);
+    }
+
+    public MutableLiveData<CategoryModel> getCategoryId(){
         return selectedCat;
+    }
+
+    public MutableLiveData<ItemModel> getItemId() {
+        return selectedItem;
+    }
+
+    public void selectItem(ItemModel selectedItem) {
+        this.selectedItem.setValue(selectedItem);
     }
 
     public MutableLiveData<List<ItemModel>> getCategory() {
@@ -59,6 +72,7 @@ public class HomeViewModel extends ViewModel {
         });
         return itemList;
     }
+
 
 }
 

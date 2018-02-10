@@ -16,7 +16,8 @@ import java.util.Map;
  * Created by khaij on 10/12/2017.
  */
 @IgnoreExtraProperties
-public class ItemModel extends BaseObservable {
+public class ItemModel{
+    public String itemId;
     public String owner;
     public String itemTitle;
     public String itemDescription;
@@ -25,13 +26,23 @@ public class ItemModel extends BaseObservable {
     public GeoLocation location;
     public List<Uri> itemImages;
 
+
+
     public ItemModel() {
-        itemImages = new ArrayList<>();
+
 
     }
 
     public String getOwner() {
         return owner;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 
     public String getItemTitle() {
