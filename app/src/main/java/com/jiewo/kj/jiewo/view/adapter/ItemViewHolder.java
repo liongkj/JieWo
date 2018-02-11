@@ -1,4 +1,4 @@
-package com.jiewo.kj.jiewo.util;
+package com.jiewo.kj.jiewo.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,21 +8,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jiewo.kj.jiewo.R;
-import com.jiewo.kj.jiewo.model.CategoryModel;
 import com.jiewo.kj.jiewo.model.ItemModel;
 import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
-import java.util.Currency;
 import java.util.Locale;
 
 
 public class ItemViewHolder extends RecyclerView.ViewHolder {
 
-    private TextView itemTitle,itemDescription,itemCost;
-    private ImageView itemImage;
     Context mContext;
     ItemViewHolder.ClickListener mClickListener;
+    private TextView itemTitle, itemDescription, itemCost;
+    private ImageView itemImage;
 
     public ItemViewHolder(View View, Context context) {
 
@@ -41,21 +39,23 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
         itemTitle.setText(model.getItemTitle());
         itemDescription.setText(model.getItemDescription());
         itemCost.setText(format.format(model.getItemPrice()));
-        Picasso.with(mContext)
-                .load(model.getItemImages().get(0))
-                .centerCrop()
-                .resize(100,100)
-                .into(itemImage);
-
+        if (!model.getItemImages().isEmpty()) {
+            Picasso.with(mContext)
+                    .load(model.getItemImages().get(0))
+                    .centerCrop()
+                    .resize(100, 100)
+                    .into(itemImage);
+        }
 
         itemView.setOnClickListener(v -> mClickListener.onCategoryClick(v,getAdapterPosition()));
     }
 
-    public interface ClickListener {
-        public void onCategoryClick(View view, int position);
-    }
     public void setOnClickListener(ItemViewHolder.ClickListener clickListener){
         mClickListener = clickListener;
+    }
+
+    public interface ClickListener {
+        public void onCategoryClick(View view, int position);
     }
 }
 

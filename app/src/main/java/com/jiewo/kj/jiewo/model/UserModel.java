@@ -1,20 +1,12 @@
 package com.jiewo.kj.jiewo.model;
 
 import android.app.Application;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.ImageView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 
-import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * Created by khaij on 09/12/2017.
@@ -22,14 +14,16 @@ import java.util.Objects;
 
 public class UserModel extends Application implements Serializable {
 
+    static FirebaseUser firebaseUser;
+    private static UserModel User = null;
     private String id;
     private String name;
     private String email;
     private Uri photoURI;
     private String number;
-    static FirebaseUser firebaseUser;
-    private static UserModel User = null;
-    Bitmap profilePic = null;
+
+    public UserModel() {
+    }
 
     private UserModel(String id, String name, String email, Uri photoURI) {
         this.id = id;
@@ -56,77 +50,46 @@ public class UserModel extends Application implements Serializable {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getName() {
         if (name != null)
             return name;
-        else return "Null";
-    }
-
-    public String getNumber() {
-        if (number == null) return "null";
-        return number;
-    }
-
-    public void setNumber(String number) {
-        //firebaseUser.setNumber();
+        else return "null";
     }
 
     public void setName(String name) {
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName(name).build();
-        firebaseUser.updateProfile(profileUpdates);
+        this.name = name;
+    }
+
+    public String getNumber() {
+        if (number != null)
+            return number;
+        return "null";
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     public String getEmail() {
-        if (email != null)
-            return email;
-        else return "sample@mail.com";
+        return firebaseUser.getEmail();
     }
 
     public void setEmail(String email) {
-
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName(email).build();
-        firebaseUser.updateProfile(profileUpdates);
+        this.email = email;
     }
 
     public Uri getPhotoURI() {
-
-        return photoURI;
+        if (photoURI != null)
+            return photoURI;
+        return Uri.parse("https://firebasestorage.googleapis.com/v0/b/jiewo-a02c5.appspot.com/o/profile_image%2Fdefault.png?alt=media&token=0fa0a1ce-b3ac-47af-b3c3-5e0cc91b140f");
     }
 
-    public void setProfilePic(ImageView imageView) {
-        if (!Objects.equals(photoURI, null)) {
-            new DownloadImageTask(imageView).execute(photoURI.toString());
-        }
-    }
-
-    public static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-        Bitmap mIcon11 = null;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-
-        }
+    public void setPhotoURI(Uri photoURI) {
+        this.photoURI = photoURI;
     }
 }
 

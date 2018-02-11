@@ -8,13 +8,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,7 +22,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.jiewo.kj.jiewo.model.CategoryModel;
 import com.jiewo.kj.jiewo.model.ItemModel;
 import com.jiewo.kj.jiewo.model.UserModel;
 import com.jiewo.kj.jiewo.util.Constants;
@@ -50,15 +48,6 @@ public class RentViewModel extends ViewModel {
 
     private static final DatabaseReference CATEGORY = FirebaseDatabase.getInstance().getReference(Constants.CATEGORY);
     private static final DatabaseReference GEOFIRE = FirebaseDatabase.getInstance().getReference(Constants.GEOLOCATION);
-
-    private final FirebaseQueryLiveData liveData = new FirebaseQueryLiveData(CATEGORY);
-    private List<String> categoryList;
-    GeoFire mGeoFire = new GeoFire(GEOFIRE);
-    private ItemModel itemModel;
-    private Place selectedPlace;
-    private StorageReference mStorage;
-
-
     public final ObservableInt imageNo = new ObservableInt();
     public final ValiFieldText itemTitle = new ValiFieldText();
     public final ValiFieldText itemDescription = new ValiFieldText();
@@ -66,6 +55,12 @@ public class RentViewModel extends ViewModel {
     public final ValiFieldDouble itemCost = new ValiFieldDouble();
     public final ValiFieldText itemLocation = new ValiFieldText();
     public final ValiFiForm form = new ValiFiForm(itemTitle, itemDescription, itemCategory, itemCost, itemLocation);
+    private final FirebaseQueryLiveData liveData = new FirebaseQueryLiveData(CATEGORY);
+    GeoFire mGeoFire = new GeoFire(GEOFIRE);
+    private List<String> categoryList;
+    private ItemModel itemModel;
+    private Place selectedPlace;
+    private StorageReference mStorage;
 
     public RentViewModel() {
         loadCategory();
@@ -147,7 +142,7 @@ public class RentViewModel extends ViewModel {
         return images;
     }
 
-    void updateCategory(String itemId) {
+    private void updateCategory(String itemId) {
         DatabaseReference catItem = DATABASE_REF.child(Constants.CATEGORY);
 
         catItem.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -157,10 +152,8 @@ public class RentViewModel extends ViewModel {
                 boolean exist = false;
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     if (ds.child("name").exists()) {
-
-                        if (ds.child("name").getValue().equals(itemCategory.getValue())) {
+                        if ((ds.child("name").getValue().toString()).equals(itemCategory.getValue())) {
                             catId = ds.getKey();
-
                             exist = true;
                         }
                     }
@@ -180,13 +173,19 @@ public class RentViewModel extends ViewModel {
         });
     }
 
+    private void updateUser(String itemId) {
+        DatabaseReference userItem = DATABASE_REF.child(Constants.USER);
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        userItem.child(uid).child("items/" + itemId).setValue(true);
+    }
+
     public Boolean submit(List<Uri> imageList) {
         form.refreshError();
         if (form.isValid()) {
 
 
             itemModel = new ItemModel();
-            itemModel.setOwner(UserModel.getUser().getId());
+            itemModel.setOwner(UserModel.getUser());
             itemModel.setItemTitle(itemTitle.getValue());
             itemModel.setItemCategory(itemCategory.getValue());
             itemModel.setItemDescription(itemDescription.getValue());
@@ -204,14 +203,14 @@ public class RentViewModel extends ViewModel {
             update.put(ITEM + "/" + itemId, newItem);
             DATABASE_REF.updateChildren(update);
             //DATABASE_REF.updateChildren(update);
-            uploadImage(imageList, itemRef);
             //save into Category
             updateCategory(itemId);
             //save into item-location key
             mGeoFire.setLocation(itemId, getGeolcation());
             //upload image & save image url
-
-
+            uploadImage(imageList, itemRef);
+            //save into user
+            updateUser(itemId);
             form.destroy();
 
         } else {

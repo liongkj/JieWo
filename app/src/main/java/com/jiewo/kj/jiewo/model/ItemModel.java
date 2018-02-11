@@ -1,13 +1,11 @@
 package com.jiewo.kj.jiewo.model;
 
-import android.databinding.BaseObservable;
 import android.net.Uri;
 
 import com.firebase.geofire.GeoLocation;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +16,7 @@ import java.util.Map;
 @IgnoreExtraProperties
 public class ItemModel{
     public String itemId;
-    public String owner;
+    public UserModel owner;
     public String itemTitle;
     public String itemDescription;
     public String itemCategory;
@@ -26,15 +24,15 @@ public class ItemModel{
     public GeoLocation location;
     public List<Uri> itemImages;
 
-
-
     public ItemModel() {
-
-
     }
 
-    public String getOwner() {
+    public UserModel getOwner() {
         return owner;
+    }
+
+    public void setOwner(UserModel owner) {
+        this.owner = owner;
     }
 
     public String getItemId() {
@@ -49,48 +47,44 @@ public class ItemModel{
         return itemTitle;
     }
 
-    public String getItemDescription() {
-        return itemDescription;
-    }
-
-    public String getItemCategory() {
-        return itemCategory;
-    }
-
-    public double getItemPrice() {
-        return itemPrice;
-    }
-
-    public GeoLocation getLocation() {
-        return location;
-    }
-
-    public List<Uri> getItemImages() {
-        return itemImages;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
     public void setItemTitle(String itemTitle) {
         this.itemTitle = itemTitle;
+    }
+
+    public String getItemDescription() {
+        return itemDescription;
     }
 
     public void setItemDescription(String itemDescription) {
         this.itemDescription = itemDescription;
     }
 
+    public String getItemCategory() {
+        return itemCategory;
+    }
+
     public void setItemCategory(String itemCategory) {
         this.itemCategory = itemCategory;
+    }
+
+    public double getItemPrice() {
+        return itemPrice;
     }
 
     public void setItemPrice(double itemPrice) {
         this.itemPrice = itemPrice;
     }
 
+    public GeoLocation getLocation() {
+        return location;
+    }
+
     public void setLocation(GeoLocation location) {
         this.location = location;
+    }
+
+    public List<Uri> getItemImages() {
+        return itemImages;
     }
 
     public void setImages(List<Uri> images) {
@@ -100,7 +94,7 @@ public class ItemModel{
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("owner", owner);
+        result.put("owner", owner.getId());
         result.put("title", itemTitle);
         result.put("description", itemDescription);
         result.put("category", itemCategory);

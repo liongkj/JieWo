@@ -18,19 +18,15 @@ import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Logger;
 import com.google.firebase.database.Query;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.HomeViewModel;
 import com.jiewo.kj.jiewo.databinding.FragmentItemListBinding;
-import com.jiewo.kj.jiewo.model.CategoryModel;
 import com.jiewo.kj.jiewo.model.ItemModel;
-import com.jiewo.kj.jiewo.util.ItemViewHolder;
+import com.jiewo.kj.jiewo.model.UserModel;
 import com.jiewo.kj.jiewo.view.activity.MainActivity;
+import com.jiewo.kj.jiewo.view.adapter.ItemViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,15 +43,15 @@ public class ItemListFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 2;
     FragmentItemListBinding binding;
-    private OnListFragmentInteractionListener mListener;
     HomeViewModel viewModel;
     FirebaseRecyclerAdapter adapter;
     RecyclerView recyclerView;
     Query keyQuery;
     List<String> data =new ArrayList<>();
+    // TODO: Customize parameters
+    private int mColumnCount = 2;
+    private OnListFragmentInteractionListener mListener;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -98,6 +94,7 @@ public class ItemListFragment extends Fragment {
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setNestedScrollingEnabled(false);
 //        recyclerView.setHasFixedSize(true);
 
         viewModel.getCategoryId().observe(this, s -> {
@@ -137,18 +134,24 @@ public class ItemListFragment extends Fragment {
                 .setLifecycleOwner(this)
                 .setIndexedQuery(keyQuery.getRef(), dataRef.getRef(), snapshot -> {
                     ItemModel im = new ItemModel();
+                    UserModel um = new UserModel();
+                    List<Uri> images = new ArrayList<>();
                     String id = snapshot.getKey();
                     String title = snapshot.child("title").getValue().toString();
                     String description = snapshot.child("description").getValue().toString();
                     Double cost = Double.valueOf(snapshot.child("price").getValue().toString());
-                    List<Uri> images =new ArrayList<>();
-                    images.add(Uri.parse(snapshot.child("picture/pic1").getValue().toString()));
-
+                    um.setId(snapshot.child("owner").getValue().toString());
+                    String category = snapshot.child("category").getValue().toString();
+                    for (DataSnapshot ds : snapshot.child("picture").getChildren()) {
+                        images.add(Uri.parse(ds.getValue().toString()));
+                    }
                     im.setItemId(id);
                     im.setItemTitle(title);
                     im.setItemDescription(description);
                     im.setItemPrice(cost);
                     im.setImages(images);
+                    im.setOwner(um);
+                    im.setItemCategory(category);
                     return im;
                 })
                 .build();
@@ -161,7 +164,7 @@ public class ItemListFragment extends Fragment {
                     final ItemModel item = model;
 
                     viewModel.selectItem(item);
-                    Fragment fragment = new ItemListFragment();
+                    Fragment fragment = new ItemDetailFragment();
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 

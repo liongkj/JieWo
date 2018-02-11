@@ -1,6 +1,7 @@
 package com.jiewo.kj.jiewo.view.fragment;
 
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,8 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.ConnectionResult;
@@ -29,9 +30,11 @@ import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.jiewo.kj.jiewo.R;
+import com.jiewo.kj.jiewo.ViewModel.UserViewModel;
 import com.jiewo.kj.jiewo.model.UserModel;
 import com.jiewo.kj.jiewo.view.activity.LoginActivity;
 import com.jiewo.kj.jiewo.view.activity.MainActivity;
+import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,6 +46,7 @@ public class SettingFragment extends Fragment
         implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
 
+    private static final int RESULT_CANCEL = 0;
     @BindView(R.id.txtUsername)
     TextView txtUsername;
     @BindView(R.id.txtEmail)
@@ -50,7 +54,7 @@ public class SettingFragment extends Fragment
     @BindView(R.id.txtNumber)
     TextView txtNumber;
     @BindView(R.id.img_profile)
-    ImageView imageView;
+    ImageView profileImg;
     @BindView(R.id.btn_signout)
     AppCompatButton btnsignOut;
     @BindView(R.id.btn_acc_delete)
@@ -60,7 +64,7 @@ public class SettingFragment extends Fragment
     @BindView(R.id.txtSavedLocation)
     TextView txtAddress;
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
-    private static final int RESULT_CANCEL = 0;
+    UserViewModel viewModel;
     String username, email, number;
     UserModel user = UserModel.getUser();
 
@@ -82,16 +86,29 @@ public class SettingFragment extends Fragment
         // Inflate the layout for this fragment
         getActivity().setTitle("Settings");
         ((MainActivity) getActivity()).hideFab();
-        btnAddress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                findPlace(v);
-            }
-        });
+
+        viewModel = ViewModelProviders.of((MainActivity) getActivity()).get(UserViewModel.class);
+
+        btnAddress.setOnClickListener(v -> findPlace(v));
+
+        viewModel.getLocation(user, getContext())
+                .observe(getActivity(), s -> {
+                    txtAddress.setText(s);
+                });
+
+        viewModel.getUser(user)
+                .observe(getActivity(), i -> {
+                            txtEmail.setText(i.getEmail());
+                            txtNumber.setText(i.getNumber());
+                            txtUsername.setText(i.getName());
+                            Picasso.with(getContext()).load(i.getPhotoURI()).into(profileImg);
+                        }
+                );
 
         return view;
 
     }
+
 
     public void findPlace(View view) {
         try {
@@ -117,6 +134,9 @@ public class SettingFragment extends Fragment
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(getContext(), data);
                 txtAddress.setText(place.getAddress().toString());
+                viewModel.updateFavoritePlace(user, place);
+                Toast.makeText(getContext(), "Location Updated", Toast.LENGTH_SHORT).show();
+
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getContext(), data);
                 Snackbar snackbar = Snackbar
@@ -135,10 +155,6 @@ public class SettingFragment extends Fragment
         super.onActivityCreated(savedInstanceState);
         btnsignOut.setOnClickListener(this);
         btndelAccount.setOnClickListener(this);
-        txtUsername.setText(user.getName());
-        txtEmail.setText(user.getEmail());
-        txtNumber.setText(user.getNumber());
-        user.setProfilePic(imageView);
     }
 
 
@@ -168,18 +184,10 @@ public class SettingFragment extends Fragment
                 .show();
 
         new MaterialDialog.Builder(getContext())
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        dialog.dismiss();
-                    }
-                })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        Log.i("del123", "delete prompt");
+                .onPositive((dialog, which) -> dialog.dismiss())
+                .onNegative((dialog, which) -> {
+                    Log.i("del123", "delete prompt");
 //                        confirmDelete(view);
-                    }
                 })
         ;
     }

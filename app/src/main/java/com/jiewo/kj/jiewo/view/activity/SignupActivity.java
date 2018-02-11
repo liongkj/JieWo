@@ -99,7 +99,9 @@ public class SignupActivity extends AppCompatActivity {
                                     String userId = auth.getCurrentUser().getUid();
                                     DatabaseReference currentUser = mDatabase.child(userId);
                                     currentUser.child("Name").setValue(name);
-                                    currentUser.child("Profile").setValue("default");
+                                    currentUser.child("Profile").setValue(Constants.DEFAULTPIC);
+                                    currentUser.child("Number").setValue("null");
+
                                 }
 
                                 progressBar.setVisibility(View.GONE);

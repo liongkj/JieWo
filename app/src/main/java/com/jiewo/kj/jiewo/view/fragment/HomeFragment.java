@@ -1,25 +1,18 @@
 package com.jiewo.kj.jiewo.view.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
-import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,21 +25,16 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.HomeViewModel;
 import com.jiewo.kj.jiewo.databinding.FragmentHomeBinding;
 import com.jiewo.kj.jiewo.model.CategoryModel;
-import com.jiewo.kj.jiewo.model.ItemModel;
-import com.jiewo.kj.jiewo.util.CategoryViewHolder;
 import com.jiewo.kj.jiewo.view.activity.MainActivity;
+import com.jiewo.kj.jiewo.view.adapter.CategoryViewHolder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import ss.com.bannerslider.banners.Banner;
 import ss.com.bannerslider.banners.DrawableBanner;
@@ -58,25 +46,23 @@ import static com.jiewo.kj.jiewo.util.Constants.DATABASE_REF;
 
 public class HomeFragment extends Fragment {
 
-    private boolean doubleBackToExitPressedOnce;
-    private RecyclerView recyclerView;
-    private FirebaseRecyclerAdapter<CategoryModel, CategoryViewHolder> adapter;
-
-    private Handler mHandler = new Handler();
-    ActionBarDrawerToggle mToggle = MainActivity.result.getActionBarDrawerToggle();
     FragmentHomeBinding binding;
     HomeViewModel viewModel;
-
-    public HomeFragment() {
-        // Required empty public constructor
-    }
-
+    ActionBarDrawerToggle mToggle = MainActivity.result.getActionBarDrawerToggle();
+    private boolean doubleBackToExitPressedOnce;
     private final Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
             doubleBackToExitPressedOnce = false;
         }
     };
+    private RecyclerView recyclerView;
+    private FirebaseRecyclerAdapter<CategoryModel, CategoryViewHolder> adapter;
+    private Handler mHandler = new Handler();
+
+    public HomeFragment() {
+        // Required empty public constructor
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -102,27 +88,24 @@ public class HomeFragment extends Fragment {
 
         view.setFocusableInTouchMode(true);
         view.requestFocus();
-        view.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_UP
-                        && keyCode == KeyEvent.KEYCODE_BACK) {
-                    if (doubleBackToExitPressedOnce) {
-                        // super.onBackPressed();
-                        if (mHandler != null) {
-                            mHandler.removeCallbacks(mRunnable);
-                        }
-                        getActivity().finish();
-                        return true;
+        view.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_UP
+                    && keyCode == KeyEvent.KEYCODE_BACK) {
+                if (doubleBackToExitPressedOnce) {
+                    // super.onBackPressed();
+                    if (mHandler != null) {
+                        mHandler.removeCallbacks(mRunnable);
                     }
-                    doubleBackToExitPressedOnce = true;
-                    Toast.makeText(getActivity(),
-                            "Please click BACK again to exit",
-                            Toast.LENGTH_SHORT).show();
-                    mHandler.postDelayed(mRunnable, 2000);
+                    getActivity().finish();
+                    return true;
                 }
-                return true;
+                doubleBackToExitPressedOnce = true;
+                Toast.makeText(getActivity(),
+                        "Please click BACK again to exit",
+                        Toast.LENGTH_SHORT).show();
+                mHandler.postDelayed(mRunnable, 2000);
             }
+            return true;
         });
 
         setHasOptionsMenu(true);

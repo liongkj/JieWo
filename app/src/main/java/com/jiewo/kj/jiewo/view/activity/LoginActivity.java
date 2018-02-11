@@ -17,7 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.jiewo.kj.jiewo.R;
-
+import com.jiewo.kj.jiewo.model.UserModel;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -105,6 +105,7 @@ public class LoginActivity extends AppCompatActivity {
                                         Toast.makeText(LoginActivity.this, "Authentication failed, check your email and password", Toast.LENGTH_LONG).show();
                                     }
                                 } else {
+                                    UserModel.getUser();
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(intent);
                                     finish();

@@ -91,6 +91,8 @@ dependencies {
     //image
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.ss.bannerslider:bannerslider:1.8.0'
+    //fab into toolbar
+    implementation 'com.github.fafaldo:fab-toolbar:1.2.0'
 
 
 }

@@ -1,7 +1,12 @@
 package com.jiewo.kj.jiewo.view.activity;
 
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,11 +17,12 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Logger;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
+import com.google.firebase.auth.FirebaseUser;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.RentViewModel;
+import com.jiewo.kj.jiewo.ViewModel.UserViewModel;
 import com.jiewo.kj.jiewo.model.ItemModel;
 import com.jiewo.kj.jiewo.model.UserModel;
 import com.jiewo.kj.jiewo.view.fragment.HomeFragment;
@@ -38,17 +44,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity implements ItemListFragment.OnListFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity implements
+        ItemListFragment.OnListFragmentInteractionListener,
+        AuthStateListener {
 
+    static public Drawer result = null;
     UserModel user = UserModel.getUser();
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.fabAdd)
     FloatingActionButton fab;
-
-    static public Drawer result = null;
+    UserViewModel viewModel;
     private AccountHeader headerResult = null;
-    private GoogleApiClient mGoogleApiClient;
+    private FirebaseAuth.AuthStateListener authListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +67,24 @@ public class MainActivity extends AppCompatActivity implements ItemListFragment.
         setSupportActionBar(toolbar);
         toolbar.setTitle("Main");
 
+        authListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user == null) {
+                // user auth state is changed - user is null
+                // launch login activity
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                finish();
+            }
+        };
+
+        viewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+
+        viewModel.getUser(user).observe(this, new Observer<UserModel>() {
+            @Override
+            public void onChanged(@Nullable UserModel userModel) {
+                user = userModel;
+            }
+        });
         //drawer header
         buildHeader(false, savedInstanceState);
 
@@ -67,19 +93,13 @@ public class MainActivity extends AppCompatActivity implements ItemListFragment.
         HomeFragment HomeFragment = new HomeFragment();
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.fragment_placeholder, HomeFragment)
+                .replace(R.id.fragment_placeholder, HomeFragment)
+                .addToBackStack(null)
                 .commit();
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
-//                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//                getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.fragment_placeholder, rentFragment)
-//                        .addToBackStack(null)
-//                        .commit();
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 RentFragment rentFragment = new RentFragment();
 
@@ -239,7 +259,6 @@ public class MainActivity extends AppCompatActivity implements ItemListFragment.
                 .addProfiles(
                         profile
                         //don't ask but google uses 14dp for the add account icon in gmail but 20dp for the normal icons (like manage account)
-
                 )
 
                 .withSavedInstance(savedInstanceState)
@@ -248,6 +267,11 @@ public class MainActivity extends AppCompatActivity implements ItemListFragment.
 
     @Override
     public void onListFragmentInteraction(ItemModel item) {
+
+    }
+
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
     }
 }
