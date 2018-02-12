@@ -21,7 +21,7 @@ import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.Query;
 import com.jiewo.kj.jiewo.R;
-import com.jiewo.kj.jiewo.ViewModel.HomeViewModel;
+import com.jiewo.kj.jiewo.ViewModel.CategoryViewModel;
 import com.jiewo.kj.jiewo.databinding.FragmentItemListBinding;
 import com.jiewo.kj.jiewo.model.ItemModel;
 import com.jiewo.kj.jiewo.model.UserModel;
@@ -44,7 +44,7 @@ public class ItemListFragment extends Fragment {
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     FragmentItemListBinding binding;
-    HomeViewModel viewModel;
+    CategoryViewModel viewModel;
     FirebaseRecyclerAdapter adapter;
     RecyclerView recyclerView;
     Query keyQuery;
@@ -73,7 +73,7 @@ public class ItemListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = ViewModelProviders.of(getActivity()).get(HomeViewModel.class);
+        viewModel = ViewModelProviders.of(getActivity()).get(CategoryViewModel.class);
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);

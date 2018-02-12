@@ -16,7 +16,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.jiewo.kj.jiewo.R;
-import com.jiewo.kj.jiewo.ViewModel.HomeViewModel;
+import com.jiewo.kj.jiewo.ViewModel.CategoryViewModel;
+import com.jiewo.kj.jiewo.ViewModel.UserViewModel;
 import com.jiewo.kj.jiewo.databinding.FragmentItemDetailBinding;
 import com.jiewo.kj.jiewo.view.activity.MainActivity;
 
@@ -40,10 +41,11 @@ public class ItemDetailFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     FragmentItemDetailBinding binding;
-    HomeViewModel viewModel;
+    CategoryViewModel viewModel;
+    UserViewModel viewModelUser;
     ActionBarDrawerToggle mToggle = MainActivity.result.getActionBarDrawerToggle();
     FloatingActionButton fab;
-    String contactNumber;
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -71,7 +73,8 @@ public class ItemDetailFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        viewModel = ViewModelProviders.of(getActivity()).get(HomeViewModel.class);
+        viewModel = ViewModelProviders.of(getActivity()).get(CategoryViewModel.class);
+        viewModelUser = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
 
     }
 
@@ -82,6 +85,7 @@ public class ItemDetailFragment extends Fragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_item_detail, container, false);
         fab = binding.fabContact;
         View view = binding.getRoot();
+        binding.setView(this);
 
 
         ((MainActivity) getActivity()).hideFab();
@@ -95,22 +99,42 @@ public class ItemDetailFragment extends Fragment {
             binding.setItem(i);
             getActivity().setTitle(i.getItemTitle());
             buildSlider(i.getItemImages());
-            contactNumber = i.getOwner().getId();
+
+
+            viewModelUser.getUser(i.getOwner()).observe(this, u -> {
+                binding.setSeller(u);
+            });
         });
+
 
         return view;
     }
 
 
-    public void onClickFab() {
-        String uri = "https://api.whatsapp.com/send?phone=" + contactNumber;
-        try {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-            startActivity(browserIntent);
-        } catch (Exception e) {
-            Toast.makeText(getContext(), "Error/n" + e.toString(), Toast.LENGTH_SHORT).show();
-        }
+    public void onClickCall(View v, String number) {
+        switch (v.getId()) {
+            case R.id.phonecall:
+            case R.id.phonecall1:
+                //phonecall
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", number, null));
+                startActivity(intent);
+                break;
+            case R.id.whatsappmsg:
+                String uri = "https://api.whatsapp.com/send?phone=" + number;
+                try {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                    startActivity(browserIntent);
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "Error/n" + e.toString(), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.phonemsg:
+                //phone msg
+                Intent intentsms = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null));
+                intentsms.putExtra("sms_body", "I am interested in your item.");
+                startActivity(intentsms);
 
+        }
     }
 
 

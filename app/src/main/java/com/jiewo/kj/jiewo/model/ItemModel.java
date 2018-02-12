@@ -5,6 +5,7 @@ import android.net.Uri;
 import com.firebase.geofire.GeoLocation;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.database.ServerValue;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,8 +24,14 @@ public class ItemModel{
     public double itemPrice;
     public GeoLocation location;
     public List<Uri> itemImages;
+    private HashMap<String, Object> timestampCreated;
+
 
     public ItemModel() {
+        HashMap<String, Object> timestampNow = new HashMap<>();
+        timestampNow.put("timestamp", ServerValue.TIMESTAMP);
+        this.timestampCreated = timestampNow;
+
     }
 
     public UserModel getOwner() {
@@ -57,6 +64,10 @@ public class ItemModel{
 
     public void setItemDescription(String itemDescription) {
         this.itemDescription = itemDescription;
+    }
+
+    public HashMap<String, Object> getTimestampCreated() {
+        return timestampCreated;
     }
 
     public String getItemCategory() {
@@ -101,6 +112,8 @@ public class ItemModel{
         result.put("price", itemPrice);
         result.put("location", location);
         result.put("images", itemImages);
+        result.put("timestamp", timestampCreated);
+
         return result;
     }
 

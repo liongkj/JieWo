@@ -3,6 +3,16 @@
 
     <data>
 
+        <import type="android.view.View" />
+
+        <variable
+            name="view"
+            type="com.jiewo.kj.jiewo.view.fragment.ItemDetailFragment" />
+
+        <variable
+            name="seller"
+            type="com.jiewo.kj.jiewo.model.UserModel" />
+
         <variable
             name="item"
             type="com.jiewo.kj.jiewo.model.ItemModel" />
@@ -37,12 +47,18 @@
                     android:text="@{item.itemTitle}"
                     android:textAppearance="@android:style/TextAppearance.Material.Large" />
 
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_menu_nearby" />
+
                 <TextView
+                    android:padding="1dp"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_weight="1"
-                    android:text="@{item.itemCategory}" />
+                    android:text="100m" />
 
             </LinearLayout>
 
@@ -64,22 +80,103 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="4dp"
+                android:text="Description"
+                android:textAppearance="@android:style/TextAppearance.Material.Subhead" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="4dp"
                 android:text="@{item.itemDescription}"
                 android:textAppearance="@android:style/TextAppearance.Material.Body2" />
-
+            <!--description end-->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginBottom="@dimen/fab_margin"
                 android:layout_marginTop="@dimen/fab_margin"
                 android:background="@android:color/darker_gray" />
-
+            <!--constact method-->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="4dp"
-                android:text="Contact Method"
-                android:textAppearance="@android:style/TextAppearance.Material.Body2" />
+                android:text="Contact me"
+                android:textAppearance="@android:style/TextAppearance.Material.Subhead" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="center|start"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp"
+                    android:text="@{seller.name}"
+                    android:textAppearance="@android:style/TextAppearance.Material.Small" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@{String.valueOf(seller.rating)}" />
+
+                <ImageView
+                    android:padding="2dp"
+                    android:layout_width="14dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_star_rate" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/phonecall"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="@{(theView) -> view.onClickCall(theView,seller.number)}"
+                    android:paddingBottom="15dp"
+                    android:paddingTop="15dp"
+                    android:src="@drawable/ic_phone" />
+
+                <TextView
+                    android:id="@+id/phonecall1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:onClick="@{(theView) -> view.onClickCall(theView,seller.number)}"
+                    android:paddingBottom="15dp"
+                    android:paddingTop="15dp"
+                    android:text="@{String.valueOf(seller.number)}" />
+
+                <ImageView
+                    android:id="@+id/whatsappmsg"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="@{(theView) -> view.onClickCall(theView,seller.number)}"
+                    android:paddingBottom="15dp"
+                    android:paddingTop="15dp"
+                    android:src="@drawable/ic_whatsapp" />
+
+                <ImageView
+                    android:id="@+id/phonemsg"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="@{(theView) -> view.onClickCall(theView,seller.number)}"
+                    android:paddingBottom="15dp"
+                    android:paddingTop="15dp"
+                    android:src="@drawable/message_text_outline" />
+            </LinearLayout>
 
 
         </LinearLayout>

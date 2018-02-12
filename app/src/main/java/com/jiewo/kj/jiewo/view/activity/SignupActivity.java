@@ -101,7 +101,8 @@ public class SignupActivity extends AppCompatActivity {
                                     currentUser.child("Name").setValue(name);
                                     currentUser.child("Profile").setValue(Constants.DEFAULTPIC);
                                     currentUser.child("Number").setValue("null");
-
+                                    currentUser.child("Rating").setValue(5);
+                                    currentUser.child("Wishlist").setValue(true);
                                 }
 
                                 progressBar.setVisibility(View.GONE);

@@ -21,6 +21,7 @@ public class UserModel extends Application implements Serializable {
     private String email;
     private Uri photoURI;
     private String number;
+    private double rating;
 
     public UserModel() {
     }
@@ -62,6 +63,14 @@ public class UserModel extends Application implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 
     public String getNumber() {

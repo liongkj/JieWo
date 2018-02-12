@@ -25,6 +25,7 @@ import com.jiewo.kj.jiewo.ViewModel.RentViewModel;
 import com.jiewo.kj.jiewo.ViewModel.UserViewModel;
 import com.jiewo.kj.jiewo.model.ItemModel;
 import com.jiewo.kj.jiewo.model.UserModel;
+import com.jiewo.kj.jiewo.view.fragment.CategoryFragment;
 import com.jiewo.kj.jiewo.view.fragment.HomeFragment;
 import com.jiewo.kj.jiewo.view.fragment.ItemListFragment;
 import com.jiewo.kj.jiewo.view.fragment.RentFragment;
@@ -154,8 +155,8 @@ public class MainActivity extends AppCompatActivity implements
     private void buildDrawer() {
         PrimaryDrawerItem home = new PrimaryDrawerItem().withIdentifier(1).withName("Home").withIcon(GoogleMaterial.Icon.gmd_home);
         //PrimaryDrawerItem rentItem = new PrimaryDrawerItem().withIdentifier(2).withName("Rent My Item").withIcon(GoogleMaterial.Icon.gmd_add);
-        PrimaryDrawerItem search = new PrimaryDrawerItem().withIdentifier(3).withName("Find Items").withIcon(GoogleMaterial.Icon.gmd_search);
-        PrimaryDrawerItem nearby = new PrimaryDrawerItem().withIdentifier(4).withName("What's Nearby").withIcon(GoogleMaterial.Icon.gmd_location_city);
+        PrimaryDrawerItem search = new PrimaryDrawerItem().withIdentifier(3).withName("Category").withIcon(GoogleMaterial.Icon.gmd_dashboard);
+        PrimaryDrawerItem nearby = new PrimaryDrawerItem().withIdentifier(4).withName("What's Nearby").withIcon(GoogleMaterial.Icon.gmd_location_on);
         SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName("Settings").withIcon(GoogleMaterial.Icon.gmd_settings);
         SecondaryDrawerItem items = new SecondaryDrawerItem().withIdentifier(6).withName("My Items").withIcon(GoogleMaterial.Icon.gmd_check_box);
 
@@ -215,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements
                 fragmentClass = RentFragment.class;
                 break;
             case 3:
-                fragmentClass = HomeFragment.class;
+                fragmentClass = CategoryFragment.class;
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
                 break;
@@ -225,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements
                 fragmentClass = SettingFragment.class;
                 break;
             default:
-                fragmentClass = HomeFragment.class;
+                fragmentClass = CategoryFragment.class;
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
 

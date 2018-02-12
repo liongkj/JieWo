@@ -56,6 +56,7 @@ public class UserViewModel extends ViewModel {
         return locationData;
     }
 
+
     private void loadUser(UserModel user) {
         DATABASE_REF.child("User/" + user.getId()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -65,9 +66,11 @@ public class UserViewModel extends ViewModel {
                 String name = dataSnapshot.child("Name").getValue().toString();
                 String number = dataSnapshot.child("Number").getValue().toString();
                 Uri uri = Uri.parse(dataSnapshot.child("Profile").getValue().toString());
+                double rating = Double.valueOf(dataSnapshot.child("Rating").getValue().toString());
                 user.setName(name);
                 user.setNumber(number);
                 user.setPhotoURI(uri);
+                user.setRating(rating);
 
                 userData.setValue(user);
             }
@@ -78,7 +81,6 @@ public class UserViewModel extends ViewModel {
             }
         });
     }
-
 
     public void updateFavoritePlace(UserModel user, Place place) {
         GeoLocation geoLocation = new GeoLocation(place.getLatLng().latitude, place.getLatLng().longitude);

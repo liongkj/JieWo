@@ -12,13 +12,13 @@ import java.util.List;
  * Created by kj on 07/02/2018.
  */
 
-public class HomeViewModel extends ViewModel {
+public class CategoryViewModel extends ViewModel {
 
     private final MutableLiveData<List<ItemModel>> itemList = new MutableLiveData();
     private MutableLiveData<CategoryModel> selectedCat;
     private MutableLiveData<ItemModel> selectedItem;
 
-    public HomeViewModel() {
+    public CategoryViewModel() {
         this.selectedCat = new MutableLiveData<>();
         this.selectedItem = new MutableLiveData<>();
     }
