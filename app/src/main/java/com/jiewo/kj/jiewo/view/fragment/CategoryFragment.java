@@ -3,7 +3,7 @@ package com.jiewo.kj.jiewo.view.fragment;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,20 +11,18 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.CategoryViewModel;
@@ -49,16 +47,9 @@ public class CategoryFragment extends Fragment {
     FragmentCategoryBinding binding;
     CategoryViewModel viewModel;
     ActionBarDrawerToggle mToggle = MainActivity.result.getActionBarDrawerToggle();
-    private boolean doubleBackToExitPressedOnce;
-    private final Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            doubleBackToExitPressedOnce = false;
-        }
-    };
     private RecyclerView recyclerView;
     private FirebaseRecyclerAdapter<CategoryModel, CategoryViewHolder> adapter;
-    private Handler mHandler = new Handler();
+
 
     public CategoryFragment() {
         // Required empty public constructor
@@ -76,45 +67,34 @@ public class CategoryFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_category, container, false);
         View view = binding.getRoot();
-        recyclerView = binding.recyclerView;
 
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
-        getActivity().setTitle("JieWo");
+//        recyclerView.setItemAnimator(new DefaultItemAnimator());
+//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL);
+//        recyclerView.addItemDecoration(dividerItemDecoration);
+
+        getActivity().setTitle("Category".toUpperCase());
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         mToggle.setDrawerIndicatorEnabled(true);
-
         ((MainActivity) getActivity()).showFab();
-
-        view.setFocusableInTouchMode(true);
-        view.requestFocus();
-        view.setOnKeyListener((v, keyCode, event) -> {
-            if (event.getAction() == KeyEvent.ACTION_UP
-                    && keyCode == KeyEvent.KEYCODE_BACK) {
-                if (doubleBackToExitPressedOnce) {
-                    // super.onBackPressed();
-                    if (mHandler != null) {
-                        mHandler.removeCallbacks(mRunnable);
-                    }
-                    getActivity().finish();
-                    return true;
-                }
-                doubleBackToExitPressedOnce = true;
-                Toast.makeText(getActivity(),
-                        "Please click BACK again to exit",
-                        Toast.LENGTH_SHORT).show();
-                mHandler.postDelayed(mRunnable, 2000);
-            }
-            return true;
-        });
 
         setHasOptionsMenu(true);
 
         buildSlider();
+
+        recyclerView = view.findViewById(R.id.recycler_view);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+        recyclerView.setLayoutManager(layoutManager);
+
         buildCategory();
-
-
+        recyclerView.setAdapter(adapter);
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
     }
 
     @Override
@@ -139,7 +119,6 @@ public class CategoryFragment extends Fragment {
     void buildCategory() {
         Query query = DATABASE_REF.child(CATEGORY).orderByChild("name");
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         FirebaseRecyclerOptions options = new FirebaseRecyclerOptions
                 .Builder<CategoryModel>()
@@ -163,6 +142,22 @@ public class CategoryFragment extends Fragment {
                 .build();
 
         adapter = new FirebaseRecyclerAdapter<CategoryModel, CategoryViewHolder>(options) {
+
+            @Override
+            public void onDataChanged() {
+                // Called each time there is a new data snapshot. You may want to use this method
+                // to hide a loading spinner or check for the "no documents" state and update your UI.
+                // ...
+
+            }
+
+            @Override
+            public void onError(DatabaseError e) {
+                // Called when there is an error getting data. You may want to update
+                // your UI to display an error message to the user.
+                // ...
+            }//TODO
+
             @Override
             protected void onBindViewHolder(CategoryViewHolder holder, int position, CategoryModel model) {
                 holder.bindView(model);
@@ -178,7 +173,6 @@ public class CategoryFragment extends Fragment {
                             .addToBackStack(null)
                             .commit();
                 });
-
             }
 
             @Override
@@ -191,7 +185,7 @@ public class CategoryFragment extends Fragment {
             }
         };
 
-        recyclerView.setAdapter(adapter);
+
     }
 
 

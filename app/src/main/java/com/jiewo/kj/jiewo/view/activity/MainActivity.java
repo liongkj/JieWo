@@ -210,11 +210,11 @@ public class MainActivity extends AppCompatActivity implements
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
                 break;
-            case 2:
-                result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                fragmentClass = RentFragment.class;
-                break;
+//            case 2:
+//                result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+//                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//                fragmentClass = RentFragment.class;
+//                break;
             case 3:
                 fragmentClass = CategoryFragment.class;
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements
                 fragmentClass = SettingFragment.class;
                 break;
             default:
-                fragmentClass = CategoryFragment.class;
+                fragmentClass = HomeFragment.class;
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
 

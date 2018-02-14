@@ -1,63 +1,426 @@
 package com.jiewo.kj.jiewo.view.fragment;
 
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.widget.Toast;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.jiewo.kj.jiewo.R;
+import com.jiewo.kj.jiewo.ViewModel.HomeViewModel;
 import com.jiewo.kj.jiewo.databinding.FragmentHomeBinding;
-import com.jiewo.kj.jiewo.util.MapFragment;
+import com.jiewo.kj.jiewo.util.MapMarkerAdapter;
 import com.jiewo.kj.jiewo.view.activity.MainActivity;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.jiewo.kj.jiewo.util.Constants.DATABASE_REF;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements
+        OnMapReadyCallback,
+        LocationListener,
+        GeoQueryEventListener,
+        GoogleMap.OnCameraMoveListener {
 
+    private DatabaseReference GEO_FIRE_DB = DATABASE_REF.child("Item-Location").getRef();
     FragmentHomeBinding binding;
     private GoogleMap mMap;
-    MapFragment mapFragment;
-    private static final int LOCATION_REQUEST_CODE = 1;
+    private Boolean mLocationPermissionsGranted = false;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    LocationManager locationManager;
+    String provider;
+
+    private boolean doubleBackToExitPressedOnce;
+    private final Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            doubleBackToExitPressedOnce = false;
+        }
+    };
+    private Handler mHandler = new Handler();
+    ActionBarDrawerToggle mToggle = MainActivity.result.getActionBarDrawerToggle();
+
+    private Circle searchCircle;
+    private GeoFire geoFire;
+    private GeoQuery geoQuery;
+    private GeoLocation geoLocation;
+
+    private Map<String, Marker> markerMap;
+    HomeViewModel viewModel;
+
+    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
+    private static final float DEFAULT_ZOOM = 18f;
+    private String TAG = "gMap";
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity()).get(HomeViewModel.class);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ((MainActivity) getActivity()).hideFab();
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
-        View v = binding.getRoot();
-
+        View view = binding.getRoot();
         binding.setView(this);
 
-        mapFragment = new MapFragment(getActivity());
+        getActivity().setTitle("JieWo");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        mToggle.setDrawerIndicatorEnabled(true);
 
-        //TODO https://github.com/arimorty/floatingsearchview
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_UP
+                    && keyCode == KeyEvent.KEYCODE_BACK) {
+                if (doubleBackToExitPressedOnce) {
+                    // super.onBackPressed();
+                    if (mHandler != null) {
+                        mHandler.removeCallbacks(mRunnable);
+                    }
+                    getActivity().finish();
+                    return true;
+                }
+                doubleBackToExitPressedOnce = true;
+                Toast.makeText(getActivity(),
+                        "Please click BACK again to exit",
+                        Toast.LENGTH_SHORT).show();
+                mHandler.postDelayed(mRunnable, 2000);
+            }
+            return true;
+        });
+
+        getLocationPermission();
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        provider = locationManager.getBestProvider(new Criteria(), false);
+        @SuppressLint("MissingPermission") Location location = locationManager.getLastKnownLocation(provider);
 
 
-        // Inflate the layout for this fragment
-        return v;
+        geoLocation = new GeoLocation(location.getLatitude(), location.getLongitude());
+        this.geoFire = new GeoFire(GEO_FIRE_DB);
+        this.geoQuery = geoFire.queryAtLocation(geoLocation, 1);
 
+        onLocationChanged(location);
+
+        this.markerMap = new HashMap<>();
+
+        return view;
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onResume() {
+        super.onResume();
+        initMap();
+        locationManager.requestLocationUpdates(provider, 1000, 1, this);
+        this.geoQuery.addGeoQueryEventListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        locationManager.removeUpdates(this);
+        this.geoQuery.removeAllListeners();
+        for (Marker marker : this.markerMap.values()) {
+            marker.remove();
+        }
+        this.markerMap.clear();
+    }
+
+    private void getDeviceLocation() {
+        Log.d(TAG, "getDeviceLocation: getting the devices current location");
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
+        try {
+            if (mLocationPermissionsGranted) {
+
+                final Task location = mFusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "onComplete: found location!");
+                            Location currentLocation = (Location) task.getResult();
+
+                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                                    DEFAULT_ZOOM);
+
+                        } else {
+                            Log.d(TAG, "onComplete: current location is null");
+                            Toast.makeText(getContext(), "unable to get current location", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        } catch (SecurityException e) {
+            Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage());
+        }
+    }
+
+    private void moveCamera(LatLng latLng, float zoom) {
+        Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+    }
+
+    private void initMap() {
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+
+        mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        if (mLocationPermissionsGranted) {
+            getDeviceLocation();
+
+            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            mMap.setMyLocationEnabled(true);
+
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+        }
+    }
+
+    private void getLocationPermission() {
+        Log.d(TAG, "getLocationPermission: getting location permissions");
+        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION};
+
+        if (ContextCompat.checkSelfPermission(getContext(),
+                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(getContext(),
+                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mLocationPermissionsGranted = true;
+                initMap();
+            } else {
+                ActivityCompat.requestPermissions(getActivity(),
+                        permissions,
+                        LOCATION_PERMISSION_REQUEST_CODE);
+            }
+        } else {
+            ActivityCompat.requestPermissions(getActivity(),
+                    permissions,
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult: called.");
+        mLocationPermissionsGranted = false;
+
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST_CODE: {
+                if (grantResults.length > 0) {
+                    for (int i = 0; i < grantResults.length; i++) {
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                            mLocationPermissionsGranted = false;
+                            Log.d(TAG, "onRequestPermissionsResult: permission failed");
+                            return;
+                        }
+                    }
+                    Log.d(TAG, "onRequestPermissionsResult: permission granted");
+                    mLocationPermissionsGranted = true;
+                    //initialize our map
+                    initMap();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        geoLocation = new GeoLocation(location.getLatitude(), location.getLongitude());
+        this.geoFire = new GeoFire(GEO_FIRE_DB);
+        this.geoQuery = geoFire.queryAtLocation(geoLocation, 1);
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    //geoquery
+    @Override
+    public void onKeyEntered(String key, GeoLocation location) {
+        DATABASE_REF.child("Item").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String item = dataSnapshot.child("title").getValue().toString();
+                Uri uri = Uri.parse(dataSnapshot.child("picture/pic1").getValue().toString());
+                createMarker(key, item, uri, location);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void createMarker(String id, String title, Uri img, GeoLocation location) {
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(new LatLng(location.latitude, location.longitude))
+                .title(title)
+                .snippet(title);
+        Marker marker = mMap.addMarker(markerOptions);
+        marker.setTag(img);
+        Log.e("marker", img.toString());
+        mMap.setInfoWindowAdapter(new MapMarkerAdapter(getContext()));
+
+        markerMap.put(id, marker);
+    }
+
+    @Override
+    public void onKeyExited(String key) {
+        Marker marker = this.markerMap.get(key);
+        if (marker != null) {
+            marker.remove();
+            this.markerMap.remove(key);
+
+        }
+    }
+
+    @Override
+    public void onKeyMoved(String key, GeoLocation location) {
+        Marker marker = this.markerMap.get(key);
+
+        if (marker != null) {
+
+            this.animateMarkerTo(marker, location.latitude, location.longitude);
+
+        }
+    }
+
+    @Override
+    public void onGeoQueryReady() {
+
+    }
+
+    @Override
+    public void onGeoQueryError(DatabaseError error) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Error")
+                .setMessage("There was an unexpected error querying GeoFire: " + error.getMessage())
+                .setPositiveButton(android.R.string.ok, null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
+    private void animateMarkerTo(final Marker marker, final double lat, final double lng) {
+
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        final long DURATION_MS = 3000;
+        final Interpolator interpolator = new AccelerateDecelerateInterpolator();
+        final LatLng startPosition = marker.getPosition();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                float elapsed = SystemClock.uptimeMillis() - start;
+                float t = elapsed / DURATION_MS;
+                float v = interpolator.getInterpolation(t);
+                double currentLat = (lat - startPosition.latitude) * v + startPosition.latitude;
+                double currentLng = (lng - startPosition.longitude) * v + startPosition.longitude;
+                marker.setPosition(new LatLng(currentLat, currentLng));
+                // if animation is not finished yet, repeat
+                if (t < 1) {
+                    handler.postDelayed(this, 16);
+                }
+            }
+        });
+    }
+
+    private double zoomLevelToRadius(double zoomLevel) {
+        // Approximation to fit circle into view
+        return 16384000 / Math.pow(2, zoomLevel);
     }
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        if (requestCode == MapFragment.MY_PERMISSIONS_REQUEST_LOCATION) {
-            mapFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        } else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
+    public void onCameraMove() {
+        LatLng center = mMap.getCameraPosition().target;
+        double radius = zoomLevelToRadius(mMap.getMaxZoomLevel());
+        this.searchCircle.setCenter(center);
+        this.searchCircle.setRadius(radius);
+        this.geoQuery.setCenter(new GeoLocation(center.latitude, center.longitude));
+        // radius in km
+        this.geoQuery.setRadius(radius / 1000);
     }
-
-
 }

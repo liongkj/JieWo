@@ -1,28 +1,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp">
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-
         card_view:cardCornerRadius="4dp"
-        card_view:cardElevation="5dp"
-        card_view:cardMaxElevation="4dp"
-        card_view:contentPadding="5dp">
-
+        card_view:cardElevation="5dp">
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="180dp"
             android:layout_height="match_parent"
-            android:layout_marginBottom="4dp"
-            android:layout_marginTop="4dp"
-            android:background="@color/md_yellow_500"
             android:orientation="vertical"
-            android:paddingEnd="@dimen/fab_margin"
-            android:paddingStart="@dimen/fab_margin"
+
             >
 
             <ImageView
@@ -32,40 +25,40 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                android:scaleType="fitXY" />
+                android:scaleType="fitXY"
+                android:src="@drawable/cat_shoe" />
+
+            <TextView
+                android:id="@+id/catTitle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="Title"
+                android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginBottom="8dp"
-                android:background="@color/md_grey_50"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/catTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="4"
-                    android:gravity="center"
-                    android:text="Title"
-                    android:textAppearance="@android:style/TextAppearance.Material.Medium" />
-
-                <TextView
                     android:id="@+id/catCount"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0"
+                    android:layout_weight="1"
+                    android:gravity="end"
                     android:paddingLeft="@dimen/album_title_padding"
                     android:paddingRight="@dimen/album_title_padding"
                     android:text="Count"
                     android:textAppearance="@android:style/TextAppearance.Material.Caption" />
 
                 <ImageView
-                    android:layout_width="20dp"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginEnd="4dp"
-                    android:layout_weight="0"
+                    android:layout_gravity="left"
+                    android:layout_weight="1"
                     android:src="@drawable/ic_heart"/>
             </LinearLayout>
         </LinearLayout>
