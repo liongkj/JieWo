@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -19,6 +20,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -43,6 +46,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -53,7 +57,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.jiewo.kj.jiewo.R;
-import com.jiewo.kj.jiewo.ViewModel.HomeViewModel;
+import com.jiewo.kj.jiewo.ViewModel.CategoryViewModel;
 import com.jiewo.kj.jiewo.databinding.FragmentHomeBinding;
 import com.jiewo.kj.jiewo.util.MapMarkerAdapter;
 import com.jiewo.kj.jiewo.view.activity.MainActivity;
@@ -70,7 +74,8 @@ public class HomeFragment extends Fragment implements
         OnMapReadyCallback,
         LocationListener,
         GeoQueryEventListener,
-        GoogleMap.OnCameraMoveListener {
+        GoogleMap.OnCameraMoveListener,
+        GoogleMap.OnInfoWindowClickListener {
 
     private DatabaseReference GEO_FIRE_DB = DATABASE_REF.child("Item-Location").getRef();
     FragmentHomeBinding binding;
@@ -90,13 +95,15 @@ public class HomeFragment extends Fragment implements
     private Handler mHandler = new Handler();
     ActionBarDrawerToggle mToggle = MainActivity.result.getActionBarDrawerToggle();
 
+    private static final GeoLocation INITIAL_CENTER = new GeoLocation(37.7789, -122.4017);
+    private static final int INITIAL_ZOOM_LEVEL = 14;
     private Circle searchCircle;
     private GeoFire geoFire;
     private GeoQuery geoQuery;
     private GeoLocation geoLocation;
 
     private Map<String, Marker> markerMap;
-    HomeViewModel viewModel;
+    CategoryViewModel viewModel;
 
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
@@ -111,7 +118,7 @@ public class HomeFragment extends Fragment implements
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = ViewModelProviders.of(getActivity()).get(HomeViewModel.class);
+        viewModel = ViewModelProviders.of(getActivity()).get(CategoryViewModel.class);
     }
 
     @Override
@@ -152,16 +159,12 @@ public class HomeFragment extends Fragment implements
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         provider = locationManager.getBestProvider(new Criteria(), false);
         @SuppressLint("MissingPermission") Location location = locationManager.getLastKnownLocation(provider);
-
-
-        geoLocation = new GeoLocation(location.getLatitude(), location.getLongitude());
         this.geoFire = new GeoFire(GEO_FIRE_DB);
-        this.geoQuery = geoFire.queryAtLocation(geoLocation, 1);
-
-        onLocationChanged(location);
-
+        this.geoQuery = geoFire.queryAtLocation(INITIAL_CENTER, 1);
+        if (location != null) {
+            onLocationChanged(location);
+        }
         this.markerMap = new HashMap<>();
-
         return view;
     }
 
@@ -200,7 +203,7 @@ public class HomeFragment extends Fragment implements
                         if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
-
+                            viewModel.setCurrentLocation(currentLocation);
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM);
 
@@ -225,6 +228,7 @@ public class HomeFragment extends Fragment implements
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
+
     }
 
     @Override
@@ -240,8 +244,12 @@ public class HomeFragment extends Fragment implements
                 return;
             }
             mMap.setMyLocationEnabled(true);
-
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            mMap.setOnCameraMoveListener(this);
+            LatLng latLngCenter = new LatLng(INITIAL_CENTER.latitude, INITIAL_CENTER.longitude);
+            this.searchCircle = mMap.addCircle(new CircleOptions().center(latLngCenter).radius(10));
+            this.searchCircle.setFillColor(Color.argb(66, 255, 255, 255));
+            this.searchCircle.setStrokeColor(Color.argb(66, 0, 0, 0));
 
         }
     }
@@ -298,7 +306,6 @@ public class HomeFragment extends Fragment implements
         geoLocation = new GeoLocation(location.getLatitude(), location.getLongitude());
         this.geoFire = new GeoFire(GEO_FIRE_DB);
         this.geoQuery = geoFire.queryAtLocation(geoLocation, 1);
-
     }
 
     @Override
@@ -341,8 +348,9 @@ public class HomeFragment extends Fragment implements
                 .snippet(title);
         Marker marker = mMap.addMarker(markerOptions);
         marker.setTag(img);
-        Log.e("marker", img.toString());
+
         mMap.setInfoWindowAdapter(new MapMarkerAdapter(getContext()));
+        mMap.setOnInfoWindowClickListener(this);
 
         markerMap.put(id, marker);
     }
@@ -353,18 +361,15 @@ public class HomeFragment extends Fragment implements
         if (marker != null) {
             marker.remove();
             this.markerMap.remove(key);
-
+            marker.setTag(null);
         }
     }
 
     @Override
     public void onKeyMoved(String key, GeoLocation location) {
         Marker marker = this.markerMap.get(key);
-
         if (marker != null) {
-
             this.animateMarkerTo(marker, location.latitude, location.longitude);
-
         }
     }
 
@@ -416,11 +421,36 @@ public class HomeFragment extends Fragment implements
     @Override
     public void onCameraMove() {
         LatLng center = mMap.getCameraPosition().target;
-        double radius = zoomLevelToRadius(mMap.getMaxZoomLevel());
+        double radius = zoomLevelToRadius(10);
         this.searchCircle.setCenter(center);
         this.searchCircle.setRadius(radius);
         this.geoQuery.setCenter(new GeoLocation(center.latitude, center.longitude));
         // radius in km
         this.geoQuery.setRadius(radius / 1000);
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        String key = null;
+        for (Map.Entry entry : markerMap.entrySet()) {
+            if (marker.equals(entry.getValue())) {
+                key = entry.getKey().toString();
+                break;
+            }
+        }
+        Location location = new Location("item");
+        location.setLatitude(marker.getPosition().latitude);
+        location.setLongitude(marker.getPosition().longitude);
+        viewModel.setItemLocation(location);
+        viewModel.selectItem(key);
+
+        Fragment fragment = new ItemDetailFragment();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.replace(R.id.fragment_placeholder, fragment, "tag")
+                .addToBackStack(null)
+                .commit();
+
     }
 }

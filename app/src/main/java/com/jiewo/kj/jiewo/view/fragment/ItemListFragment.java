@@ -3,6 +3,7 @@ package com.jiewo.kj.jiewo.view.fragment;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,9 +17,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.LocationCallback;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.CategoryViewModel;
@@ -163,7 +168,24 @@ public class ItemListFragment extends Fragment {
                 holder.setOnClickListener((view, position1) -> {
                     final ItemModel item = model;
 
+                    GeoFire geoFire = new GeoFire(DATABASE_REF.child("Item-Location"));
+                    geoFire.getLocation(item.getItemId(), new LocationCallback() {
+                        @Override
+                        public void onLocationResult(String key, GeoLocation location) {
+                            Location loc = new Location("item");
+                            loc.setLatitude(location.latitude);
+                            loc.setLongitude(location.longitude);
+                            viewModel.setItemLocation(loc);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
                     viewModel.selectItem(item);
+
                     Fragment fragment = new ItemDetailFragment();
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

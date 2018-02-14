@@ -100,10 +100,17 @@ public class ItemDetailFragment extends Fragment {
             getActivity().setTitle(i.getItemTitle());
             buildSlider(i.getItemImages());
 
-
             viewModelUser.getUser(i.getOwner()).observe(this, u -> {
                 binding.setSeller(u);
             });
+        });
+
+        viewModel.getDistance().observe(this, (Float distance) -> {
+            String text = "null";
+            if (distance != null) {
+                text = String.format("%.2f%s", distance / 1000, " KM");
+            }
+            binding.layoutItemDetail.distance.setText(text);
         });
 
 
