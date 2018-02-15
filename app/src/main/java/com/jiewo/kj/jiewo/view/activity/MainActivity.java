@@ -28,7 +28,9 @@ import com.jiewo.kj.jiewo.model.UserModel;
 import com.jiewo.kj.jiewo.view.fragment.CategoryFragment;
 import com.jiewo.kj.jiewo.view.fragment.HomeFragment;
 import com.jiewo.kj.jiewo.view.fragment.ItemListFragment;
+import com.jiewo.kj.jiewo.view.fragment.MyItemFragment;
 import com.jiewo.kj.jiewo.view.fragment.RentFragment;
+import com.jiewo.kj.jiewo.view.fragment.SettingFragment;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -38,7 +40,6 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -174,35 +175,24 @@ public class MainActivity extends AppCompatActivity implements
                         items,
                         settings
                 )
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        // do something with the clicked item :D
-                        selectDrawerItem((int) drawerItem.getIdentifier());
-
-                        return false;
-                    }
+                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
+                    // do something with the clicked item :D
+                    selectDrawerItem((int) drawerItem.getIdentifier());
+                    return false;
                 })
-                .withOnDrawerNavigationListener(new Drawer.OnDrawerNavigationListener() {
-
-                    @Override
-
-                    public boolean onNavigationClickListener(View clickedView) {
-                        //this method is only called if the Arrow icon is shown. The hamburger is automatically managed by the MaterialDrawer
-                        //if the back arrow is shown. close the activity
+                .withOnDrawerNavigationListener(clickedView -> {
+                    //this method is only called if the Arrow icon is shown. The hamburger is automatically managed by the MaterialDrawer
+                    //if the back arrow is shown. close the activity
 //                        RentFragment.class.this.finish();
-
-                        getSupportFragmentManager().popBackStack();
-                        return true;
-                    }
+                    getSupportFragmentManager().popBackStack();
+                    return true;
                 })
                 .build();
     }
 
     private void selectDrawerItem(int identifier) {
         Fragment fragment = null;
-        Class fragmentClass = null;
+        Class fragmentClass;
         switch (identifier) {
             case 1:
                 fragmentClass = HomeFragment.class;
@@ -219,11 +209,17 @@ public class MainActivity extends AppCompatActivity implements
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
                 break;
-//            case 5:
-//                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-//                result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
-//                fragmentClass = SettingFragment.class;
-//                break;
+            case 5:
+                fragmentClass = SettingFragment.class;
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+                break;
+            case 6:
+                fragmentClass = MyItemFragment.class;
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+                break;
+//            0
             default:
                 fragmentClass = HomeFragment.class;
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);

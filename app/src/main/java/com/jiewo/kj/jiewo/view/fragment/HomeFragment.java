@@ -7,7 +7,9 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -45,6 +47,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -64,6 +67,7 @@ import com.jiewo.kj.jiewo.view.activity.MainActivity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import static com.jiewo.kj.jiewo.util.Constants.DATABASE_REF;
 
@@ -110,6 +114,9 @@ public class HomeFragment extends Fragment implements
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 18f;
     private String TAG = "gMap";
+
+
+    Bitmap smallMarker;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -165,6 +172,10 @@ public class HomeFragment extends Fragment implements
             onLocationChanged(location);
         }
         this.markerMap = new HashMap<>();
+        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.map_marker);
+        Bitmap b = bitmapdraw.getBitmap();
+        smallMarker = Bitmap.createScaledBitmap(b, 100, 100, false);
+
         return view;
     }
 
@@ -331,7 +342,8 @@ public class HomeFragment extends Fragment implements
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String item = dataSnapshot.child("title").getValue().toString();
                 Uri uri = Uri.parse(dataSnapshot.child("picture/pic1").getValue().toString());
-                createMarker(key, item, uri, location);
+                String category = dataSnapshot.child("category").getValue().toString();
+                createMarker(key, item, category, uri, location);
             }
 
             @Override
@@ -341,18 +353,25 @@ public class HomeFragment extends Fragment implements
         });
     }
 
-    private void createMarker(String id, String title, Uri img, GeoLocation location) {
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(new LatLng(location.latitude, location.longitude))
-                .title(title)
-                .snippet(title);
-        Marker marker = mMap.addMarker(markerOptions);
+    private void createMarker(String id, String title, String category, Uri img, GeoLocation location) {
+        Log.e("marker", "new marker");
+        Random r = new Random();
+
+        LatLng position = new LatLng(location.latitude, location.longitude);
+
+        Marker marker = mMap.addMarker(new MarkerOptions()
+                .position(position)
+                .title(category)
+                .snippet(title)
+                .anchor(r.nextFloat(), r.nextFloat())
+                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
         marker.setTag(img);
 
         mMap.setInfoWindowAdapter(new MapMarkerAdapter(getContext()));
         mMap.setOnInfoWindowClickListener(this);
 
         markerMap.put(id, marker);
+        Log.e("marker", String.valueOf(markerMap.size()) + marker.getSnippet());
     }
 
     @Override
@@ -360,8 +379,9 @@ public class HomeFragment extends Fragment implements
         Marker marker = this.markerMap.get(key);
         if (marker != null) {
             marker.remove();
-            this.markerMap.remove(key);
+            markerMap.remove(key);
             marker.setTag(null);
+            Log.e("marker", marker.getSnippet() + "exited");
         }
     }
 
@@ -421,12 +441,12 @@ public class HomeFragment extends Fragment implements
     @Override
     public void onCameraMove() {
         LatLng center = mMap.getCameraPosition().target;
-        double radius = zoomLevelToRadius(10);
-        this.searchCircle.setCenter(center);
-        this.searchCircle.setRadius(radius);
-        this.geoQuery.setCenter(new GeoLocation(center.latitude, center.longitude));
+        double radius = zoomLevelToRadius(12);
+        searchCircle.setCenter(center);
+        searchCircle.setRadius(radius);
+        geoQuery.setCenter(new GeoLocation(center.latitude, center.longitude));
         // radius in km
-        this.geoQuery.setRadius(radius / 1000);
+        geoQuery.setRadius(radius / 1000);
     }
 
     @Override
