@@ -16,6 +16,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.jiewo.kj.jiewo.model.ItemModel;
 import com.jiewo.kj.jiewo.model.UserModel;
 
 import java.util.List;
@@ -34,12 +35,14 @@ public class UserViewModel extends ViewModel {
     private MutableLiveData<UserModel> seller;
     private MutableLiveData<UserModel> userData;
     private MutableLiveData<String> locationData;
+    private MutableLiveData<Boolean> isFavorite;
 
 
     public UserViewModel() {
 
         geoFire = new GeoFire(DATABASE_REF);
         seller = new MutableLiveData<>();
+
     }
 
     public LiveData<UserModel> getLoggedUser(UserModel user) {
@@ -64,7 +67,6 @@ public class UserViewModel extends ViewModel {
         return locationData;
     }
 
-
     private void loadUser(UserModel user, MutableLiveData<UserModel> holder) {
         DATABASE_REF.child("User/" + user.getId()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -87,6 +89,7 @@ public class UserViewModel extends ViewModel {
                     Log.e("Error", e.toString());
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -141,5 +144,43 @@ public class UserViewModel extends ViewModel {
         }
         return strAdd;
     }
+
+    public void itemFavorite(ItemModel item, UserModel user, boolean isFavorite) {
+        if (isFavorite) {
+            DATABASE_REF.child("User/" + user.getId()).child("Wishlist").child(item.getItemId()).setValue(isFavorite);
+            this.isFavorite.setValue(isFavorite);
+        } else {
+            DATABASE_REF.child("User/" + user.getId()).child("Wishlist").child(item.getItemId()).removeValue();
+            this.isFavorite.setValue(false);
+        }
+    }
+
+    public LiveData<Boolean> isFavorite(UserModel user, ItemModel item) {
+        isFavorite = new MutableLiveData<>();
+        DATABASE_REF.child("User/" + user.getId()).child("Wishlist").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        if (ds.getKey().equals(item.getItemId())) {
+                            if (ds.getValue().equals(true)) {
+                                isFavorite.setValue(true);
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    isFavorite.setValue(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        return isFavorite;
+    }
+
 
 }

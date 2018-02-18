@@ -59,7 +59,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_weight="1"
                     android:padding="1dp"
-                    android:text="100m" />
+                    android:text="Locating..." />
 
             </LinearLayout>
 
@@ -166,7 +166,7 @@
                     android:paddingBottom="15dp"
                     android:paddingTop="15dp"
                     android:src="@drawable/ic_whatsapp"
-                    android:visibility="@{seller.number != null? View.VISIBLE : View.GONE}" />
+                    android:visibility="@{seller.number == null? View.VISIBLE : View.GONE}" />
 
                 <ImageView
                     android:id="@+id/whatsappmsg"

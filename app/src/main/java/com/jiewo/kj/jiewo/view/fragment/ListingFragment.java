@@ -2,6 +2,7 @@ package com.jiewo.kj.jiewo.view.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,9 +15,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.LocationCallback;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.CategoryViewModel;
@@ -123,8 +128,26 @@ public class ListingFragment extends Fragment {
                 holder.bindView(model);
                 holder.setOnClickListener((view, position1) -> {
                     final ItemModel item = model;
+                    GeoFire geoFire = new GeoFire(DATABASE_REF.child("Item-Location").getRef());
+                    geoFire.getLocation(model.getItemId(), new LocationCallback() {
+                        @Override
+                        public void onLocationResult(String key, GeoLocation location) {
 
-//                    viewModel.selectItem(item);
+                            if (location != null) {
+                                Location loc = new Location("provider");
+                                loc.setLatitude(location.latitude);
+                                loc.setLongitude(location.longitude);
+                                categoryViewModel.setItemLocation(loc);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.e("item", "retrieve item location failed");
+                        }
+                    });
+
+                    categoryViewModel.selectItem(item);
 
                     Fragment fragment = new ItemDetailFragment();
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();

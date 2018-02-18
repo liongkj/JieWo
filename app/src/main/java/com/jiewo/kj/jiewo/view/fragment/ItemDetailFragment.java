@@ -19,6 +19,8 @@ import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.CategoryViewModel;
 import com.jiewo.kj.jiewo.ViewModel.UserViewModel;
 import com.jiewo.kj.jiewo.databinding.FragmentItemDetailBinding;
+import com.jiewo.kj.jiewo.model.ItemModel;
+import com.jiewo.kj.jiewo.model.UserModel;
 import com.jiewo.kj.jiewo.view.activity.MainActivity;
 
 import java.util.ArrayList;
@@ -45,6 +47,7 @@ public class ItemDetailFragment extends Fragment {
     UserViewModel viewModelUser;
     ActionBarDrawerToggle mToggle = MainActivity.result.getActionBarDrawerToggle();
     FloatingActionButton fab;
+    UserModel user = UserModel.getUser();
 
 
     // TODO: Rename and change types of parameters
@@ -83,9 +86,11 @@ public class ItemDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_item_detail, container, false);
-        fab = binding.fabContact;
+        fab = binding.fabFav;
         View view = binding.getRoot();
         binding.setView(this);
+        binding.setLogged(user);
+        binding.setViewmodel(viewModelUser);
 
 
         ((MainActivity) getActivity()).hideFab();
@@ -95,7 +100,7 @@ public class ItemDetailFragment extends Fragment {
         getActivity().setTitle("JieWo");
 
 
-        viewModel.getItemId().observe(this, i -> {
+        viewModel.getItemId().observe(this, (ItemModel i) -> {
             binding.setItem(i);
             getActivity().setTitle(i.getItemTitle());
             buildSlider(i.getItemImages());
@@ -103,10 +108,21 @@ public class ItemDetailFragment extends Fragment {
             viewModelUser.getSeller(i.getOwner()).observe(this, u -> {
                 binding.setSeller(u);
             });
+
+            viewModelUser.isFavorite(user, i).observe(this, (Boolean favorite) -> {
+                if (favorite) {
+                    binding.fabFav.setImageResource(R.drawable.ic_heart);
+                    binding.setIsFavorite(!favorite);
+                } else {
+                    binding.fabFav.setImageResource(R.drawable.ic_heart_outline);
+                    binding.setIsFavorite(favorite);
+                }
+
+            });
         });
 
-        viewModel.getDistance().observe(this, (Float distance) -> {
-            String text = "null";
+        viewModel.getDistance().observe(this, distance -> {
+            String text = "Locating...";
             if (distance != null) {
                 text = String.format("%.2f%s", distance / 1000, " KM");
             }
@@ -119,28 +135,32 @@ public class ItemDetailFragment extends Fragment {
 
 
     public void onClickCall(View v, String number) {
-        switch (v.getId()) {
-            case R.id.phonecall:
-            case R.id.phonecall1:
-                //phonecall
-                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", number, null));
-                startActivity(intent);
-                break;
-            case R.id.whatsappmsg:
-                String uri = "https://api.whatsapp.com/send?phone=" + number;
-                try {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-                    startActivity(browserIntent);
-                } catch (Exception e) {
-                    Toast.makeText(getContext(), "Error/n" + e.toString(), Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.phonemsg:
-                //phone msg
-                Intent intentsms = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null));
-                intentsms.putExtra("sms_body", "I am interested in your item.");
-                startActivity(intentsms);
+        if (number != null) {
+            switch (v.getId()) {
+                case R.id.phonecall:
+                case R.id.phonecall1:
+                    //phonecall
+                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", number, null));
+                    startActivity(intent);
+                    break;
+                case R.id.whatsappmsg:
+                    String uri = "https://api.whatsapp.com/send?phone=" + number;
+                    try {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                        startActivity(browserIntent);
+                    } catch (Exception e) {
+                        Toast.makeText(getContext(), "Error/n" + e.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case R.id.phonemsg:
+                    //phone msg
+                    Intent intentsms = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null));
+                    intentsms.putExtra("sms_body", "I am interested in your item.");
+                    startActivity(intentsms);
 
+            }
+        } else {
+            Toast.makeText(getContext(), "This user did not leave any contact details", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -169,5 +189,9 @@ public class ItemDetailFragment extends Fragment {
         bannerSlider.setBanners(banners);
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        viewModel.getDistance().removeObservers(this);
+    }
 }

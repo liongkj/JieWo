@@ -2,7 +2,6 @@ package com.jiewo.kj.jiewo.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,7 +34,6 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
 
     public void bindView(ItemModel model){
         NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
-        Log.e("item",model.getItemTitle());
         itemTitle.setText(model.getItemTitle());
         itemDescription.setText(model.getItemDescription());
         itemCost.setText(format.format(model.getItemPrice()));

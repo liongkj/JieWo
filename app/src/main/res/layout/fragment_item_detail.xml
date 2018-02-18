@@ -1,12 +1,19 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-
     android:id="@+id/item_detail_container"
     tools:context="com.jiewo.kj.jiewo.view.fragment.ItemDetailFragment"
     tools:ignore="MergeRootFrame">
 
     <data>
+
+        <variable
+            name="isFavorite"
+            type="boolean" />
+
+        <variable
+            name="logged"
+            type="com.jiewo.kj.jiewo.model.UserModel" />
 
         <variable
             name="seller"
@@ -19,6 +26,10 @@
         <variable
             name="view"
             type="com.jiewo.kj.jiewo.view.fragment.ItemDetailFragment" />
+
+        <variable
+            name="viewmodel"
+            type="com.jiewo.kj.jiewo.ViewModel.UserViewModel" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -78,11 +89,12 @@
         </android.support.v4.widget.NestedScrollView>
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fabContact"
+            android:id="@+id/fabFav"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_marginEnd="@dimen/fab_margin"
             android:elevation="7dp"
+            android:onClick="@{() -> viewmodel.itemFavorite(item,logged,isFavorite)}"
             android:src="@drawable/ic_heart_outline"
             app:backgroundTint="@color/md_white_1000"
             app:borderWidth="0dp"

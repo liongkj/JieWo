@@ -34,9 +34,10 @@ public class CategoryViewModel extends ViewModel {
     public CategoryViewModel() {
         this.selectedCat = new MutableLiveData<>();
         this.selectedItem = new MutableLiveData<>();
-        distance = new MutableLiveData<>();
+
         currentLoc = new MutableLiveData<>();
         itemLoc = new MutableLiveData<>();
+        distance = new MutableLiveData<>();
     }
 
     public void selectCategory(CategoryModel categoryId) {
@@ -93,18 +94,17 @@ public class CategoryViewModel extends ViewModel {
     }
 
     public void setItemLocation(Location location) {
+
         itemLoc.setValue(location);
 
+        if (itemLoc.getValue() != null && currentLoc.getValue() != null) {
+            distance.setValue(itemLoc.getValue().distanceTo(currentLoc.getValue()));
+        }
     }
 
     public LiveData<Float> getDistance() {
-        if (!(itemLoc.getValue() == null && currentLoc.getValue() == null)) {
-            distance.setValue(currentLoc.getValue().distanceTo(itemLoc.getValue()));
-            return distance;
-        }
-        return null;
+        return distance;
     }
-
 }
 
 

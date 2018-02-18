@@ -3,6 +3,7 @@ package com.jiewo.kj.jiewo.view.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,18 +29,27 @@ import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.UserViewModel;
 import com.jiewo.kj.jiewo.model.UserModel;
 import com.jiewo.kj.jiewo.view.activity.LoginActivity;
 import com.jiewo.kj.jiewo.view.activity.MainActivity;
 import com.squareup.picasso.Picasso;
+import com.vansuita.pickimage.bean.PickResult;
+import com.vansuita.pickimage.bundle.PickSetup;
+import com.vansuita.pickimage.dialog.PickImageDialog;
+import com.vansuita.pickimage.listeners.IPickResult;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.app.Activity.RESULT_OK;
+import static com.jiewo.kj.jiewo.util.Constants.DATABASE_REF;
 
 
 public class SettingFragment extends Fragment
@@ -65,8 +75,8 @@ public class SettingFragment extends Fragment
     TextView txtAddress;
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     UserViewModel viewModel;
-    String username, email, number;
     UserModel user = UserModel.getUser();
+    private StorageReference mStorage;
 
     public SettingFragment() {
         // Required empty public constructor
@@ -76,7 +86,8 @@ public class SettingFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        mStorage = storage.getReference();
     }
 
     @Override
@@ -87,7 +98,7 @@ public class SettingFragment extends Fragment
         getActivity().setTitle("Settings");
         ((MainActivity) getActivity()).hideFab();
 
-        viewModel = ViewModelProviders.of((MainActivity) getActivity()).get(UserViewModel.class);
+        viewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
 
         btnAddress.setOnClickListener(v -> findPlace(v));
 
@@ -105,10 +116,36 @@ public class SettingFragment extends Fragment
                         }
                 );
 
+        profileImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeProfilePicture();
+            }
+        });
+
         return view;
 
     }
 
+    private void changeProfilePicture() {
+        PickImageDialog.build(new PickSetup())
+                .setOnPickResult(new IPickResult() {
+                    @Override
+                    public void onPickResult(PickResult r) {
+                        Uri uri = r.getUri();
+                        //profileImg.setImageURI(uri);
+                        StorageReference filepath = mStorage.child("profile_image").child(uri.getLastPathSegment());
+                        filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                Uri downloadUri = taskSnapshot.getDownloadUrl();
+                                DATABASE_REF.child("User").child(user.getId()).child("Profile").setValue(downloadUri.toString());
+                                Toast.makeText(getContext(), "Profile Picture changed successfully", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }).show(getActivity().getSupportFragmentManager());
+    }
 
     public void findPlace(View view) {
         try {

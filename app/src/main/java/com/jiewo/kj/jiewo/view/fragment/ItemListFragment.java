@@ -107,7 +107,7 @@ public class ItemListFragment extends Fragment {
             keyQuery = DATABASE_REF.child("Category/" + s.getId() + "/items");
             buildItemList();
             recyclerView.setAdapter(adapter);
-            Log.e("data",data.toString());
+
         });
 
 
@@ -166,25 +166,26 @@ public class ItemListFragment extends Fragment {
             protected void onBindViewHolder(ItemViewHolder holder, int position, ItemModel model) {
                 holder.bindView(model);
                 holder.setOnClickListener((view, position1) -> {
-                    final ItemModel item = model;
-
-                    GeoFire geoFire = new GeoFire(DATABASE_REF.child("Item-Location"));
-                    geoFire.getLocation(item.getItemId(), new LocationCallback() {
+                    GeoFire geoFire = new GeoFire(DATABASE_REF.child("Item-Location").getRef());
+                    geoFire.getLocation(model.getItemId(), new LocationCallback() {
                         @Override
                         public void onLocationResult(String key, GeoLocation location) {
-                            Location loc = new Location("item");
-                            loc.setLatitude(location.latitude);
-                            loc.setLongitude(location.longitude);
-                            viewModel.setItemLocation(loc);
+
+                            if (location != null) {
+                                Location loc = new Location("provider");
+                                loc.setLatitude(location.latitude);
+                                loc.setLongitude(location.longitude);
+                                viewModel.setItemLocation(loc);
+                            }
                         }
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-
+                            Log.e("item", "retrieve item location failed");
                         }
                     });
 
-                    viewModel.selectItem(item);
+                    viewModel.selectItem(model);
 
                     Fragment fragment = new ItemDetailFragment();
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();

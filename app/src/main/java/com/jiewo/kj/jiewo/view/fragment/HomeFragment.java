@@ -170,6 +170,7 @@ public class HomeFragment extends Fragment implements
         this.geoQuery = geoFire.queryAtLocation(INITIAL_CENTER, 1);
         if (location != null) {
             onLocationChanged(location);
+            viewModel.setCurrentLocation(location);
         }
         this.markerMap = new HashMap<>();
         BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.map_marker);
@@ -214,7 +215,7 @@ public class HomeFragment extends Fragment implements
                         if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
-                            viewModel.setCurrentLocation(currentLocation);
+
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM);
 
@@ -261,6 +262,7 @@ public class HomeFragment extends Fragment implements
             this.searchCircle = mMap.addCircle(new CircleOptions().center(latLngCenter).radius(10));
             this.searchCircle.setFillColor(Color.argb(66, 255, 255, 255));
             this.searchCircle.setStrokeColor(Color.argb(66, 0, 0, 0));
+
 
         }
     }
@@ -317,6 +319,7 @@ public class HomeFragment extends Fragment implements
         geoLocation = new GeoLocation(location.getLatitude(), location.getLongitude());
         this.geoFire = new GeoFire(GEO_FIRE_DB);
         this.geoQuery = geoFire.queryAtLocation(geoLocation, 1);
+        viewModel.setCurrentLocation(location);
     }
 
     @Override

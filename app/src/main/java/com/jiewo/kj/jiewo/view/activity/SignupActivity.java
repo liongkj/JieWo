@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -22,7 +23,7 @@ import com.jiewo.kj.jiewo.util.Constants;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private EditText inputEmail, inputPassword, inputName;
+    private EditText inputEmail, inputPassword, inputName, inputNumber;
     private Button btnSignIn, btnSignUp, btnResetPassword;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
@@ -42,6 +43,7 @@ public class SignupActivity extends AppCompatActivity {
         inputEmail = (EditText) findViewById(R.id.email);
         inputPassword = (EditText) findViewById(R.id.password);
         inputName = findViewById(R.id.name);
+        inputNumber = findViewById(R.id.number);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         btnResetPassword = (Button) findViewById(R.id.btn_reset_password);
 
@@ -66,6 +68,7 @@ public class SignupActivity extends AppCompatActivity {
                 String email = inputEmail.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
                 String name = inputName.getText().toString().trim();
+                String number = inputNumber.getText().toString().trim();
 
                 if (TextUtils.isEmpty(email)) {
                     Toast.makeText(getApplicationContext(), "Please enter your email address", Toast.LENGTH_SHORT).show();
@@ -78,6 +81,10 @@ public class SignupActivity extends AppCompatActivity {
                 }
                 if (TextUtils.isEmpty(name)) {
                     Toast.makeText(getApplicationContext(), "Please enter your name!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (TextUtils.isEmpty(name)) {
+                    Toast.makeText(getApplicationContext(), "Please enter your number!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -96,11 +103,12 @@ public class SignupActivity extends AppCompatActivity {
                                 Toast.makeText(SignupActivity.this, "Account created successfully", Toast.LENGTH_SHORT).show();
 
                                 if (task.isSuccessful()) {
+
                                     String userId = auth.getCurrentUser().getUid();
                                     DatabaseReference currentUser = mDatabase.child(userId);
                                     currentUser.child("Name").setValue(name);
                                     currentUser.child("Profile").setValue(Constants.DEFAULTPIC);
-                                    currentUser.child("Number").setValue("null");
+                                    currentUser.child("Number").setValue(PhoneNumberUtils.formatNumber(number, "mys"));
                                     currentUser.child("Rating").setValue(5);
                                     currentUser.child("Wishlist").setValue(true);
                                 }
