@@ -96,7 +96,7 @@ public class SettingFragment extends Fragment
                     txtAddress.setText(s);
                 });
 
-        viewModel.getUser(user)
+        viewModel.getLoggedUser(user)
                 .observe(getActivity(), i -> {
                             txtEmail.setText(i.getEmail());
                             txtNumber.setText(i.getNumber());

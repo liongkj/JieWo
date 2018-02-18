@@ -31,6 +31,7 @@ public class UserViewModel extends ViewModel {
 
     private String userId;
     private GeoFire geoFire;
+    private MutableLiveData<UserModel> seller;
     private MutableLiveData<UserModel> userData;
     private MutableLiveData<String> locationData;
 
@@ -38,14 +39,21 @@ public class UserViewModel extends ViewModel {
     public UserViewModel() {
 
         geoFire = new GeoFire(DATABASE_REF);
+        seller = new MutableLiveData<>();
     }
 
-    public LiveData<UserModel> getUser(UserModel user) {
+    public LiveData<UserModel> getLoggedUser(UserModel user) {
         if (userData == null) {
             userData = new MutableLiveData<>();
-            loadUser(user);
+            loadUser(user, userData);
         }
         return userData;
+    }
+
+    public LiveData<UserModel> getSeller(UserModel user) {
+        this.seller = new MutableLiveData<>();
+        loadUser(user, seller);
+        return seller;
     }
 
     public LiveData<String> getLocation(UserModel user, Context context) {
@@ -57,24 +65,28 @@ public class UserViewModel extends ViewModel {
     }
 
 
-    private void loadUser(UserModel user) {
+    private void loadUser(UserModel user, MutableLiveData<UserModel> holder) {
         DATABASE_REF.child("User/" + user.getId()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                try {
+                    UserModel user = new UserModel();
+                    String id = user.getId();
+                    String name = dataSnapshot.child("Name").getValue().toString();
+                    String number = dataSnapshot.child("Number").getValue().toString();
+                    Uri uri = Uri.parse(dataSnapshot.child("Profile").getValue().toString());
+                    double rating = Double.valueOf(dataSnapshot.child("Rating").getValue().toString());
+                    user.setId(id);
+                    user.setName(name);
+                    user.setNumber(number);
+                    user.setPhotoURI(uri);
+                    user.setRating(rating);
 
-                UserModel user = new UserModel();
-                String name = dataSnapshot.child("Name").getValue().toString();
-                String number = dataSnapshot.child("Number").getValue().toString();
-                Uri uri = Uri.parse(dataSnapshot.child("Profile").getValue().toString());
-                double rating = Double.valueOf(dataSnapshot.child("Rating").getValue().toString());
-                user.setName(name);
-                user.setNumber(number);
-                user.setPhotoURI(uri);
-                user.setRating(rating);
-
-                userData.setValue(user);
+                    holder.setValue(user);
+                } catch (Exception e) {
+                    Log.e("Error", e.toString());
+                }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -129,4 +141,5 @@ public class UserViewModel extends ViewModel {
         }
         return strAdd;
     }
+
 }

@@ -54,11 +54,11 @@
 
                 <TextView
                     android:id="@+id/distance"
-                    android:padding="1dp"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_weight="1"
+                    android:padding="1dp"
                     android:text="100m" />
 
             </LinearLayout>
@@ -125,9 +125,9 @@
                     android:text="@{String.valueOf(seller.rating)}" />
 
                 <ImageView
-                    android:padding="2dp"
                     android:layout_width="14dp"
                     android:layout_height="wrap_content"
+                    android:padding="2dp"
                     android:src="@drawable/ic_star_rate" />
 
             </LinearLayout>
@@ -157,6 +157,16 @@
                     android:paddingBottom="15dp"
                     android:paddingTop="15dp"
                     android:text="@{String.valueOf(seller.number)}" />
+
+                <ImageView
+                    android:id="@+id/notify"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingBottom="15dp"
+                    android:paddingTop="15dp"
+                    android:src="@drawable/ic_whatsapp"
+                    android:visibility="@{seller.number != null? View.VISIBLE : View.GONE}" />
 
                 <ImageView
                     android:id="@+id/whatsappmsg"

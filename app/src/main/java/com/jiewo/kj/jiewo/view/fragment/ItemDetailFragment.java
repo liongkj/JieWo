@@ -100,7 +100,7 @@ public class ItemDetailFragment extends Fragment {
             getActivity().setTitle(i.getItemTitle());
             buildSlider(i.getItemImages());
 
-            viewModelUser.getUser(i.getOwner()).observe(this, u -> {
+            viewModelUser.getSeller(i.getOwner()).observe(this, u -> {
                 binding.setSeller(u);
             });
         });

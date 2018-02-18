@@ -74,9 +74,7 @@ public class UserModel extends Application implements Serializable {
     }
 
     public String getNumber() {
-        if (number != null)
-            return number;
-        return "null";
+        return number;
     }
 
     public void setNumber(String number) {

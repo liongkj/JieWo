@@ -340,10 +340,14 @@ public class HomeFragment extends Fragment implements
         DATABASE_REF.child("Item").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String item = dataSnapshot.child("title").getValue().toString();
-                Uri uri = Uri.parse(dataSnapshot.child("picture/pic1").getValue().toString());
-                String category = dataSnapshot.child("category").getValue().toString();
-                createMarker(key, item, category, uri, location);
+                try {
+                    String item = dataSnapshot.child("title").getValue().toString();
+                    Uri uri = Uri.parse(dataSnapshot.child("picture/pic1").getValue().toString());
+                    String category = dataSnapshot.child("category").getValue().toString();
+                    createMarker(key, item, category, uri, location);
+                } catch (Exception e) {
+                    Log.e("error", e.toString());
+                }
             }
 
             @Override
@@ -354,7 +358,7 @@ public class HomeFragment extends Fragment implements
     }
 
     private void createMarker(String id, String title, String category, Uri img, GeoLocation location) {
-        Log.e("marker", "new marker");
+
         Random r = new Random();
 
         LatLng position = new LatLng(location.latitude, location.longitude);
@@ -371,7 +375,7 @@ public class HomeFragment extends Fragment implements
         mMap.setOnInfoWindowClickListener(this);
 
         markerMap.put(id, marker);
-        Log.e("marker", String.valueOf(markerMap.size()) + marker.getSnippet());
+
     }
 
     @Override

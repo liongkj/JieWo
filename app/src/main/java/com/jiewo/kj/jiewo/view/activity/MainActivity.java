@@ -1,12 +1,11 @@
 package com.jiewo.kj.jiewo.view.activity;
 
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,8 +26,8 @@ import com.jiewo.kj.jiewo.model.ItemModel;
 import com.jiewo.kj.jiewo.model.UserModel;
 import com.jiewo.kj.jiewo.view.fragment.CategoryFragment;
 import com.jiewo.kj.jiewo.view.fragment.HomeFragment;
+import com.jiewo.kj.jiewo.view.fragment.ItemFragment;
 import com.jiewo.kj.jiewo.view.fragment.ItemListFragment;
-import com.jiewo.kj.jiewo.view.fragment.MyItemFragment;
 import com.jiewo.kj.jiewo.view.fragment.RentFragment;
 import com.jiewo.kj.jiewo.view.fragment.SettingFragment;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -55,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements
     Toolbar toolbar;
     @BindView(R.id.fabAdd)
     FloatingActionButton fab;
+    @BindView(R.id.app_bar)
+    AppBarLayout appBarLayout;
     UserViewModel viewModel;
     private AccountHeader headerResult = null;
     private FirebaseAuth.AuthStateListener authListener;
@@ -67,26 +68,21 @@ public class MainActivity extends AppCompatActivity implements
 //        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle("Main");
+        viewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
         authListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user == null) {
                 // user auth state is changed - user is null
                 // launch login activity
+
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
                 finish();
             }
+
         };
 
-        viewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
-        viewModel.getUser(user).observe(this, new Observer<UserModel>() {
-            @Override
-            public void onChanged(@Nullable UserModel userModel) {
-                user = userModel;
-            }
-        });
-        //drawer header
         buildHeader(false, savedInstanceState);
 
         buildDrawer();
@@ -198,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements
                 fragmentClass = HomeFragment.class;
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+                appBarLayout.setElevation(8);
                 break;
 //            case 2:
 //                result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
@@ -208,22 +205,26 @@ public class MainActivity extends AppCompatActivity implements
                 fragmentClass = CategoryFragment.class;
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+                appBarLayout.setElevation(8);
                 break;
             case 5:
                 fragmentClass = SettingFragment.class;
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+                appBarLayout.setElevation(8);
                 break;
             case 6:
-                fragmentClass = MyItemFragment.class;
+                fragmentClass = ItemFragment.class;
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+                appBarLayout.setElevation(0);
                 break;
 //            0
             default:
                 fragmentClass = HomeFragment.class;
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+                appBarLayout.setElevation(8);
 
                 break;
         }
