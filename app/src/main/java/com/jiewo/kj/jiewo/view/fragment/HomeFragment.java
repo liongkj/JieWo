@@ -5,6 +5,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
@@ -20,6 +21,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -31,6 +33,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -41,8 +46,14 @@ import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -69,6 +80,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import static android.app.Activity.RESULT_OK;
 import static com.jiewo.kj.jiewo.util.Constants.DATABASE_REF;
 
 /**
@@ -88,6 +100,8 @@ public class HomeFragment extends Fragment implements
     private FusedLocationProviderClient mFusedLocationProviderClient;
     LocationManager locationManager;
     String provider;
+    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    private static final int RESULT_CANCEL = 0;
 
     private boolean doubleBackToExitPressedOnce;
     private final Runnable mRunnable = new Runnable() {
@@ -139,6 +153,7 @@ public class HomeFragment extends Fragment implements
         getActivity().setTitle("JieWo");
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         mToggle.setDrawerIndicatorEnabled(true);
+        setHasOptionsMenu(true);
 
         view.setFocusableInTouchMode(true);
         view.requestFocus();
@@ -170,7 +185,6 @@ public class HomeFragment extends Fragment implements
         this.geoQuery = geoFire.queryAtLocation(INITIAL_CENTER, 1);
         if (location != null) {
             onLocationChanged(location);
-            viewModel.setCurrentLocation(location);
         }
         this.markerMap = new HashMap<>();
         BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.map_marker);
@@ -178,26 +192,6 @@ public class HomeFragment extends Fragment implements
         smallMarker = Bitmap.createScaledBitmap(b, 100, 100, false);
 
         return view;
-    }
-
-    @SuppressLint("MissingPermission")
-    @Override
-    public void onResume() {
-        super.onResume();
-        initMap();
-        locationManager.requestLocationUpdates(provider, 1000, 1, this);
-        this.geoQuery.addGeoQueryEventListener(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        locationManager.removeUpdates(this);
-        this.geoQuery.removeAllListeners();
-        for (Marker marker : this.markerMap.values()) {
-            marker.remove();
-        }
-        this.markerMap.clear();
     }
 
     private void getDeviceLocation() {
@@ -215,10 +209,14 @@ public class HomeFragment extends Fragment implements
                         if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
+                            if (currentLocation != null) {
 
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-                                    DEFAULT_ZOOM);
-
+                                viewModel.setCurrentLocation(currentLocation);
+                                moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                                        DEFAULT_ZOOM);
+                            } else {
+                                Toast.makeText(getContext(), "Please enable Location service", Toast.LENGTH_LONG).show();
+                            }
                         } else {
                             Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(getContext(), "unable to get current location", Toast.LENGTH_SHORT).show();
@@ -237,33 +235,10 @@ public class HomeFragment extends Fragment implements
     }
 
     private void initMap() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-
-        mapFragment.getMapAsync(this);
-
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        if (mLocationPermissionsGranted) {
+        if (mMap == null) {
+            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
             getDeviceLocation();
-
-            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            mMap.setOnCameraMoveListener(this);
-            LatLng latLngCenter = new LatLng(INITIAL_CENTER.latitude, INITIAL_CENTER.longitude);
-            this.searchCircle = mMap.addCircle(new CircleOptions().center(latLngCenter).radius(10));
-            this.searchCircle.setFillColor(Color.argb(66, 255, 255, 255));
-            this.searchCircle.setStrokeColor(Color.argb(66, 0, 0, 0));
-
-
+            mapFragment.getMapAsync(this);
         }
     }
 
@@ -287,6 +262,136 @@ public class HomeFragment extends Fragment implements
             ActivityCompat.requestPermissions(getActivity(),
                     permissions,
                     LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    private void createMarker(String id, String title, String category, Uri img, GeoLocation location) {
+
+        Random r = new Random();
+
+        LatLng position = new LatLng(location.latitude, location.longitude);
+
+        Marker marker = mMap.addMarker(new MarkerOptions()
+                .position(position)
+                .title(category)
+                .snippet(title)
+                .anchor(r.nextFloat(), r.nextFloat())
+                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+        marker.setTag(img);
+
+        mMap.setInfoWindowAdapter(new MapMarkerAdapter(getContext()));
+        mMap.setOnInfoWindowClickListener(this);
+
+        markerMap.put(id, marker);
+
+    }
+
+    private void animateMarkerTo(final Marker marker, final double lat, final double lng) {
+
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        final long DURATION_MS = 3000;
+        final Interpolator interpolator = new AccelerateDecelerateInterpolator();
+        final LatLng startPosition = marker.getPosition();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                float elapsed = SystemClock.uptimeMillis() - start;
+                float t = elapsed / DURATION_MS;
+                float v = interpolator.getInterpolation(t);
+                double currentLat = (lat - startPosition.latitude) * v + startPosition.latitude;
+                double currentLng = (lng - startPosition.longitude) * v + startPosition.longitude;
+                marker.setPosition(new LatLng(currentLat, currentLng));
+                // if animation is not finished yet, repeat
+                if (t < 1) {
+                    handler.postDelayed(this, 16);
+                }
+            }
+        });
+    }
+
+    private double zoomLevelToRadius(double zoomLevel) {
+        // Approximation to fit circle into view
+        return 16384000 / Math.pow(2, zoomLevel);
+    }
+
+    public void findPlace() {
+        try {
+            AutocompleteFilter autocompleteFilter = new AutocompleteFilter.Builder()
+                    .setCountry("MY")
+                    .build();
+
+            Intent intent =
+                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                            .setFilter(autocompleteFilter)
+                            .build(getActivity());
+
+
+            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.search_options_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.search:
+                findPlace();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onResume() {
+        super.onResume();
+        initMap();
+        locationManager.requestLocationUpdates(provider, 1000, 1, this);
+        this.geoQuery.addGeoQueryEventListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        searchCircle.remove();
+        locationManager.removeUpdates(this);
+        this.geoQuery.removeAllListeners();
+        for (Marker marker : this.markerMap.values()) {
+            marker.remove();
+        }
+        this.markerMap.clear();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        if (mLocationPermissionsGranted) {
+//            getDeviceLocation();
+            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            mMap.setOnCameraMoveListener(this);
+            LatLng latLngCenter = new LatLng(INITIAL_CENTER.latitude, INITIAL_CENTER.longitude);
+            this.searchCircle = mMap.addCircle(new CircleOptions().center(latLngCenter).radius(1000));
+            this.searchCircle.setFillColor(Color.argb(80, 255, 255, 255));
+            this.searchCircle.setStrokeColor(Color.argb(66, 0, 0, 0));
+
+
         }
     }
 
@@ -317,8 +422,9 @@ public class HomeFragment extends Fragment implements
     @Override
     public void onLocationChanged(Location location) {
         geoLocation = new GeoLocation(location.getLatitude(), location.getLongitude());
-        this.geoFire = new GeoFire(GEO_FIRE_DB);
+
         this.geoQuery = geoFire.queryAtLocation(geoLocation, 1);
+
         viewModel.setCurrentLocation(location);
     }
 
@@ -360,27 +466,6 @@ public class HomeFragment extends Fragment implements
         });
     }
 
-    private void createMarker(String id, String title, String category, Uri img, GeoLocation location) {
-
-        Random r = new Random();
-
-        LatLng position = new LatLng(location.latitude, location.longitude);
-
-        Marker marker = mMap.addMarker(new MarkerOptions()
-                .position(position)
-                .title(category)
-                .snippet(title)
-                .anchor(r.nextFloat(), r.nextFloat())
-                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
-        marker.setTag(img);
-
-        mMap.setInfoWindowAdapter(new MapMarkerAdapter(getContext()));
-        mMap.setOnInfoWindowClickListener(this);
-
-        markerMap.put(id, marker);
-
-    }
-
     @Override
     public void onKeyExited(String key) {
         Marker marker = this.markerMap.get(key);
@@ -388,7 +473,6 @@ public class HomeFragment extends Fragment implements
             marker.remove();
             markerMap.remove(key);
             marker.setTag(null);
-            Log.e("marker", marker.getSnippet() + "exited");
         }
     }
 
@@ -415,45 +499,21 @@ public class HomeFragment extends Fragment implements
                 .show();
     }
 
-    private void animateMarkerTo(final Marker marker, final double lat, final double lng) {
-
-        final Handler handler = new Handler();
-        final long start = SystemClock.uptimeMillis();
-        final long DURATION_MS = 3000;
-        final Interpolator interpolator = new AccelerateDecelerateInterpolator();
-        final LatLng startPosition = marker.getPosition();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                float elapsed = SystemClock.uptimeMillis() - start;
-                float t = elapsed / DURATION_MS;
-                float v = interpolator.getInterpolation(t);
-                double currentLat = (lat - startPosition.latitude) * v + startPosition.latitude;
-                double currentLng = (lng - startPosition.longitude) * v + startPosition.longitude;
-                marker.setPosition(new LatLng(currentLat, currentLng));
-                // if animation is not finished yet, repeat
-                if (t < 1) {
-                    handler.postDelayed(this, 16);
-                }
-            }
-        });
-    }
-
-    private double zoomLevelToRadius(double zoomLevel) {
-        // Approximation to fit circle into view
-        return 16384000 / Math.pow(2, zoomLevel);
-    }
-
 
     @Override
     public void onCameraMove() {
         LatLng center = mMap.getCameraPosition().target;
-        double radius = zoomLevelToRadius(12);
+        double radius = zoomLevelToRadius(mMap.getCameraPosition().zoom);
         searchCircle.setCenter(center);
         searchCircle.setRadius(radius);
         geoQuery.setCenter(new GeoLocation(center.latitude, center.longitude));
         // radius in km
         geoQuery.setRadius(radius / 1000);
+        if (markerMap.size() > 1) {
+            Toast.makeText(getContext(), "Found " + markerMap.size() + " items", Toast.LENGTH_LONG).show();
+        } else if (markerMap.size() == 1) {
+            Toast.makeText(getContext(), "Found " + markerMap.size() + " item", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -479,5 +539,29 @@ public class HomeFragment extends Fragment implements
                 .addToBackStack(null)
                 .commit();
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(getContext(), data);
+//                CameraUpdate location = CameraUpdateFactory.newCameraPosition(new CameraPosition(place.getLatLng(), 15,0,25));
+                moveCamera(place.getLatLng(), 15);
+                this.searchCircle = mMap.addCircle(new CircleOptions().center(place.getLatLng()).radius(1000));
+                this.searchCircle.setFillColor(Color.argb(80, 255, 255, 255));
+                this.searchCircle.setStrokeColor(Color.argb(66, 0, 0, 0));
+
+
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(getContext(), data);
+                Snackbar snackbar = Snackbar
+                        .make(getView(), status.toString(), Snackbar.LENGTH_LONG);
+                snackbar.show();
+            } else if (resultCode == RESULT_CANCEL) {
+                Status status = PlaceAutocomplete.getStatus(getContext(), data);
+                Snackbar.make(getView(), "An error occured,", Snackbar.LENGTH_LONG).show();
+            }
+        }
     }
 }

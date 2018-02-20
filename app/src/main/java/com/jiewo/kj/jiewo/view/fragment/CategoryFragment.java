@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -129,13 +130,16 @@ public class CategoryFragment extends Fragment {
                     @Override
                     public CategoryModel parseSnapshot(DataSnapshot snapshot) {
                         items = new ArrayList<>();
+
                         String id = snapshot.getKey();
                         String name = snapshot.child("name").getValue().toString();
                         for (DataSnapshot ds : snapshot.child("items").getChildren()) {
                             items.add(ds.getValue().toString());
                         }
+
                         int count = items.size();
                         cm = new CategoryModel(id, name, items, count);
+                        Log.e("id", id);
                         return cm;
                     }
                 })

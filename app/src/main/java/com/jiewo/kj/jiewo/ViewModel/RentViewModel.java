@@ -106,8 +106,10 @@ public class RentViewModel extends ViewModel {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         categoryStringList.clear();
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            String data = ds.child("name").getValue().toString();
-                            categoryStringList.add(data);
+                            if (ds.exists()) {
+                                String data = ds.child("name").getValue().toString();
+                                categoryStringList.add(data);
+                            }
                         }
                     }
 
@@ -162,7 +164,7 @@ public class RentViewModel extends ViewModel {
                     catId = catItem.push().getKey();
                     catItem.child(catId + "/name").setValue(itemCategory.getValue());
                 }
-                catItem.child(catId + "/items/"+itemId).setValue(true);
+                catItem.child(catId + "/items/" + itemId).setValue(true);
 
             }
 

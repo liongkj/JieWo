@@ -35,10 +35,8 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -153,8 +151,8 @@ public class MainActivity extends AppCompatActivity implements
         //PrimaryDrawerItem rentItem = new PrimaryDrawerItem().withIdentifier(2).withName("Rent My Item").withIcon(GoogleMaterial.Icon.gmd_add);
         PrimaryDrawerItem search = new PrimaryDrawerItem().withIdentifier(3).withName("Category").withIcon(GoogleMaterial.Icon.gmd_dashboard);
         //PrimaryDrawerItem nearby = new PrimaryDrawerItem().withIdentifier(4).withName("What's Nearby").withIcon(GoogleMaterial.Icon.gmd_location_on);
-        SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName("Settings").withIcon(GoogleMaterial.Icon.gmd_settings);
-        SecondaryDrawerItem items = new SecondaryDrawerItem().withIdentifier(6).withName("My Items").withIcon(GoogleMaterial.Icon.gmd_check_box);
+        PrimaryDrawerItem settings = new PrimaryDrawerItem().withIdentifier(5).withName("Settings").withIcon(GoogleMaterial.Icon.gmd_settings);
+        PrimaryDrawerItem items = new PrimaryDrawerItem().withIdentifier(6).withName("My Items").withIcon(GoogleMaterial.Icon.gmd_check_box);
 
 
         result = new DrawerBuilder()
@@ -167,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements
                         //rentItem,
                         search,
                         // nearby,
-                        new DividerDrawerItem(),
+
                         items,
                         settings
                 )

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
     tools:context="com.jiewo.kj.jiewo.view.activity.SignupActivity">
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="@color/md_blue_100"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/md_grey_100"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="@dimen/activity_horizontal_margin">
@@ -20,77 +20,73 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="30dp"
             android:src="@mipmap/ic_launcher" />
 
-        <android.support.design.widget.TextInputLayout
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:text="@string/application_name"
+            android:textSize="30sp"
+            android:gravity="center"
+            android:layout_marginBottom="10dp" />
 
-            <EditText
-                android:id="@+id/email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Email"
-                android:inputType="textEmailAddress"
-                android:maxLines="1"
-                android:singleLine="true"
-                android:textColor="@android:color/white" />
 
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/email"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            app:met_floatingLabel="highlight" />
 
-            <EditText
-                android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusableInTouchMode="true"
-                android:hint="Password"
-                app:passwordToggleEnabled="true"
-                android:imeOptions="actionUnspecified"
-                android:inputType="textPassword"
-                android:maxLines="1"
-                android:singleLine="true"
-                android:textColor="@android:color/white" />
 
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/password"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
+            android:hint="Password"
+            android:imeOptions="actionNext"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            app:met_floatingLabel="highlight"
+            app:passwordToggleEnabled="true" />
 
-            <EditText
-                android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusableInTouchMode="true"
-                android:hint="Full Name"
-                android:inputType="textCapWords"
-                android:maxLines="1"
-                android:singleLine="true"
-                android:textColor="@android:color/white" />
 
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
+            android:hint="Full Name"
+            android:inputType="textCapWords"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            app:met_floatingLabel="highlight" />
 
-            <EditText
-                android:id="@+id/number"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Phone Number"
-                android:inputType="phone"
-                android:digits="60123637830+"
-                android:maxLines="1"
-                android:singleLine="true"
-                android:textColor="@android:color/white" />
 
-        </android.support.design.widget.TextInputLayout>
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:digits="0123456789"
+            android:hint="Phone Number"
+            android:inputType="phone"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:title="Phone Number"
+            app:met_floatingLabel="highlight"
+            app:met_floatingLabelText="etc. 60123456789"
+            app:met_maxCharacters="12"
+            app:met_minCharacters="11" />
+
 
         <Button
             android:id="@+id/sign_up_button"
@@ -98,33 +94,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="@color/colorPrimaryLight"
+            android:background="@color/colorPrimaryDark"
             android:text="Sign Up"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
             android:textStyle="bold" />
 
         <Button
             android:id="@+id/btn_reset_password"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dip"
+            android:layout_marginTop="6dp"
             android:background="@null"
             android:text="Forget Password"
             android:textAllCaps="false"
-            android:textColor="@color/colorAccent" />
+            android:textColor="@color/md_black_1000" />
 
         <!-- Link to Login Screen -->
 
         <Button
             android:id="@+id/sign_in_button"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dip"
             android:background="@null"
             android:text="Login"
             android:textAllCaps="false"
-            android:textColor="@color/md_white_1000"
-            android:textSize="15dp" />
+            android:textColor="@color/md_black_1000"
+            android:textSize="15sp" />
     </LinearLayout>
 
     <ProgressBar

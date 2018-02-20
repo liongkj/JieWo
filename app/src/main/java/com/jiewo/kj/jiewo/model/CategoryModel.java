@@ -25,6 +25,7 @@ public class CategoryModel {
         this.name = name;
         this.items = items;
         this.count = count;
+
     }
 
     public void setId(String id) {
@@ -46,6 +47,7 @@ public class CategoryModel {
     public String getId() {
         return id;
     }
+
 
     @Exclude
     public HashMap<String,Object> toMap(){

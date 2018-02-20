@@ -105,6 +105,7 @@ public class CategoryViewModel extends ViewModel {
     public LiveData<Float> getDistance() {
         return distance;
     }
+
 }
 
 
