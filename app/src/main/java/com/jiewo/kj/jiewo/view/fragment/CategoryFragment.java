@@ -163,7 +163,7 @@ public class CategoryFragment extends Fragment {
             }//TODO
 
             @Override
-            protected void onBindViewHolder(CategoryViewHolder holder, int position, CategoryModel model) {
+            protected void onBindViewHolder(@NonNull CategoryViewHolder holder, int position, @NonNull CategoryModel model) {
                 holder.bindView(model);
                 holder.setOnClickListener((view, position1) -> {
                     final CategoryModel cat = model;
