@@ -10,9 +10,6 @@ import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.model.ItemModel;
 import com.squareup.picasso.Picasso;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
 
 public class ItemViewHolder extends RecyclerView.ViewHolder {
 
@@ -26,17 +23,17 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
         super(View);
         mContext = context;
         itemTitle = View.findViewById(R.id.itemName);
-        itemDescription = View.findViewById(R.id.itemDescription);
+//        itemDescription = View.findViewById(R.id.itemDescription);
         itemCost = View.findViewById(R.id.itemCost);
         itemImage = View.findViewById(R.id.itemImage);
 
     }
 
     public void bindView(ItemModel model){
-        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
+
         itemTitle.setText(model.getItemTitle());
-        itemDescription.setText(model.getItemDescription());
-        itemCost.setText(format.format(model.getItemPrice()));
+//        itemDescription.setText(model.getItemDescription());
+        itemCost.setText(String.format("RM " + "%.2f", model.getItemPrice()));
         if (!model.getItemImages().isEmpty()) {
             Picasso.with(mContext)
                     .load(model.getItemImages().get(0))

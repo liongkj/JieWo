@@ -13,23 +13,27 @@
         android:layout_height="wrap_content"
         android:padding="4dp"
         android:orientation="horizontal"
-        android:background="@color/md_light_appbar">
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:background="@color/md_grey_200">
 
         <android.support.v7.widget.AppCompatImageView
             android:id="@+id/itemImage"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:layout_gravity="center"
             android:padding="4dp"
             android:scaleType="fitCenter" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginStart="@dimen/fab_margin"
-            android:layout_marginTop="@dimen/fab_margin"
             android:orientation="vertical">
 
             <LinearLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -50,12 +54,12 @@
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/itemDescription"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+            <!--<TextView-->
+            <!--android:id="@+id/itemDescription"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
 
-                android:textAppearance="?attr/textAppearanceListItemSecondary" />
+            <!--android:textAppearance="?attr/textAppearanceListItemSecondary" />-->
 
             <TextView
                 android:id="@+id/itemCost"

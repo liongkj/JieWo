@@ -8,9 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -29,7 +27,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -129,9 +126,6 @@ public class HomeFragment extends Fragment implements
     private static final float DEFAULT_ZOOM = 18f;
     private String TAG = "gMap";
 
-
-    Bitmap smallMarker;
-
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -151,8 +145,8 @@ public class HomeFragment extends Fragment implements
         binding.setView(this);
 
         getActivity().setTitle("JieWo");
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         mToggle.setDrawerIndicatorEnabled(true);
+        ((MainActivity) getActivity()).showFab();
         setHasOptionsMenu(true);
 
         view.setFocusableInTouchMode(true);
@@ -187,9 +181,6 @@ public class HomeFragment extends Fragment implements
             onLocationChanged(location);
         }
         this.markerMap = new HashMap<>();
-        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.map_marker);
-        Bitmap b = bitmapdraw.getBitmap();
-        smallMarker = Bitmap.createScaledBitmap(b, 100, 100, false);
 
         return view;
     }
@@ -276,7 +267,7 @@ public class HomeFragment extends Fragment implements
                 .title(category)
                 .snippet(title)
                 .anchor(r.nextFloat(), r.nextFloat())
-                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_round)));
         marker.setTag(img);
 
         mMap.setInfoWindowAdapter(new MapMarkerAdapter(getContext()));
@@ -337,6 +328,7 @@ public class HomeFragment extends Fragment implements
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.search_options_menu, menu);
+
     }
 
     @Override
@@ -358,24 +350,25 @@ public class HomeFragment extends Fragment implements
         initMap();
         locationManager.requestLocationUpdates(provider, 1000, 1, this);
         this.geoQuery.addGeoQueryEventListener(this);
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        searchCircle.remove();
+
         locationManager.removeUpdates(this);
         this.geoQuery.removeAllListeners();
-        for (Marker marker : this.markerMap.values()) {
+        for (Marker marker : markerMap.values()) {
             marker.remove();
         }
-        this.markerMap.clear();
+        markerMap.clear();
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        if (searchCircle != null) searchCircle.remove();
         if (mLocationPermissionsGranted) {
 //            getDeviceLocation();
             if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
@@ -403,8 +396,8 @@ public class HomeFragment extends Fragment implements
         switch (requestCode) {
             case LOCATION_PERMISSION_REQUEST_CODE: {
                 if (grantResults.length > 0) {
-                    for (int i = 0; i < grantResults.length; i++) {
-                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                    for (int grantResult : grantResults) {
+                        if (grantResult != PackageManager.PERMISSION_GRANTED) {
                             mLocationPermissionsGranted = false;
                             Log.d(TAG, "onRequestPermissionsResult: permission failed");
                             return;
@@ -468,11 +461,12 @@ public class HomeFragment extends Fragment implements
 
     @Override
     public void onKeyExited(String key) {
-        Marker marker = this.markerMap.get(key);
+        Marker marker = markerMap.get(key);
         if (marker != null) {
             marker.remove();
+//            marker.setTag(null);
             markerMap.remove(key);
-            marker.setTag(null);
+
         }
     }
 
@@ -502,6 +496,7 @@ public class HomeFragment extends Fragment implements
 
     @Override
     public void onCameraMove() {
+
         LatLng center = mMap.getCameraPosition().target;
         double radius = zoomLevelToRadius(mMap.getCameraPosition().zoom);
         searchCircle.setCenter(center);
@@ -513,6 +508,8 @@ public class HomeFragment extends Fragment implements
             Toast.makeText(getContext(), "Found " + markerMap.size() + " items", Toast.LENGTH_LONG).show();
         } else if (markerMap.size() == 1) {
             Toast.makeText(getContext(), "Found " + markerMap.size() + " item", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getContext(), "No item found in this location", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -560,7 +557,7 @@ public class HomeFragment extends Fragment implements
                 snackbar.show();
             } else if (resultCode == RESULT_CANCEL) {
                 Status status = PlaceAutocomplete.getStatus(getContext(), data);
-                Snackbar.make(getView(), "An error occured,", Snackbar.LENGTH_LONG).show();
+                // Snackbar.make(getView(), "An error occured", Snackbar.LENGTH_LONG).show();
             }
         }
     }

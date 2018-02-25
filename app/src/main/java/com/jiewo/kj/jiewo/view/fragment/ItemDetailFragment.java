@@ -1,7 +1,6 @@
 package com.jiewo.kj.jiewo.view.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
@@ -97,7 +96,7 @@ public class ItemDetailFragment extends Fragment {
         MainActivity.result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        getActivity().setTitle("JieWo");
+
 
 
         viewModel.getItemId().observe(this, (ItemModel i) -> {
@@ -133,6 +132,11 @@ public class ItemDetailFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+    }
 
     public void onClickCall(View v, String number) {
         if (number != null) {
@@ -165,15 +169,6 @@ public class ItemDetailFragment extends Fragment {
     }
 
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
 
     void buildSlider(List<Uri> itemImages) {
 
@@ -192,6 +187,6 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        viewModel.getDistance().removeObservers(this);
+        //viewModel.getDistance().removeObservers(this);
     }
 }

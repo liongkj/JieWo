@@ -65,7 +65,7 @@ public class ItemFragment extends Fragment {
         binding.setView(this);
         View view = binding.getRoot();
 
-        getActivity().setTitle("My Items");
+        getActivity().setTitle("My Items".toUpperCase());
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         mToggle.setDrawerIndicatorEnabled(true);

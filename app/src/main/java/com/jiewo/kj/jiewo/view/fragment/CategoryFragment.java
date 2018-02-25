@@ -12,7 +12,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -139,7 +138,7 @@ public class CategoryFragment extends Fragment {
 
                         int count = items.size();
                         cm = new CategoryModel(id, name, items, count);
-                        Log.e("id", id);
+
                         return cm;
                     }
                 })

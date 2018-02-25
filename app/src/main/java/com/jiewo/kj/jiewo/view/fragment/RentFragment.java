@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -106,15 +105,14 @@ public class RentFragment extends DialogFragment {
         Toolbar toolbar = view.findViewById(R.id.toolbarDialog);
         toolbar.setTitle("Rent Item");
 
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        //((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         toolbar.setNavigationIcon(R.drawable.ic_close_cancel);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDialog().dismiss();
+        toolbar.setNavigationOnClickListener(v -> {
+//            MainActivity.
+//            ((AppCompatActivity) getActivity()).setSupportActionBar(current);
+            getDialog().dismiss();
 
-            }
         });
 
         //((MainActivity) getActivity()).hideFab();
