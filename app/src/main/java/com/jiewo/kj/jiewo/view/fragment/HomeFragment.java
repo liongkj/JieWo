@@ -90,16 +90,23 @@ public class HomeFragment extends Fragment implements
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnInfoWindowClickListener {
 
-    private DatabaseReference GEO_FIRE_DB = DATABASE_REF.child("Item-Location").getRef();
+    private static final int RESULT_CANCEL = 0;
+    private static final GeoLocation INITIAL_CENTER = new GeoLocation(37.7789, -122.4017);
+    private static final int INITIAL_ZOOM_LEVEL = 14;
+    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
+    private static final float DEFAULT_ZOOM = 18f;
     FragmentHomeBinding binding;
-    private GoogleMap mMap;
-    private Boolean mLocationPermissionsGranted = false;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
     LocationManager locationManager;
     String provider;
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
-    private static final int RESULT_CANCEL = 0;
-
+    ActionBarDrawerToggle mToggle = MainActivity.result.getActionBarDrawerToggle();
+    CategoryViewModel viewModel;
+    private DatabaseReference GEO_FIRE_DB = DATABASE_REF.child("Item-Location").getRef();
+    private GoogleMap mMap;
+    private Boolean mLocationPermissionsGranted = false;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
     private boolean doubleBackToExitPressedOnce;
     private final Runnable mRunnable = new Runnable() {
         @Override
@@ -108,22 +115,11 @@ public class HomeFragment extends Fragment implements
         }
     };
     private Handler mHandler = new Handler();
-    ActionBarDrawerToggle mToggle = MainActivity.result.getActionBarDrawerToggle();
-
-    private static final GeoLocation INITIAL_CENTER = new GeoLocation(37.7789, -122.4017);
-    private static final int INITIAL_ZOOM_LEVEL = 14;
     private Circle searchCircle;
     private GeoFire geoFire;
     private GeoQuery geoQuery;
     private GeoLocation geoLocation;
-
     private Map<String, Marker> markerMap;
-    CategoryViewModel viewModel;
-
-    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
-    private static final float DEFAULT_ZOOM = 18f;
     private String TAG = "gMap";
 
     public HomeFragment() {
@@ -237,7 +233,6 @@ public class HomeFragment extends Fragment implements
         Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION};
-
         if (ContextCompat.checkSelfPermission(getContext(),
                 FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (ContextCompat.checkSelfPermission(getContext(),
@@ -311,13 +306,10 @@ public class HomeFragment extends Fragment implements
             AutocompleteFilter autocompleteFilter = new AutocompleteFilter.Builder()
                     .setCountry("MY")
                     .build();
-
             Intent intent =
                     new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
                             .setFilter(autocompleteFilter)
                             .build(getActivity());
-
-
             startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
         } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
 

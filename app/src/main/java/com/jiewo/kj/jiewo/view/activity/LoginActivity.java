@@ -24,10 +24,10 @@ import com.jiewo.kj.jiewo.model.UserModel;
 
 public class LoginActivity extends AppCompatActivity {
 
+    UserViewModel viewModel;
     private EditText inputEmail, inputPassword;
     private FirebaseAuth auth;
     private ProgressBar progressBar;
-    UserViewModel viewModel;
     private Button btnSignup, btnLogin, btnReset;
 
 
@@ -92,11 +92,11 @@ public class LoginActivity extends AppCompatActivity {
                             // signed in user can be handled in the listener.
                             progressBar.setVisibility(View.GONE);
                             if (!task.isSuccessful()) {
-                                // there was an error
                                 if (password.length() < 6) {
                                     inputPassword.setError("Password too short, enter minimum 6 characters!");
                                 } else {
-                                    Toast.makeText(LoginActivity.this, "Authentication failed, check your email and password", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(LoginActivity.this, "Authentication failed, " +
+                                            "check your email and password", Toast.LENGTH_LONG).show();
                                 }
                             } else {
                                 UserModel.getUser();

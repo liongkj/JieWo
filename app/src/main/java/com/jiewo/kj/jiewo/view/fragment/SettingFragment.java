@@ -56,7 +56,7 @@ public class SettingFragment extends Fragment
         implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
 
-
+    private static final int RESULT_CANCEL = 0;
     @BindView(R.id.txtUsername)
     TextView txtUsername;
     @BindView(R.id.txtEmail)
@@ -74,7 +74,6 @@ public class SettingFragment extends Fragment
     @BindView(R.id.txtSavedLocation)
     TextView txtAddress;
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
-    private static final int RESULT_CANCEL = 0;
     UserViewModel viewModel;
     UserModel user = UserModel.getUser();
     private StorageReference mStorage;
@@ -206,6 +205,7 @@ public class SettingFragment extends Fragment
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     public void onComplete(@NonNull Task<Void> task) {
                         // user is now signed out
+                        user.logout();
                         startActivity(new Intent(getActivity(), LoginActivity.class));
                         getActivity().finish();
                     }

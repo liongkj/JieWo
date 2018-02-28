@@ -1,33 +1,28 @@
 package com.jiewo.kj.jiewo.view.fragment;
 
+
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.firebase.geofire.GeoFire;
-import com.firebase.geofire.GeoLocation;
-import com.firebase.geofire.LocationCallback;
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.jiewo.kj.jiewo.R;
-import com.jiewo.kj.jiewo.ViewModel.CategoryViewModel;
 import com.jiewo.kj.jiewo.ViewModel.UserViewModel;
-import com.jiewo.kj.jiewo.databinding.FragmentListingBinding;
+import com.jiewo.kj.jiewo.databinding.FragmentRequestBinding;
 import com.jiewo.kj.jiewo.model.ItemModel;
 import com.jiewo.kj.jiewo.model.UserModel;
 import com.jiewo.kj.jiewo.util.Callback;
@@ -38,25 +33,27 @@ import java.util.List;
 
 import static com.jiewo.kj.jiewo.util.Constants.DATABASE_REF;
 
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link RequestFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class RequestFragment extends Fragment {
 
-public class ListingFragment extends Fragment {
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "userid";
+    private static final String ARG_PARAM1 = "param1";
+    UserViewModel userViewModel;
+    FragmentRequestBinding binding;
+    RecyclerView recyclerView;
     Query keyQuery;
-    UserModel user = UserModel.getUser();
-    UserViewModel viewModel;
-    CategoryViewModel categoryViewModel;
-    FragmentListingBinding binding;
     private String mParam1;
-    private RecyclerView recyclerView;
     private FirebaseRecyclerAdapter<ItemModel, ItemViewHolder> adapter;
 
-    public ListingFragment() {
+    public RequestFragment() {
         // Required empty public constructor
     }
 
-    public static ListingFragment newInstance(String param1) {
-        ListingFragment fragment = new ListingFragment();
+    public static RequestFragment newInstance(String param1) {
+        RequestFragment fragment = new RequestFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         fragment.setArguments(args);
@@ -66,21 +63,20 @@ public class ListingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
-        categoryViewModel = ViewModelProviders.of(getActivity()).get(CategoryViewModel.class);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
+        userViewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_listing, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_request, container, false);
         View view = binding.getRoot();
-        recyclerView = binding.UserItemList;
         binding.setView(this);
+        recyclerView = binding.UserItemList;
         buildItemList();
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setNestedScrollingEnabled(false);
@@ -93,35 +89,43 @@ public class ListingFragment extends Fragment {
 //        buildItemList();
         recyclerView.setAdapter(adapter);
         return view;
-
     }
 
-
     void buildItemList() {
-        Query dataRef = DATABASE_REF.child("Item");
-        keyQuery = DATABASE_REF.child("User/" + mParam1 + "/items");
+        Query dataRef = DATABASE_REF.child("Request");
+        keyQuery = DATABASE_REF.child("User/" + mParam1 + "/request");
         FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<ItemModel>()
                 .setLifecycleOwner(this)
                 .setIndexedQuery(keyQuery.getRef(), dataRef.getRef(), snapshot -> {
                     ItemModel im = new ItemModel();
                     UserModel um = new UserModel();
                     List<Uri> images = new ArrayList<>();
+                    String item = snapshot.child("Item").getValue().toString();
+                    String itemname = snapshot.child("Itemname").getValue().toString();
                     String id = snapshot.getKey();
-                    String title = snapshot.child("title").getValue().toString();
-                    String description = snapshot.child("description").getValue().toString();
-                    Double cost = Double.valueOf(snapshot.child("price").getValue().toString());
-                    um.setId(snapshot.child("owner").getValue().toString());
-                    String category = snapshot.child("category").getValue().toString();
-                    for (DataSnapshot ds : snapshot.child("picture").getChildren()) {
-                        images.add(Uri.parse(ds.getValue().toString()));
+                    if (snapshot.child("From").exists()) {
+                        String requester = snapshot.child("From").getValue().toString();
+                        um.setId(requester);
                     }
-                    im.setItemId(id);
-                    im.setItemTitle(title);
-                    im.setItemDescription(description);
-                    im.setItemPrice(cost);
+                    if (snapshot.child("Rating").exists()) {
+                        String requester = snapshot.child("Rating").getValue().toString();
+                        um.setRating(Double.valueOf(requester));
+                    }
+                    if (snapshot.child("ItemPic").exists()) {
+                        String pic = snapshot.child("ItemPic").getValue().toString();
+                        images.add(Uri.parse(pic));
+                    }
+
+                    String requesterName = snapshot.child("FromName").getValue().toString();
+                    String ownerid = snapshot.child("To").getValue().toString();
+                    um.setName(requesterName);
+                    um.setId(ownerid);
+                    im.setItemId(item);
+                    im.setItemTitle(itemname);
                     im.setImages(images);
                     im.setOwner(um);
-                    im.setItemCategory(category);
+                    im.setItemCategory(id);//request id holder
+
                     return im;
                 })
                 .build();
@@ -129,40 +133,28 @@ public class ListingFragment extends Fragment {
         adapter = new FirebaseRecyclerAdapter<ItemModel, ItemViewHolder>(options) {
             @Override
             protected void onBindViewHolder(ItemViewHolder holder, int position, ItemModel model) {
-                holder.bindView(model, false);
+
+                holder.bindView(model, true);
                 holder.setOnClickListener((view, position1) -> {
-                    final ItemModel item = model;
-                    GeoFire geoFire = new GeoFire(DATABASE_REF.child("Item-Location").getRef());
-                    geoFire.getLocation(model.getItemId(), new LocationCallback() {
-                        @Override
-                        public void onLocationResult(String key, GeoLocation location) {
 
-                            if (location != null) {
-                                Location loc = new Location("provider");
-                                loc.setLatitude(location.latitude);
-                                loc.setLongitude(location.longitude);
-                                categoryViewModel.setItemLocation(loc);
-                            }
-                        }
+                    MaterialDialog md = new MaterialDialog.Builder(getContext())
+                            .title("Approve request from " + model.getOwner().getName() + "?")
+                            .content("User rating: " + model.getOwner().getRating())
+                            .positiveText("Yes")
+                            .negativeText("No")
+                            .show();
 
+                    md.getBuilder().onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Log.e("item", "retrieve item location failed");
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            Toast toast = Toast.makeText(getContext(), "Item is rented", Toast.LENGTH_LONG);
+                            DATABASE_REF.child("User").child(model.getOwner().getId()).child("rented/" + model.getItemId()).setValue(true);
+                            DATABASE_REF.child("User").child(UserModel.getUser().getId()).child("request").child(model.getItemCategory()).setValue(null);
+                            DATABASE_REF.child("Request").child(model.getItemCategory()).setValue(null);
+                            toast.show();
                         }
                     });
-
-                    categoryViewModel.selectItem(item);
-
-                    Fragment fragment = new ItemDetailFragment();
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-                    fragmentTransaction.replace(R.id.fragment_placeholder, fragment, "tag")
-                            .addToBackStack(null)
-                            .commit();
-//
                 });
-
             }
 
             @Override
@@ -170,12 +162,8 @@ public class ListingFragment extends Fragment {
 
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.layout_fragment_item, parent, false);
-
                 return new ItemViewHolder(view, getContext());
             }
         };
-
-
     }
-
 }

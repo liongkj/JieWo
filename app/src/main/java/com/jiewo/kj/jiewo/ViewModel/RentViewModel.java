@@ -146,7 +146,6 @@ public class RentViewModel extends ViewModel {
 
     private void updateCategory(String itemId) {
         DatabaseReference catItem = DATABASE_REF.child(Constants.CATEGORY);
-
         catItem.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -185,7 +184,6 @@ public class RentViewModel extends ViewModel {
         form.refreshError();
         if (form.isValid()) {
 
-
             itemModel = new ItemModel();
             itemModel.setOwner(UserModel.getUser());
             itemModel.setItemTitle(itemTitle.getValue());
@@ -193,9 +191,7 @@ public class RentViewModel extends ViewModel {
             itemModel.setItemDescription(itemDescription.getValue());
             itemModel.setLocation(getGeolcation());
             itemModel.setItemPrice(itemCost.getNumber());
-
             //generate key
-
             String itemId = DATABASE_REF.child(ITEM).push().getKey();
             DatabaseReference itemRef = DATABASE_REF.child(ITEM).child(itemId);
 

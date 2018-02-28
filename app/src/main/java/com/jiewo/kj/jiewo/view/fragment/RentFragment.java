@@ -49,20 +49,58 @@ import java.util.List;
 
 public class RentFragment extends DialogFragment {
 
-    RentViewModel viewModel;
-    FragmentRentBinding binding;
-
-    private int current = 0;
-    private final int MAX = 6;
-    LinearLayout imageButtonParent;
-
-    protected GeoDataClient mGeoDataClient;
-    private PlaceAutoCompleteAdapter mAdapter;
-    private AutoCompleteTextView mAutocompleteView;
     private static final LatLngBounds BOUNDS_MALAYSIA = new LatLngBounds(
             new LatLng(0.360349, 99.228516), new LatLng(7.327599, 105.952148));
+    private final int MAX = 6;
+    protected GeoDataClient mGeoDataClient;
+    RentViewModel viewModel;
+    FragmentRentBinding binding;
+    LinearLayout imageButtonParent;
+    private int current = 0;
+    private PlaceAutoCompleteAdapter mAdapter;
+    private AutoCompleteTextView mAutocompleteView;
     private String TAG = "google api location";
     private List<Uri> imageList = new ArrayList<>();
+    private OnCompleteListener<PlaceBufferResponse> mUpdatePlaceDetailsCallback
+            = new OnCompleteListener<PlaceBufferResponse>() {
+        @Override
+        public void onComplete(Task<PlaceBufferResponse> task) {
+            try {
+                PlaceBufferResponse places = task.getResult();
+                // Get the Place object from the buffer.
+                final Place place = places.get(0).freeze();
+                // Format details of the place for display and show it in a TextView.
+                // Display the third party attributions if set.
+
+                viewModel.setSelectedPlace(place);
+                places.release();
+                Log.i(TAG, "Place details received: " + place.getName());
+                places.release();
+            } catch (RuntimeRemoteException e) {
+                // Request did not complete successfully
+                Log.e(TAG, "Place keyQuery did not complete.", e);
+                return;
+            }
+        }
+    };
+    private AdapterView.OnItemClickListener mAutoCompleteClickListener = new AdapterView.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            final AutocompletePrediction item = mAdapter.getItem(position);
+            final String placeId = item.getPlaceId();
+            final CharSequence primaryText = item.getPrimaryText(null);
+            Log.i(TAG, "Autocomplete item selected: " + primaryText);
+            /*
+             Issue a request to the Places Geo Data Client to retrieve a Place object with
+             additional details about the place.
+              */
+            Task<PlaceBufferResponse> placeResult = mGeoDataClient.getPlaceById(placeId);
+            placeResult.addOnCompleteListener(mUpdatePlaceDetailsCallback);
+
+            Log.i(TAG, "Called getPlaceById to get Place details for " + placeId);
+        }
+    };
 
     public RentFragment() {
         // Required empty public constructor
@@ -151,7 +189,7 @@ public class RentFragment extends DialogFragment {
 
     public void generateImageButton() {
         View view = getLayoutInflater().inflate(R.layout.layout_imagepicker, imageButtonParent, false);
-        AppCompatImageButton imageButton = (AppCompatImageButton) view.findViewById(R.id.imageButton);
+        AppCompatImageButton imageButton = view.findViewById(R.id.imageButton);
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -169,51 +207,7 @@ public class RentFragment extends DialogFragment {
         imageButtonParent.addView(imageButton);
     }
 
-
-    private AdapterView.OnItemClickListener mAutoCompleteClickListener = new AdapterView.OnItemClickListener() {
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            final AutocompletePrediction item = mAdapter.getItem(position);
-            final String placeId = item.getPlaceId();
-            final CharSequence primaryText = item.getPrimaryText(null);
-            Log.i(TAG, "Autocomplete item selected: " + primaryText);
-            /*
-             Issue a request to the Places Geo Data Client to retrieve a Place object with
-             additional details about the place.
-              */
-            Task<PlaceBufferResponse> placeResult = mGeoDataClient.getPlaceById(placeId);
-            placeResult.addOnCompleteListener(mUpdatePlaceDetailsCallback);
-
-            Log.i(TAG, "Called getPlaceById to get Place details for " + placeId);
-        }
-    };
-
-    private OnCompleteListener<PlaceBufferResponse> mUpdatePlaceDetailsCallback
-            = new OnCompleteListener<PlaceBufferResponse>() {
-        @Override
-        public void onComplete(Task<PlaceBufferResponse> task) {
-            try {
-                PlaceBufferResponse places = task.getResult();
-                // Get the Place object from the buffer.
-                final Place place = places.get(0).freeze();
-                // Format details of the place for display and show it in a TextView.
-                // Display the third party attributions if set.
-
-                viewModel.setSelectedPlace(place);
-                places.release();
-                Log.i(TAG, "Place details received: " + place.getName());
-                places.release();
-            } catch (RuntimeRemoteException e) {
-                // Request did not complete successfully
-                Log.e(TAG, "Place keyQuery did not complete.", e);
-                return;
-            }
-        }
-    };
-
     public void onClickSubmit(View view) {
-        Log.e("asd", binding.catSpinner.getText().toString());
 
         MaterialDialog md = new MaterialDialog.Builder(getContext())
                 .title("Submit Item?")

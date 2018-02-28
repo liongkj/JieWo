@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,8 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.CategoryViewModel;
+import com.jiewo.kj.jiewo.ViewModel.RequestViewModel;
 import com.jiewo.kj.jiewo.ViewModel.UserViewModel;
 import com.jiewo.kj.jiewo.databinding.FragmentItemDetailBinding;
 import com.jiewo.kj.jiewo.model.ItemModel;
@@ -44,6 +48,7 @@ public class ItemDetailFragment extends Fragment {
     FragmentItemDetailBinding binding;
     CategoryViewModel viewModel;
     UserViewModel viewModelUser;
+    RequestViewModel viewModelRequest;
     ActionBarDrawerToggle mToggle = MainActivity.result.getActionBarDrawerToggle();
     FloatingActionButton fab;
     UserModel user = UserModel.getUser();
@@ -77,6 +82,7 @@ public class ItemDetailFragment extends Fragment {
         }
         viewModel = ViewModelProviders.of(getActivity()).get(CategoryViewModel.class);
         viewModelUser = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
+        viewModelRequest = ViewModelProviders.of(getActivity()).get(RequestViewModel.class);
 
     }
 
@@ -97,8 +103,6 @@ public class ItemDetailFragment extends Fragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-
-
         viewModel.getItemId().observe(this, (ItemModel i) -> {
             binding.setItem(i);
             getActivity().setTitle(i.getItemTitle());
@@ -108,16 +112,6 @@ public class ItemDetailFragment extends Fragment {
                 binding.setSeller(u);
             });
 
-            viewModelUser.isFavorite(user, i).observe(this, (Boolean favorite) -> {
-                if (favorite) {
-                    binding.fabFav.setImageResource(R.drawable.ic_heart);
-                    binding.setIsFavorite(!favorite);
-                } else {
-                    binding.fabFav.setImageResource(R.drawable.ic_heart_outline);
-                    binding.setIsFavorite(favorite);
-                }
-
-            });
         });
 
         viewModel.getDistance().observe(this, distance -> {
@@ -168,6 +162,27 @@ public class ItemDetailFragment extends Fragment {
         }
     }
 
+    public void makeRequest(ItemModel item, UserModel owner) {
+
+        MaterialDialog md = new MaterialDialog.Builder(getContext())
+                .title("Send Request")
+                .content("Send a rent request for this item?")
+                .positiveText("Send")
+                .show();
+
+        md.getBuilder().onPositive(new MaterialDialog.SingleButtonCallback() {
+            @Override
+            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                Toast.makeText(getContext(), "Posting...", Toast.LENGTH_LONG).show();
+                if (viewModelRequest.request(item, owner)) {
+                    Toast.makeText(getContext(), "Request sent", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast toast = Toast.makeText(getContext(), "This is your item", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
+        });
+    }
 
 
     void buildSlider(List<Uri> itemImages) {

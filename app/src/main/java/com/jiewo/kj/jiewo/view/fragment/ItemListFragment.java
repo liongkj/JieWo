@@ -102,6 +102,7 @@ public class ItemListFragment extends Fragment {
         recyclerView.setNestedScrollingEnabled(false);
 //        recyclerView.setHasFixedSize(true);
 
+
         viewModel.getCategoryId().observe(this, s -> {
             getActivity().setTitle(s.getName());
             keyQuery = DATABASE_REF.child("Category/" + s.getId() + "/items");
@@ -164,7 +165,7 @@ public class ItemListFragment extends Fragment {
         adapter = new FirebaseRecyclerAdapter<ItemModel, ItemViewHolder>(options) {
             @Override
             protected void onBindViewHolder(ItemViewHolder holder, int position, ItemModel model) {
-                holder.bindView(model);
+                holder.bindView(model, false);
                 holder.setOnClickListener((view, position1) -> {
                     GeoFire geoFire = new GeoFire(DATABASE_REF.child("Item-Location").getRef());
                     geoFire.getLocation(model.getItemId(), new LocationCallback() {

@@ -29,11 +29,9 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public void bindView(ItemModel model){
+    public void bindView(ItemModel model, boolean bool) {
 
         itemTitle.setText(model.getItemTitle());
-//        itemDescription.setText(model.getItemDescription());
-        itemCost.setText(String.format("RM " + "%.2f", model.getItemPrice()));
         if (!model.getItemImages().isEmpty()) {
             Picasso.with(mContext)
                     .load(model.getItemImages().get(0))
@@ -41,16 +39,23 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
                     .resize(100, 100)
                     .into(itemImage);
         }
+//        itemDescription.setText(model.getItemDescription());
+        if (bool) {
+            itemCost.setText(model.getOwner().getName()); // to hold the requester name
+        } else {
+            itemCost.setText(String.format("RM " + "%.2f", model.getItemPrice()));
 
-        itemView.setOnClickListener(v -> mClickListener.onCategoryClick(v,getAdapterPosition()));
+        }
+
+        itemView.setOnClickListener(v -> mClickListener.onCategoryClick(v, getAdapterPosition()));
     }
 
-    public void setOnClickListener(ItemViewHolder.ClickListener clickListener){
+    public void setOnClickListener(ItemViewHolder.ClickListener clickListener) {
         mClickListener = clickListener;
     }
 
     public interface ClickListener {
-        public void onCategoryClick(View view, int position);
+        void onCategoryClick(View view, int position);
     }
 }
 

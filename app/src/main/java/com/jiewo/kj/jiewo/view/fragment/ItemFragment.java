@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,11 +34,10 @@ public class ItemFragment extends Fragment {
     ActionBarDrawerToggle mToggle = MainActivity.result.getActionBarDrawerToggle();
     UserModel user = UserModel.getUser();
 //    AppBarLayout appBarLayout = getActivity().findViewById(R.id.app_bar);
-
+String userid;
     private int mReplace = 0;
     private List<Fragment> mFragments;
     private List<String> mFragmentTitles;
-    String userid;
 
     public ItemFragment() {
         // Required empty public constructor
@@ -91,19 +89,26 @@ public class ItemFragment extends Fragment {
         //ViewPager findFragmentByTag，tag= "android:switcher:" + R.id.viewpager + position
         ListingFragment listingFragment = (ListingFragment) getActivity().getSupportFragmentManager()
                 .findFragmentByTag("android:switcher:" + R.id.item_pager + ":" + 0);
-        WishlistFragment wishlistFragment = (WishlistFragment) getActivity().getSupportFragmentManager()
+        RequestFragment requestFragment = (RequestFragment) getActivity().getSupportFragmentManager()
                 .findFragmentByTag("android:switcher:" + R.id.item_pager + ":" + 1);
+        RentedFragment rentedFragment = (RentedFragment) getActivity().getSupportFragmentManager()
+                .findFragmentByTag("android:switcher:" + R.id.item_pager + ":" + 2);
         if (listingFragment == null) {
             listingFragment = ListingFragment.newInstance(userid);
-            Log.e("fragment", "new instance");
         }
-        if (wishlistFragment == null) {
-            wishlistFragment = WishlistFragment.newInstance(userid);
+        if (requestFragment == null) {
+            requestFragment = RequestFragment.newInstance(userid);
+        }
+        if (rentedFragment == null) {
+            rentedFragment = RentedFragment.newInstance(userid);
         }
         mFragments.add(listingFragment);
-        mFragments.add(wishlistFragment);
+        mFragments.add(requestFragment);
+        mFragments.add(rentedFragment);
+
         mFragmentTitles.add("Listing");
-        mFragmentTitles.add("Favourite Items");
+        mFragmentTitles.add("Request");
+        mFragmentTitles.add("Rented Item");
         //Setup ViewPager
         TabFragmentAdapter adapter = new TabFragmentAdapter(getChildFragmentManager(), mFragments, mFragmentTitles);
         binding.itemPager.setAdapter(adapter);
