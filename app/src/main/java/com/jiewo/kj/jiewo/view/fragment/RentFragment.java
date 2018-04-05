@@ -112,7 +112,7 @@ public class RentFragment extends DialogFragment {
         viewModel = ViewModelProviders.of(this).get(RentViewModel.class);
         setStyle(DialogFragment.STYLE_NO_TITLE, R.style.AppTheme);
         setHasOptionsMenu(true);
-        mGeoDataClient = Places.getGeoDataClient(getContext(), null);
+        mGeoDataClient = Places.getGeoDataClient(getContext());
         mAdapter = new PlaceAutoCompleteAdapter(getContext(), mGeoDataClient, BOUNDS_MALAYSIA, null);
 
     }

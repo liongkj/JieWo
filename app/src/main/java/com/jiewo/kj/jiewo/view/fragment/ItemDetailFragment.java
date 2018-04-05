@@ -108,10 +108,14 @@ public class ItemDetailFragment extends Fragment {
             getActivity().setTitle(i.getItemTitle());
             buildSlider(i.getItemImages());
 
-            viewModelUser.getSeller(i.getOwner()).observe(this, u -> {
+            viewModelUser.getSeller(i.getOwner()).observe(getActivity(), u -> {
                 binding.setSeller(u);
             });
 
+        });
+
+        viewModelUser.getLoggedUser(user).observe(getActivity(), renter -> {
+            user = renter;
         });
 
         viewModel.getDistance().observe(this, distance -> {
@@ -162,7 +166,7 @@ public class ItemDetailFragment extends Fragment {
         }
     }
 
-    public void makeRequest(ItemModel item, UserModel owner) {
+    public void makeRequest(ItemModel item) {
 
         MaterialDialog md = new MaterialDialog.Builder(getContext())
                 .title("Send Request")
@@ -174,12 +178,13 @@ public class ItemDetailFragment extends Fragment {
             @Override
             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                 Toast.makeText(getContext(), "Posting...", Toast.LENGTH_LONG).show();
-                if (viewModelRequest.request(item, owner)) {
+                if (viewModelRequest.request(item, user)) {
                     Toast.makeText(getContext(), "Request sent", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast toast = Toast.makeText(getContext(), "This is your item", Toast.LENGTH_LONG);
                     toast.show();
                 }
+                fab.setEnabled(false);
             }
         });
     }

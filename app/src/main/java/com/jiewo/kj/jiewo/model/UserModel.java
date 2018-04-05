@@ -38,6 +38,7 @@ public class UserModel extends Application implements Serializable {
             FirebaseAuth auth = FirebaseAuth.getInstance();
             firebaseUser = auth.getCurrentUser();
             User = new UserModel(firebaseUser.getUid(), firebaseUser.getDisplayName(), firebaseUser.getEmail(), firebaseUser.getPhotoUrl());
+
         }
         return User;
     }
@@ -56,9 +57,7 @@ public class UserModel extends Application implements Serializable {
     }
 
     public String getName() {
-        if (name != null)
-            return name;
-        else return "null";
+        return name;
     }
 
     public void setName(String name) {

@@ -37,6 +37,7 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.stepstone.apprating.listener.RatingDialogListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,7 +45,8 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements
         ItemListFragment.OnListFragmentInteractionListener,
-        AuthStateListener {
+        AuthStateListener,
+        RatingDialogListener {
 
     static public Drawer result = null;
     UserModel user = UserModel.getUser();
@@ -137,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements
             super.onBackPressed();
         }
     }
+
 
     public void showFab() {
         fab.show();
@@ -267,6 +270,22 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+    }
+
+    @Override
+    public void onPositiveButtonClicked(int i, String s) {
+        Log.e("rating", String.valueOf(i));
+        viewModel.setRate(i, s);
+    }
+
+    @Override
+    public void onNegativeButtonClicked() {
+
+    }
+
+    @Override
+    public void onNeutralButtonClicked() {
 
     }
 }

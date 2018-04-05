@@ -73,6 +73,8 @@ public class SettingFragment extends Fragment
     TextView btnAddress;
     @BindView(R.id.txtSavedLocation)
     TextView txtAddress;
+    @BindView(R.id.txtRating)
+    TextView txtRating;
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     UserViewModel viewModel;
     UserModel user = UserModel.getUser();
@@ -112,6 +114,7 @@ public class SettingFragment extends Fragment
                             txtEmail.setText(i.getEmail());
                             txtNumber.setText(i.getNumber());
                             txtUsername.setText(i.getName());
+                    txtRating.setText(String.format("Rating: %s", String.valueOf(i.getRating())));
                             Picasso.with(getContext()).load(i.getPhotoURI()).into(profileImg);
                         }
                 );

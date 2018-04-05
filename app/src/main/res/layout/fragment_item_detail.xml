@@ -94,7 +94,7 @@
             android:layout_height="56dp"
             android:layout_marginEnd="@dimen/fab_margin"
             android:elevation="7dp"
-            android:onClick="@{() -> view.makeRequest(item,seller)}"
+            android:onClick="@{() -> view.makeRequest(item)}"
             android:src="@drawable/ic_bell_ring"
             app:backgroundTint="@color/md_red_500"
             app:borderWidth="0dp"

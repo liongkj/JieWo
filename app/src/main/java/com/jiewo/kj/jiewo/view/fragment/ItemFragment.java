@@ -108,10 +108,11 @@ String userid;
 
         mFragmentTitles.add("Listing");
         mFragmentTitles.add("Request");
-        mFragmentTitles.add("Rented Item");
+        mFragmentTitles.add("Return");
         //Setup ViewPager
         TabFragmentAdapter adapter = new TabFragmentAdapter(getChildFragmentManager(), mFragments, mFragmentTitles);
         binding.itemPager.setAdapter(adapter);
+
         binding.tabLayout.setupWithViewPager(binding.itemPager);
 
         binding.itemPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

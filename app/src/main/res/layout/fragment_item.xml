@@ -25,7 +25,8 @@
             app:tabTextColor="@color/md_white_1000"
             app:tabIndicatorColor="@color/md_pink_A200" />
 
-        <android.support.v4.view.ViewPager
+        <com.jiewo.kj.jiewo.view.adapter.NonSwipeableViewPager
+
             android:id="@+id/item_pager"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

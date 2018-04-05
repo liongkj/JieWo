@@ -42,7 +42,7 @@ public class MapMarkerAdapter implements GoogleMap.InfoWindowAdapter {
         distance.setText(marker.getSnippet());
         Picasso.with(context)
                 .load(Uri.parse(marker.getTag().toString()))
-                .placeholder(R.drawable.empty_drawable)
+                .placeholder(R.drawable.empty_img)
                 .resize(200, 200)
                 .into(img, new MarkerCallback(marker));
 

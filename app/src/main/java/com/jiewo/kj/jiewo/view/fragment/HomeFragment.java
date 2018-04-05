@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -66,6 +65,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.jiewo.kj.jiewo.R;
 import com.jiewo.kj.jiewo.ViewModel.CategoryViewModel;
@@ -88,7 +88,8 @@ public class HomeFragment extends Fragment implements
         LocationListener,
         GeoQueryEventListener,
         GoogleMap.OnCameraMoveListener,
-        GoogleMap.OnInfoWindowClickListener {
+        GoogleMap.OnInfoWindowClickListener,
+        GoogleMap.OnCameraIdleListener {
 
     private static final int RESULT_CANCEL = 0;
     private static final GeoLocation INITIAL_CENTER = new GeoLocation(37.7789, -122.4017);
@@ -130,6 +131,22 @@ public class HomeFragment extends Fragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(getActivity()).get(CategoryViewModel.class);
+        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (connected) {
+                    Toast.makeText(getContext(), "Connected", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Not connected", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+            }
+        });
     }
 
     @Override
@@ -226,6 +243,7 @@ public class HomeFragment extends Fragment implements
             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
             getDeviceLocation();
             mapFragment.getMapAsync(this);
+
         }
     }
 
@@ -298,7 +316,7 @@ public class HomeFragment extends Fragment implements
 
     private double zoomLevelToRadius(double zoomLevel) {
         // Approximation to fit circle into view
-        return 16384000 / Math.pow(2, zoomLevel);
+        return 16384000 / Math.pow(1.9, zoomLevel);
     }
 
     public void findPlace() {
@@ -371,11 +389,16 @@ public class HomeFragment extends Fragment implements
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
             mMap.setOnCameraMoveListener(this);
+            mMap.setOnCameraIdleListener(this);
             LatLng latLngCenter = new LatLng(INITIAL_CENTER.latitude, INITIAL_CENTER.longitude);
             this.searchCircle = mMap.addCircle(new CircleOptions().center(latLngCenter).radius(1000));
-            this.searchCircle.setFillColor(Color.argb(80, 255, 255, 255));
-            this.searchCircle.setStrokeColor(Color.argb(66, 0, 0, 0));
+            Snackbar.make(getView(), "Drag around or search for a address", Snackbar.LENGTH_INDEFINITE).setAction("Okay", v -> {
 
+            }).show();
+//            this.searchCircle.setFillColor(Color.argb(80, 255, 255, 255));
+//           this.searchCircle.setStrokeColor(Color.argb(66, 0, 0, 0));
+            searchCircle.setVisible(false);
+            onCameraMove();
 
         }
     }
@@ -496,12 +519,17 @@ public class HomeFragment extends Fragment implements
         geoQuery.setCenter(new GeoLocation(center.latitude, center.longitude));
         // radius in km
         geoQuery.setRadius(radius / 1000);
+
+    }
+
+    @Override
+    public void onCameraIdle() {
         if (markerMap.size() > 1) {
-            Toast.makeText(getContext(), "Found " + markerMap.size() + " items", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Found " + markerMap.size() + " items", Toast.LENGTH_SHORT).show();
         } else if (markerMap.size() == 1) {
-            Toast.makeText(getContext(), "Found " + markerMap.size() + " item", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Found " + markerMap.size() + " item", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(getContext(), "No item found in this location", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "No item found in this location", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -537,11 +565,7 @@ public class HomeFragment extends Fragment implements
                 Place place = PlaceAutocomplete.getPlace(getContext(), data);
 //                CameraUpdate location = CameraUpdateFactory.newCameraPosition(new CameraPosition(place.getLatLng(), 15,0,25));
                 moveCamera(place.getLatLng(), 15);
-                this.searchCircle = mMap.addCircle(new CircleOptions().center(place.getLatLng()).radius(1000));
-                this.searchCircle.setFillColor(Color.argb(80, 255, 255, 255));
-                this.searchCircle.setStrokeColor(Color.argb(66, 0, 0, 0));
-
-
+                onCameraMove();
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getContext(), data);
                 Snackbar snackbar = Snackbar
@@ -553,4 +577,6 @@ public class HomeFragment extends Fragment implements
             }
         }
     }
+
+
 }

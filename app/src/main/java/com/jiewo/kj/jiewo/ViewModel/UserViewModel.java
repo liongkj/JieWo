@@ -34,12 +34,14 @@ public class UserViewModel extends ViewModel {
     private MutableLiveData<UserModel> seller;
     private MutableLiveData<UserModel> userData;
     private MutableLiveData<String> locationData;
+    private MutableLiveData<String> rateTarget;
 
 
     public UserViewModel() {
 
         geoFire = new GeoFire(DATABASE_REF);
         seller = new MutableLiveData<>();
+        rateTarget = new MutableLiveData<>();
 
     }
 
@@ -71,12 +73,12 @@ public class UserViewModel extends ViewModel {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 try {
                     UserModel user = new UserModel();
-                    String id = user.getId();
+
                     String name = dataSnapshot.child("Name").getValue().toString();
                     String number = dataSnapshot.child("Number").getValue().toString();
                     Uri uri = Uri.parse(dataSnapshot.child("Profile").getValue().toString());
                     double rating = Double.valueOf(dataSnapshot.child("Rating").getValue().toString());
-                    user.setId(id);
+                    user.setId(dataSnapshot.getKey());
                     user.setName(name);
                     user.setNumber(number);
                     user.setPhotoURI(uri);
@@ -144,8 +146,33 @@ public class UserViewModel extends ViewModel {
     }
 
 
+    public void setRate(int i, String s) {
+        if (rateTarget != null) {
+            DATABASE_REF.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String id = rateTarget.getValue();
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
 
+                        if (ds.getKey().equals(id)) {
+                            Double rating = Double.valueOf(dataSnapshot.child(id).child("Rating").getValue().toString());
+                            rating = (rating + i) / 2;
+                            DATABASE_REF.child("User").child(id).child("Rating").setValue(rating);
+                            Log.e("rate", id + i + s);
+                        }
+                    }
+                }
 
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
+                }
+            });
 
+        }
+    }
+
+    public void setRateTarget(String rateTarget) {
+        this.rateTarget.setValue(rateTarget);
+    }
 }

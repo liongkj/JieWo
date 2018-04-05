@@ -16,13 +16,30 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="@dimen/fab_margin"
             android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pending" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/UserItemList"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="@dimen/fab_margin"
+                android:layout_height="wrap_content"
+
+                tools:listitem="@layout/layout_fragment_item" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Rented Items" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/UserRentedList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
 
                 tools:listitem="@layout/layout_fragment_item" />
         </LinearLayout>
